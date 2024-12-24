@@ -12,6 +12,6 @@ public class PlayerJoinListener implements Listener {
         String playerName = event.getPlayer().getName();
 
         // Send a message to the player who joined
-        event.getPlayer().sendMessage("Hello " + playerName + "!");
+        event.getPlayer().sendMessage("Hello WOLRD" + playerName + "!");
     }
 }
