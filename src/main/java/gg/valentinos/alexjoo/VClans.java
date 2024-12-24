@@ -7,9 +7,6 @@ public final class VClans extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("vClans has been enabled!");
-
-        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-
     }
 
     @Override
