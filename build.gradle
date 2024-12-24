@@ -71,7 +71,7 @@ tasks.register('buildAndDeploy') {
 
         // 4. Send a command to the Minecraft server using PlugMan to restart the plugin
         exec {
-            commandLine 'docker', 'exec', 'mc', 'mc-send-to-console', 'restart'
+            commandLine 'docker', 'exec', 'mc', 'mc-send-to-console', 'say', 'Hello'
         }
     }
 }
