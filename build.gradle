@@ -61,6 +61,7 @@ tasks.register('buildAndDeploy') {
         def dateStamp = new Date().format('yyyyMMdd')
         exec {
             commandLine 'git', 'commit', '-m', '\"VClans-${version}-${dateStamp}\"'
+            ignoreExitValue = true
         }
 
         // 3. Copy and replace the plugin in the Minecraft server plugins folder
@@ -72,6 +73,7 @@ tasks.register('buildAndDeploy') {
         // 4. Send a command to the Minecraft server using PlugMan to restart the plugin
         exec {
             commandLine 'docker', 'exec', 'mc', 'mc-send-to-console', 'say', 'Hello'
+            ignoreExitValue = true
         }
     }
 }
