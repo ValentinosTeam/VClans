@@ -13,5 +13,5 @@ public final class VClans extends JavaPlugin {
     public void onDisable() {
         getLogger().info("vClans has been disabled.");
     }
-
+    
 }
