@@ -28,6 +28,13 @@ public class JsonUtils {
     }
 
     public static void toJsonFile(Object object, String fileName) {
+        File dataFolder = VClans.getInstance().getDataFolder();
+        if (!dataFolder.exists()) {
+            // Ensure the data folder exists
+            dataFolder.mkdirs();
+        }
+        VClans.getInstance().getLogger().info("Data folder: " + dataFolder.getAbsolutePath());
+
         File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
         String json = JsonParser.parseString(new Gson().toJson(object)).getAsJsonObject().getAsString();
         try (FileWriter writer = new FileWriter(jsonFile)) {
@@ -38,6 +45,13 @@ public class JsonUtils {
     }
 
     public static <T> T fromJsonFile(String fileName, Class<T> clazz) {
+        File dataFolder = VClans.getInstance().getDataFolder();
+        if (!dataFolder.exists()) {
+            // Ensure the data folder exists
+            dataFolder.mkdirs();
+        }
+        VClans.getInstance().getLogger().info("Data folder: " + dataFolder.getAbsolutePath());
+
         File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
         if (!jsonFile.exists()) {
             try {
