@@ -13,7 +13,8 @@ public final class VClans extends JavaPlugin {
         instance = this;
         clansHandler = new ClansHandler();
 
-        clansHandler.loadClans();
+//        clansHandler.loadClans();
+        clansHandler.saveClans();
         getLogger().info("vClans has been enabled!");
 
     }

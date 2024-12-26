@@ -1,8 +1,10 @@
 package gg.valentinos.alexjoo.Handlers;
 
+import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.Clans;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ClansHandler {
@@ -25,12 +27,18 @@ public class ClansHandler {
         clans = JsonUtils.fromJsonFile("clans.json", Clans.class);
         if (clans == null)
             clans = new Clans();
-        
+
     }
 
-    private void saveClans() {
+    public void saveClans() {
+        tempClans();
         JsonUtils.toJsonFile(clans, "clans.json");
     }
 
-
+    public void tempClans() {
+        List<UUID> members = List.of(UUID.randomUUID(), UUID.randomUUID());
+        List<UUID> owners = List.of(UUID.randomUUID());
+        Clan clan = new Clan("Test", members, owners);
+        clans.getClans().add(clan);
+    }
 }
