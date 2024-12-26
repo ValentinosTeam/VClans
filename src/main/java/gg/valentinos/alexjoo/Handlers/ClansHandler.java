@@ -39,6 +39,7 @@ public class ClansHandler {
         List<UUID> members = List.of(UUID.randomUUID(), UUID.randomUUID());
         List<UUID> owners = List.of(UUID.randomUUID());
         Clan clan = new Clan("Test", members, owners);
+        clans = new Clans();
         clans.getClans().add(clan);
     }
 }
