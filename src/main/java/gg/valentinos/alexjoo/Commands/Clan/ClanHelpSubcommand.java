@@ -29,10 +29,12 @@ public class ClanHelpSubcommand implements SubCommand {
         }
 
         String helpMessage = """
+                ==============================================================
                 Thank you for using Valentinos Clans plugin made by Alex_Joo!
                 To view the list of available commands, use /clan.
                 
                 Show some explanation about what this plugin does here.
+                ==============================================================
                 """;
 
         sender.sendMessage(helpMessage);

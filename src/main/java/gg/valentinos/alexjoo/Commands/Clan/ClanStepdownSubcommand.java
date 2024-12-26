@@ -5,44 +5,37 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Objects;
 
-public class ClanCreateSubcommand implements SubCommand {
+public class ClanStepdownSubcommand implements SubCommand {
     @Override
     public String getName() {
-        return "create";
+        return "stepdown";
     }
 
     @Override
     public String getDescription() {
-        return "Creates a new clan.";
+        return "Step down from your clan leadership.";
     }
 
     @Override
     public String getUsage() {
-        return "/clan create <name>";
+        return "/clan stepdown";
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
-
-        if (args.length != 2) {
+        if (args.length > 1) {
             sender.sendMessage("Usage: " + getUsage());
             return true;
         }
 
-        String clanName = args[1];
-        String error = clansHandler.createClan(((Player) sender).getUniqueId(), clanName);
-
-        if (error == null) {
-            sender.sendMessage("Clan " + clanName + " created successfully!");
-        } else {
-            sender.sendMessage(error);
-        }
-
+        String error = clansHandler.stepDownPlayer(player.getUniqueId());
+        player.sendMessage(Objects.requireNonNullElseGet(error, () -> "You stepped down from your clan leadership."));
         return true;
     }
 

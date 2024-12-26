@@ -15,7 +15,6 @@ public final class VClans extends JavaPlugin {
         instance = this;
 
         clansHandler = new ClansHandler();
-        clansHandler.loadClans();
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 

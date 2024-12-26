@@ -1,11 +1,11 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.SubCommand;
-import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ClanDisbandSubcommand implements SubCommand {
     @Override
@@ -35,14 +35,10 @@ public class ClanDisbandSubcommand implements SubCommand {
             return true;
         }
 
-        String clanName = VClans.getInstance().getClansHandler().getClanName(((Player) sender).getUniqueId());
-        String error = VClans.getInstance().getClansHandler().disbandClan(((Player) sender).getUniqueId());
+        String clanName = clansHandler.getClanNameOfMember(((Player) sender).getUniqueId());
+        String error = clansHandler.disbandClan(((Player) sender).getUniqueId());
 
-        if (error == null) {
-            sender.sendMessage("Clan " + clanName + " disbanded successfully!");
-        } else {
-            sender.sendMessage(error);
-        }
+        sender.sendMessage(Objects.requireNonNullElseGet(error, () -> "Clan " + clanName + " disbanded successfully!"));
 
         return true;
     }
