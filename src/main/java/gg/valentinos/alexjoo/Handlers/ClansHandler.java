@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.Clans;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 import gg.valentinos.alexjoo.VClans;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class ClansHandler {
 
     public String createClan(UUID player, String name) {
         // This method will create a clan return null if successful, error message if not
-        VClans.getInstance().getLogger().info("Player " + player + " is trying to create a clan with name " + name);
+        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to create a clan with name " + name);
         if (clans.getClans().stream().anyMatch(clan -> clan.getName().equalsIgnoreCase(name))) {
             VClans.getInstance().getLogger().warning("Clan with name " + name + " already exists.");
             return "Clan with name " + name + " already exists.";
@@ -52,7 +53,7 @@ public class ClansHandler {
         Clan clan = new Clan(name, members, owners);
         clans.addClan(clan);
         saveClans();
-        VClans.getInstance().getLogger().fine("Player " + player + " has successfully created a clan with name " + name);
+        VClans.getInstance().getLogger().fine("Player " + Bukkit.getPlayer(player).getName() + " has successfully created a clan with name " + name);
         return null;
     }
 
@@ -62,7 +63,7 @@ public class ClansHandler {
         // TODO: Check if player is an admin. if true then allow delete clan
         // Check if the player is the owner of the clan
         if (!clan.getOwners().contains(player)) {
-            VClans.getInstance().getLogger().warning("Player " + player + " is not the owner of the clan.");
+            VClans.getInstance().getLogger().warning("Player " + Bukkit.getPlayer(player).getName() + " is not the owner of the clan.");
             return "You are not the owner of the clan.";
         }
 
@@ -73,7 +74,7 @@ public class ClansHandler {
 
     public String disbandClan(UUID player) {
         // This method will disband a clan return true if successful, false if not
-        VClans.getInstance().getLogger().info("Player " + player + " is trying to disband a clan.");
+        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to disband a clan.");
         Clan clan = clans.getClans().stream().filter(c -> c.getOwners().contains(player)).findFirst().orElse(null);
         if (clan == null) {
             VClans.getInstance().getLogger().warning("Player does not own a clan to disband.");
@@ -105,5 +106,14 @@ public class ClansHandler {
             clan = clans.getClans().stream().filter(c -> c.getMembers().contains(uniqueId)).findFirst().orElse(null);
         }
         return clan == null ? null : clan.getName();
+    }
+
+    public String getClanList() {
+        // This method will return the list of clans
+        StringBuilder sb = new StringBuilder();
+        for (Clan clan : clans.getClans()) {
+            sb.append(clan.getName()).append("\n");
+        }
+        return sb.toString();
     }
 }
