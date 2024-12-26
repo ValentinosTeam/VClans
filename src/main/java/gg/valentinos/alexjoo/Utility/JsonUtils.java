@@ -14,6 +14,15 @@ public class JsonUtils {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+    public JsonUtils() {
+        File dataFolder = VClans.getInstance().getDataFolder();
+        if (!dataFolder.exists()) {
+            // Ensure the data folder exists
+            dataFolder.mkdirs();
+        }
+        VClans.getInstance().getLogger().info("Data folder: " + dataFolder.getAbsolutePath());
+    }
+
     private static String toJson(Object object) {
         return JsonParser.parseString(new Gson().toJson(object)).getAsJsonObject().getAsString();
     }
@@ -29,7 +38,6 @@ public class JsonUtils {
     }
 
     public static <T> T fromJsonFile(String fileName, Class<T> clazz) {
-
         File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
         if (!jsonFile.exists()) {
             try {
