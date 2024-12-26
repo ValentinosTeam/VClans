@@ -12,4 +12,8 @@ public class Clans {
     public void setClans(List<Clan> clans) {
         this.clans = clans;
     }
+
+    public void addClan(Clan clan) {
+        clans.add(clan);
+    }
 }

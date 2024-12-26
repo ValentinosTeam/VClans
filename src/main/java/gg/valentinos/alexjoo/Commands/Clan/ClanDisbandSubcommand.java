@@ -7,20 +7,20 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ClanCreateSubcommand implements SubCommand {
+public class ClanDisbandSubcommand implements SubCommand {
     @Override
     public String getName() {
-        return "create";
+        return "disband";
     }
 
     @Override
     public String getDescription() {
-        return "Creates a new clan.";
+        return "Disbands the clan you are an owner of.";
     }
 
     @Override
     public String getUsage() {
-        return "/clan create <name>";
+        return "/clan disband";
     }
 
     @Override
@@ -30,13 +30,13 @@ public class ClanCreateSubcommand implements SubCommand {
             return true;
         }
 
-        if (args.length < 2) {
+        if (args.length > 1) {
             sender.sendMessage("Usage: " + getUsage());
             return true;
         }
 
-        String clanName = args[1];
-        String error = VClans.getInstance().getClansHandler().createClan(((Player) sender).getUniqueId(), clanName);
+        String clanName = VClans.getInstance().getClansHandler().getClanName(((Player) sender).getUniqueId());
+        String error = VClans.getInstance().getClansHandler().disbandClan(((Player) sender).getUniqueId());
 
         if (error == null) {
             sender.sendMessage("Clan " + clanName + " created successfully!");

@@ -2,7 +2,6 @@ package gg.valentinos.alexjoo.Utility;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import gg.valentinos.alexjoo.VClans;
 
 import java.io.File;
@@ -14,27 +13,18 @@ public class JsonUtils {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public JsonUtils() {
+    private static void checkDataFolder() {
         File dataFolder = VClans.getInstance().getDataFolder();
         if (!dataFolder.exists()) {
-            // Ensure the data folder exists
-            dataFolder.mkdirs();
+            VClans.getInstance().getLogger().info("Data folder missing, creating one now at " + dataFolder.getAbsolutePath());
+            dataFolder.mkdirs(); // Ensure the directory exists
         }
-        VClans.getInstance().getLogger().info("1. Data folder: " + dataFolder.getAbsolutePath());
-    }
-
-    private static String toJson(Object object) {
-        return JsonParser.parseString(new Gson().toJson(object)).getAsJsonObject().getAsString();
     }
 
     public static void toJsonFile(Object object, String fileName) {
-        File dataFolder = VClans.getInstance().getDataFolder();
-        if (!dataFolder.exists()) {
-            dataFolder.mkdirs(); // Ensure the directory exists
-        }
-        VClans.getInstance().getLogger().info("2. Data folder: " + dataFolder.getAbsolutePath());
+        checkDataFolder();
 
-        File jsonFile = new File(dataFolder, fileName);
+        File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
 
         try (FileWriter writer = new FileWriter(jsonFile)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -45,14 +35,9 @@ public class JsonUtils {
     }
 
     public static <T> T fromJsonFile(String fileName, Class<T> clazz) {
-        File dataFolder = VClans.getInstance().getDataFolder();
-        if (!dataFolder.exists()) {
-            // Ensure the data folder exists
-            dataFolder.mkdirs();
-        }
-        VClans.getInstance().getLogger().info("3. Data folder: " + dataFolder.getAbsolutePath());
+        checkDataFolder();
 
-        File jsonFile = new File(dataFolder, fileName);
+        File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
         if (!jsonFile.exists()) {
             try {
                 jsonFile.createNewFile();
