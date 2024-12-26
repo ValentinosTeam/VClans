@@ -8,7 +8,7 @@ website: valentinos.gg
 commands:
   clan:
     description: Handles all clan related commands.
-    usage: /clan <create|disband>
+    usage: /clan <create|disband|list>
     aliases: [ c ]
     permission: clan.command
     permission-message: You do not have permission to execute this command.

@@ -32,7 +32,7 @@ public class ClanListSubcommand implements SubCommand {
         sender.sendMessage("Clans:");
         sender.sendMessage(VClans.getInstance().getClansHandler().getClanList());
 
-        return false;
+        return true;
     }
 
     @Override
