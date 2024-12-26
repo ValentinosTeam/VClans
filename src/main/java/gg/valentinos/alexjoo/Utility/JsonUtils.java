@@ -20,7 +20,7 @@ public class JsonUtils {
             // Ensure the data folder exists
             dataFolder.mkdirs();
         }
-        VClans.getInstance().getLogger().info("Data folder: " + dataFolder.getAbsolutePath());
+        VClans.getInstance().getLogger().info("1. Data folder: " + dataFolder.getAbsolutePath());
     }
 
     private static String toJson(Object object) {
@@ -30,15 +30,15 @@ public class JsonUtils {
     public static void toJsonFile(Object object, String fileName) {
         File dataFolder = VClans.getInstance().getDataFolder();
         if (!dataFolder.exists()) {
-            // Ensure the data folder exists
-            dataFolder.mkdirs();
+            dataFolder.mkdirs(); // Ensure the directory exists
         }
-        VClans.getInstance().getLogger().info("Data folder: " + dataFolder.getAbsolutePath());
+        VClans.getInstance().getLogger().info("2. Data folder: " + dataFolder.getAbsolutePath());
 
-        File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
-        String json = JsonParser.parseString(new Gson().toJson(object)).getAsJsonObject().getAsString();
+        File jsonFile = new File(dataFolder, fileName);
+
         try (FileWriter writer = new FileWriter(jsonFile)) {
-            writer.write(json);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(object, writer); // Serialize the object and write it to the file
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,9 +50,9 @@ public class JsonUtils {
             // Ensure the data folder exists
             dataFolder.mkdirs();
         }
-        VClans.getInstance().getLogger().info("Data folder: " + dataFolder.getAbsolutePath());
+        VClans.getInstance().getLogger().info("3. Data folder: " + dataFolder.getAbsolutePath());
 
-        File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
+        File jsonFile = new File(dataFolder, fileName);
         if (!jsonFile.exists()) {
             try {
                 jsonFile.createNewFile();
