@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import gg.valentinos.alexjoo.VClans;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -37,7 +38,12 @@ public class JsonUtils {
                 e.printStackTrace();
             }
         }
-        return gson.fromJson(jsonFile.toString(), clazz);
+        try (FileReader reader = new FileReader(jsonFile)) {
+            return new Gson().fromJson(reader, clazz);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null; // Return null or handle the error appropriately
+        }
     }
 
 

@@ -23,6 +23,9 @@ public class ClansHandler {
 
     public void loadClans() {
         clans = JsonUtils.fromJsonFile("clans.json", Clans.class);
+        if (clans == null)
+            clans = new Clans();
+        
     }
 
     private void saveClans() {
