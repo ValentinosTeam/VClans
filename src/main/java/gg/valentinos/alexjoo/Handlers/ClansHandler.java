@@ -90,9 +90,12 @@ public class ClansHandler {
 
     public void loadClans() {
         clans = JsonUtils.fromJsonFile("clans.json", Clans.class);
-        if (clans == null)
+        if (clans == null) {
+            VClans.getInstance().getLogger().warning("Clans file is empty. Creating new clans.json file.");
             clans = new Clans();
-        clans.setClans(new ArrayList<>());
+            clans.setClans(new ArrayList<>());
+            saveClans();
+        }
     }
 
     public void saveClans() {
