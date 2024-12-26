@@ -39,7 +39,7 @@ public class ClanDisbandSubcommand implements SubCommand {
         String error = VClans.getInstance().getClansHandler().disbandClan(((Player) sender).getUniqueId());
 
         if (error == null) {
-            sender.sendMessage("Clan " + clanName + " created successfully!");
+            sender.sendMessage("Clan " + clanName + " disbanded successfully!");
         } else {
             sender.sendMessage(error);
         }

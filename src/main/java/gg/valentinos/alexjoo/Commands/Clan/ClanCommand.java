@@ -19,6 +19,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ClanCreateSubcommand());
         registerSubCommand(new ClanDisbandSubcommand());
         registerSubCommand(new ClanListSubcommand());
+        registerSubCommand(new ClanHelpSubcommand());
     }
 
     private void registerSubCommand(SubCommand subCommand) {

@@ -59,11 +59,13 @@ tasks.register('buildAndDeploy') {
         }
 
         // 2. Commit with an appropriate name
+        /*
         def dateStamp = new Date().format('yyyyMMdd')
         exec {
-            //commandLine 'git', 'commit', '-m', "VClans-${version}-${dateStamp}"
+            commandLine 'git', 'commit', '-m', "VClans-${version}-${dateStamp}"
             ignoreExitValue = true
         }
+        */
 
         // 3. Copy and replace the plugin in the Minecraft server plugins folder
         copy {
