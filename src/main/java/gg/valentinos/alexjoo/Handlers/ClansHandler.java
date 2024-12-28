@@ -191,7 +191,6 @@ public class ClansHandler {
         if (clans == null) {
             VClans.getInstance().getLogger().warning("Clans file is empty. Creating new clans.json file.");
             clans = new Clans();
-            clans.setClans(new ArrayList<>());
             saveClans();
         }
     }

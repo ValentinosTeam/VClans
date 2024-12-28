@@ -8,5 +8,5 @@ website: valentinos.gg
 commands:
   clan:
     description: Handles all clan related commands.
-    usage: /clan <create|disband|list>
+    usage: /clan <help|create|disband|invite|join|kick|leave|list|stepdown>
     aliases: [ c ]

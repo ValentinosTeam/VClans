@@ -1,10 +1,15 @@
 package gg.valentinos.alexjoo.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Clans {
     private List<Clan> clans;
+
+    public Clans() {
+        setClans(new ArrayList<>());
+    }
 
     public List<Clan> getClans() {
         return clans;
