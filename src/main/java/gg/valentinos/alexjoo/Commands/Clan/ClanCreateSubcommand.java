@@ -5,8 +5,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ClanCreateSubcommand implements SubCommand {
+    private final static String cooldownQuery = "ClanCreate";
+    private final static long cooldownDuration = 20;
+
     @Override
     public String getName() {
         return "create";
@@ -33,11 +37,19 @@ public class ClanCreateSubcommand implements SubCommand {
             sender.sendMessage("Usage: " + getUsage());
             return true;
         }
+        UUID playerUUID = ((Player) sender).getUniqueId();
+
+        if (cooldownHandler.isOnCooldown(playerUUID, cooldownQuery)) {
+            String timeLeft = cooldownHandler.getTimeLeft(playerUUID, cooldownQuery);
+            sender.sendMessage("This command is on cooldown. " + timeLeft + " left.");
+            return true;
+        }
 
         String clanName = args[1];
         String error = clansHandler.createClan(((Player) sender).getUniqueId(), clanName);
 
         if (error == null) {
+            cooldownHandler.createCooldown(playerUUID, cooldownQuery, cooldownDuration);
             sender.sendMessage("Clan " + clanName + " created successfully!");
         } else {
             sender.sendMessage(error);

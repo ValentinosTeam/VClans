@@ -196,7 +196,7 @@ public class ClansHandler {
     }
 
     public void saveClans() {
-        JsonUtils.toJsonFile(clans, "clans.json");
+        JsonUtils.toJsonFile(clans.getClans(), "clans.json");
     }
 
     public String getInvitedClanNames(UUID uniqueId) {

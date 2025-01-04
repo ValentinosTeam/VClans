@@ -1,6 +1,7 @@
 package gg.valentinos.alexjoo.Commands;
 
 import gg.valentinos.alexjoo.Handlers.ClansHandler;
+import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 
@@ -8,6 +9,7 @@ import java.util.List;
 
 public interface SubCommand {
     ClansHandler clansHandler = VClans.getInstance().getClansHandler();
+    CooldownHandler cooldownHandler = VClans.getInstance().getCooldownHandler();
 
     String getName(); // Name of the subcommand (e.g., "create", "delete")
 
