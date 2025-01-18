@@ -24,6 +24,8 @@ public final class VClans extends JavaPlugin {
         getCommand("clan").setExecutor(new ClanCommand());
         getCommand("clan").setTabCompleter(new ClanCommand());
 
+        saveDefaultConfig();
+
         getLogger().info("vClans has been enabled!");
     }
 

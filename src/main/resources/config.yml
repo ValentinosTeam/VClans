@@ -1,0 +1,6 @@
+current-clan: true
+commands:
+  clan:
+    create:
+      enabled: true
+      cooldown: 300

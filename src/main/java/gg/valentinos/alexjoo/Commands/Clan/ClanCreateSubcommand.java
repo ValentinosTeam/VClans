@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClanCreateSubcommand implements SubCommand {
-    private final static String cooldownQuery = "ClanCreate";
-    private final static long cooldownDuration = 300;
+    private final String cooldownQuery = "ClanCreate";
+    private final long cooldownDuration = 300;
 
     @Override
     public String getName() {
