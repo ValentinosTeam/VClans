@@ -1,11 +1,13 @@
 package gg.valentinos.alexjoo.Handlers;
 
+import com.google.gson.reflect.TypeToken;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.Clans;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -187,12 +189,14 @@ public class ClansHandler {
     }
 
     public void loadClans() {
-        clans = JsonUtils.fromJsonFile("clans.json", Clans.class);
-        if (clans == null) {
+        clans = new Clans();
+        List<Clan> clansList = JsonUtils.deserializeClans("clans.json");
+        if (clansList == null) {
             VClans.getInstance().getLogger().warning("Clans file is empty. Creating new clans.json file.");
-            clans = new Clans();
             saveClans();
+            return;
         }
+        clans.setClans(clansList);
     }
 
     public void saveClans() {

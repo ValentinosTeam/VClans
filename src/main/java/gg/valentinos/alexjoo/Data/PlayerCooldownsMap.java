@@ -11,11 +11,11 @@ public class PlayerCooldownsMap {
         playerCooldownsMap = new HashMap<>();
     }
 
-    public HashMap<UUID, HashSet<Cooldown>> getCooldowns() {
+    public HashMap<UUID, HashSet<Cooldown>> getPlayerCooldownsMap() {
         return playerCooldownsMap;
     }
 
-    public void setCooldowns(HashMap<UUID, HashSet<Cooldown>> playerCooldownsMap) {
+    public void setPlayerCooldownsMap(HashMap<UUID, HashSet<Cooldown>> playerCooldownsMap) {
         this.playerCooldownsMap = playerCooldownsMap;
     }
 
@@ -39,6 +39,7 @@ public class PlayerCooldownsMap {
         Cooldown cooldown = cooldowns.stream().filter(c -> c.getQuery().equals(query)).findFirst().orElse(null);
         if (cooldown != null && cooldown.isExpired()) {
             cooldowns.remove(cooldown);
+            return null;
         }
         return cooldown;
     }

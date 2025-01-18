@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class ClanCreateSubcommand implements SubCommand {
     private final static String cooldownQuery = "ClanCreate";
-    private final static long cooldownDuration = 20;
+    private final static long cooldownDuration = 300;
 
     @Override
     public String getName() {

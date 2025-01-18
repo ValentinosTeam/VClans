@@ -53,29 +53,13 @@ tasks.register('buildAndDeploy') {
     dependsOn build
 
     doLast {
-        // 1. Add all files to stage
-        exec {
-            commandLine 'git', 'add', '.'
-        }
-
-        // 2. Commit with an appropriate name
-        /*
-        def dateStamp = new Date().format('yyyyMMdd')
-        exec {
-            commandLine 'git', 'commit', '-m', "VClans-${version}-${dateStamp}"
-            ignoreExitValue = true
-        }
-        */
-
-        // 3. Copy and replace the plugin in the Minecraft server plugins folder
         copy {
             from "build/libs/VClans-${version}.jar"
-            into 'C:\\Users\\alexa\\Projects\\MinecraftServer\\mc\\plugins'
+            into 'D:\\Minecraft Server\\plugins'
         }
 
-        // 4. Send a command to the Minecraft server using PlugMan to restart the plugin
         exec {
-            commandLine 'docker', 'exec', 'mc', 'mc-send-to-console', 'restart'
+            commandLine 'docker', 'restart', 'mcserver'
             ignoreExitValue = true
         }
     }
