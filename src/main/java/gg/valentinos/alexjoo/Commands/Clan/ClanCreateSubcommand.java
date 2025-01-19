@@ -7,53 +7,29 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.UUID;
 
-public class ClanCreateSubcommand implements SubCommand {
-    private final String cooldownQuery = "ClanCreate";
-    private final long cooldownDuration = 300;
+public class ClanCreateSubcommand extends SubCommand {
 
-    @Override
-    public String getName() {
-        return "create";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Creates a new clan.";
-    }
-
-    @Override
-    public String getUsage() {
-        return "/clan create <name>";
+    public ClanCreateSubcommand() {
+        super("clan", "create");
+        if (config.getBoolean(configPath + "inverse"))
+            targetCooldownQuery = "clan-disband";
+        hasToBePlayer = true;
+        requiredArgs = 2;
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
-            return true;
-        }
+        if (commonChecks(sender, args)) return true;
 
-        if (args.length != 2) {
-            sender.sendMessage("Usage: " + getUsage());
-            return true;
-        }
-        UUID playerUUID = ((Player) sender).getUniqueId();
-
-        if (cooldownHandler.isOnCooldown(playerUUID, cooldownQuery)) {
-            String timeLeft = cooldownHandler.getTimeLeft(playerUUID, cooldownQuery);
-            sender.sendMessage("This command is on cooldown. " + timeLeft + " left.");
-            return true;
-        }
-
+        Player player = (Player) sender;
+        UUID playerUUID = player.getUniqueId();
         String clanName = args[1];
-        String error = clansHandler.createClan(((Player) sender).getUniqueId(), clanName);
 
-        if (error == null) {
-            cooldownHandler.createCooldown(playerUUID, cooldownQuery, cooldownDuration);
-            sender.sendMessage("Clan " + clanName + " created successfully!");
-        } else {
-            sender.sendMessage(error);
-        }
+        if (isOnCooldown(sender, selfCooldownQuery)) return true;
+
+        String errorMessage = clansHandler.createClan(playerUUID, clanName);
+
+        handleCommandResult(sender, errorMessage, config.getString(configPath+"messages.success").replace("{name}", clanName));
 
         return true;
     }

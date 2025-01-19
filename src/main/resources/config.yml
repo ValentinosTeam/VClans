@@ -1,6 +1,108 @@
-current-clan: true
+show-current-clan-on-join: true
 commands:
+  default:
+    messages:
+      no-permission: "You do not have permission to use this command."
+      player-only: "This command can only be used by players."
+      not-enough-arguments: "Not enough arguments."
+      too-many-arguments: "Too many arguments."
+      wrong-number-of-arguments: "Wrong number of arguments."
+      on-cooldown: "The command is on cooldown. Time left: {time}."
+      command-disabled: "This command is disabled. Contact an administrator for more information."
+      not-in-clan: "You are not in a clan."
+      not-owner: "You are not the owner of your clan."
+      never-joined: "That player has never played on this server."
   clan:
     create:
       enabled: true
-      cooldown: 300
+      inverse: true # If true the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
+      cooldown: 5 # If inverse is false, this cooldown will be applied to the create command. I.E. You can't create a clan for 30 seconds after creating one.
+      description: "Creates a new clan."
+      usage: "/clan create <name>"
+      messages:
+        success: "You have successfully created the clan - {name}." # {name} will be replaced with the name of the clan. Works on most messages.
+        already-exists: "Clan with name {name} already exists."
+        too-long: "The clan name is too long. Maximum length is 16 characters."
+        too-short: "The clan name is too short. Minimum length is 3 characters."
+        invalid-characters: "The clan name contains invalid characters. Only letters, numbers, and underscores are allowed."
+        already-in-clan: "You are already in a clan. Leave your current clan to create a new one."
+    disband:
+      enabled: true
+      inverse: true # if true cooldown will be applied to the create command on disband.
+      cooldown: 10
+      description: "Disbands your clan."
+      usage: "/clan disband"
+      messages:
+        success: "You have disbanded the clan {clan}."
+        not-in-clan: "You are not in a clan."
+        not-leader: "You are not the leader of your clan."
+        not-only-owner: "You are not the only owner of the clan."
+    help:
+      enabled: true
+      description: "Displays the help menu."
+      usage: "/clan help"
+      show-command-list: true
+      messages:
+        header: "=============Clan Commands============="
+        content: "
+        Thank you for using Valentinos Clans plugin made by Alex_Joo!
+        To view the list of available commands, use /clan help.
+        "
+        list-item: " - {item}: {desc}" # example: " - create: Creates a new clan."
+        footer: "======================================="
+    invite:
+      enabled: true
+      description: "Invites a player to your clan."
+      usage: "/clan invite <player>"
+      messages:
+        success: "You have invited {name} to your clan."
+        invitation: "You have been invited to join the clan {clan} by {player}. Use '/clan join {clan}' to accept the invitation."
+        invite-self: "You can't invite yourself to your clan."
+        not-owner: "You can't invite players to your clan. You are not the owner."
+        already-in-a-clan: "That player is already in a clan."
+        already-in-the-clan: "That player is already in the clan."
+        already-invited: "That player has already been invited to your clan."
+    join:
+      enabled: true
+      description: "Joins a clan if you have been invited."
+      usage: "/clan join <clan>"
+      messages:
+        success: "You have joined the clan {clan} successfully!"
+        member-joined: "{player} has joined the clan!" # This will be sent to all online clan members when a player joins.
+        clan-not-exist: "The clan {clan} does not exist."
+        not-invited: "You have not been invited to join the clan {clan}."
+        already-in-a-clan: "You are already in a clan."
+        already-in-the-clan: "You are already in the clan."
+    kick:
+      enabled: true
+      description: "Kicks a player from your clan."
+      usage: "/clan kick <player>"
+      messages:
+        success: "You have kicked {name} from your clan."
+        cant-kick-yourself: "You can't kick yourself from your clan."
+        target-not-in-clan: "That player is not in your clan."
+        cant-kick-owner: "You can't kick the owner of the clan."
+    leave:
+      enabled: true
+      description: "Leaves your current clan."
+      usage: "/clan leave"
+      messages:
+        success: "You have left the clan {clan} successfully."
+        owner-cant-leave: "You can't leave your clan. Disband it instead."
+    stepdown:
+      enabled: true
+      description: "Steps down as the leader of your clan."
+      usage: "/clan stepdown"
+      messages:
+        success: "You have stepped down as the leader of your clan."
+        only-owner: "You are the only owner of the clan, you can't step down."
+    list:
+      enabled: true
+      description: "Lists all clans."
+      usage: "/clan list"
+      messages:
+        clan-list-header: "=============Clans============="
+        clan-list-footer: "==============================="
+        list-item: " - {item}"
+        member-list-header: "============Members of {clan}============"
+        member-list-footer: "========================================="

@@ -10,40 +10,28 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ClanKickSubcommand implements SubCommand {
-    @Override
-    public String getName() {
-        return "kick";
-    }
+public class ClanKickSubcommand extends SubCommand {
 
-    @Override
-    public String getDescription() {
-        return "Kicks a member from your clan.";
-    }
-
-    @Override
-    public String getUsage() {
-        return "/clan kick <player>";
+    public ClanKickSubcommand() {
+        super("clan", "kick");
+        targetCooldownQuery = "clan-disband";
+        hasToBePlayer = true;
+        requiredArgs = 2;
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can use this command.");
-            return true;
-        }
-        if (args.length != 2) {
-            sender.sendMessage("Usage: " + getUsage());
-            return true;
-        }
+        if (commonChecks(sender, args)) return true;
 
-        OfflinePlayer target = player.getServer().getOfflinePlayer(args[1]);
-        if (!target.hasPlayedBefore()) {
-            player.sendMessage("Player " + args[1] + " has never joined this server before.");
-            return true;
-        }
-        String error = clansHandler.kickPlayer(player.getUniqueId(), target.getUniqueId());
-        player.sendMessage(Objects.requireNonNullElseGet(error, () -> "Kicked " + target.getName() + " from your clan."));
+        Player player = (Player) sender;
+        String targetName = args[1];
+
+        if (isOnCooldown(sender, selfCooldownQuery)) return true;
+
+        String error = clansHandler.kickPlayer(player.getUniqueId(), targetName);
+
+        handleCommandResult(sender, error, config.getString(configPath + "messages.success").replace("{name}", targetName));
+
         return true;
     }
 

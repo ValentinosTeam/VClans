@@ -9,50 +9,41 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ClanJoinSubcommand implements SubCommand {
-    @Override
-    public String getName() {
-        return "join";
-    }
+public class ClanJoinSubcommand extends SubCommand {
 
-    @Override
-    public String getDescription() {
-        return "Joins you to a clan if you were invited.";
-    }
-
-    @Override
-    public String getUsage() {
-        return "/clan join <clan>";
+    public ClanJoinSubcommand() {
+        super("clan", "join");
+        hasToBePlayer = true;
+        requiredArgs = 2;
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can use this command.");
-            return true;
-        }
-        if (args.length != 2) {
-            sender.sendMessage("Usage: " + getUsage());
-            return true;
-        }
+        if (commonChecks(sender, args)) return true;
 
-        String error = clansHandler.joinClan(player.getUniqueId(), args[1]);
-        if (error != null) {
-            player.sendMessage(error);
-        } else {
-            player.sendMessage("Joined clan " + args[1] + " successfully!");
-            List<UUID> clanMembers = clansHandler.getClanMemberUUIDs(args[1]);
+        Player player = (Player) sender;
+        String clanName = args[1];
+
+        if (isOnCooldown(sender, selfCooldownQuery)) return true;
+
+        String error = clansHandler.joinClan(player.getUniqueId(), clanName);
+
+        handleCommandResult(sender, error, () -> {
+            player.sendMessage(config.getString(configPath + "messages.success").replace("{clan}", clanName));
+            List<UUID> clanMembers = clansHandler.getClanMemberUUIDs(clanName);
             for (UUID uuid : clanMembers) {
-                if (uuid.equals(player.getUniqueId())) {
+                if (uuid.equals(player.getUniqueId()))
                     continue;
-                }
                 OfflinePlayer memberPlayer = sender.getServer().getOfflinePlayer(uuid);
                 if (memberPlayer.isOnline()) {
-                    Objects.requireNonNull(memberPlayer.getPlayer()).sendMessage(player.getName() + " has joined the clan!");
+                    Objects.requireNonNull(memberPlayer.getPlayer()).sendMessage(
+                            config.getString(configPath + "messages.member-joined")
+                                  .replace("{player}", player.getName())
+                    );
                 }
             }
-        }
-        player.sendMessage(Objects.requireNonNullElseGet(error, () -> "Joined clan " + args[1] + " successfully!"));
+        });
+
         return true;
     }
 

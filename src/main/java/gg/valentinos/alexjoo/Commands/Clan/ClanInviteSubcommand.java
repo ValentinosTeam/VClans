@@ -7,53 +7,37 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ClanInviteSubcommand implements SubCommand {
-    @Override
-    public String getName() {
-        return "invite";
-    }
+public class ClanInviteSubcommand extends SubCommand {
 
-    @Override
-    public String getDescription() {
-        return "Invite an online player to your clan.";
-    }
-
-    @Override
-    public String getUsage() {
-        return "/clan invite <player>";
+    public ClanInviteSubcommand() {
+        super("clan", "invite");
+        hasToBePlayer = true;
+        requiredArgs = 2;
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can use this command.");
-            return true;
-        }
-        if (args.length != 2) {
-            sender.sendMessage("Usage: " + getUsage());
-            return true;
-        }
+        if (commonChecks(sender, args)) return true;
 
-        OfflinePlayer target = player.getServer().getOfflinePlayer(args[1]);
-        if (!target.hasPlayedBefore()) {
-            player.sendMessage("Player " + args[1] + " has never joined this server before.");
-            return true;
-        } else if (target.equals(player)) {
-            player.sendMessage("You can't invite yourself to your clan.");
-            return true;
-        }
+        Player player = (Player) sender;
+        String targetName = args[1];
+        OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
 
-        String error = clansHandler.invitePlayer(player.getUniqueId(), target.getUniqueId());
-        if (error != null) {
-            player.sendMessage(error);
-        } else {
-            player.sendMessage("Invited " + target.getName() + " to your clan.");
-            if (target.isOnline()) {
-                target.getPlayer().sendMessage("You have been invited to join " +
-                        clansHandler.getClanNameOfMember(player.getUniqueId()) +
-                        ". Use /clan join <clan name> to join.");
+        if (isOnCooldown(sender, selfCooldownQuery)) return true;
+
+        String error = clansHandler.invitePlayer(player.getUniqueId(), targetName);
+
+        handleCommandResult(sender, error, () -> {
+            sender.sendMessage(config.getString(configPath + "messages.success").replace("{name}", targetName));
+            if (error == null && target.isOnline()) {
+                target.getPlayer().sendMessage(
+                        config.getString(configPath + "messages.invitation")
+                                .replace("{clan}", clansHandler.getClanNameOfMember(player.getUniqueId()))
+                                .replace("{name}", player.getName())
+                );
             }
-        }
+        });
+
         return true;
     }
 

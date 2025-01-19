@@ -1,10 +1,12 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.SubCommand;
+import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -17,15 +19,18 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     private final Map<String, SubCommand> subCommands = new HashMap<>();
 
     public ClanCommand() {
+        ClanHelpSubcommand clanHelpSubcommand = new ClanHelpSubcommand();
+        registerSubCommand(clanHelpSubcommand);
         registerSubCommand(new ClanCreateSubcommand());
         registerSubCommand(new ClanDisbandSubcommand());
         registerSubCommand(new ClanListSubcommand());
-        registerSubCommand(new ClanHelpSubcommand());
         registerSubCommand(new ClanInviteSubcommand());
         registerSubCommand(new ClanJoinSubcommand());
         registerSubCommand(new ClanLeaveSubcommand());
         registerSubCommand(new ClanStepdownSubcommand());
         registerSubCommand(new ClanKickSubcommand());
+
+        clanHelpSubcommand.setSubCommands(subCommands);
     }
 
     private void registerSubCommand(SubCommand subCommand) {
@@ -35,10 +40,11 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("Available commands:");
-            for (SubCommand subCommand : subCommands.values()) {
-                sender.sendMessage("- " + subCommand.getName() + ": " + subCommand.getDescription());
+            if (sender instanceof Player player){
+                String clanName = VClans.getInstance().getClansHandler().getClanNameOfMember(player.getUniqueId());
+                sender.sendMessage("You are in " + (clanName == null ? "no clan" : "clan " + clanName));
             }
+            sender.sendMessage("Use '/clan help' for help.");
             return true;
         }
 

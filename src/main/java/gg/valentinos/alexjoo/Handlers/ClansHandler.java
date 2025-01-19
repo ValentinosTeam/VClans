@@ -6,15 +6,22 @@ import gg.valentinos.alexjoo.Data.Clans;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class ClansHandler {
 
     private Clans clans;
+    private static final Logger logger = VClans.getInstance().getLogger();
+    private static final FileConfiguration config = VClans.getInstance().getConfig();
 
     public ClansHandler() {
         loadClans();
@@ -22,26 +29,26 @@ public class ClansHandler {
 
     public String createClan(UUID player, String name) {
         // This method will create a clan return null if successful, error message if not
-        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to create a clan with name " + name);
+        logger.info("Player " + Bukkit.getPlayer(player).getName() + " is trying to create a clan with name " + name);
         if (clans.clanExists(name)) {
-            VClans.getInstance().getLogger().warning("Clan with name " + name + " already exists.");
-            return "Clan with name " + name + " already exists.";
+            logger.warning("Clan with name " + name + " already exists.");
+            return Objects.requireNonNull(config.getString("commands.clan.create.messages.already-exists")).replace("{name}",name);
         }
         if (name.length() > 16) {
-            VClans.getInstance().getLogger().warning("Clan name is too long.");
-            return "Clan name is too long.";
+            logger.warning("Clan name is too long.");
+            return Objects.requireNonNull(config.getString("commands.clan.create.messages.too-long"));
         }
         if (name.length() < 3) {
-            VClans.getInstance().getLogger().warning("Clan name is too short.");
-            return "Clan name is too short.";
+            logger.warning("Clan name is too short.");
+            return Objects.requireNonNull(config.getString("commands.clan.create.messages.too-short"));
         }
         if (clans.getClanByMember(player) != null) {
-            VClans.getInstance().getLogger().warning("Player is already in a clan.");
-            return "You already in a clan.";
+            logger.warning("Player is already in a clan.");
+            return Objects.requireNonNull(config.getString("commands.clan.create.messages.already-in-clan"));
         }
         if (!name.matches("^[a-zA-Z0-9_]*$")) {
-            VClans.getInstance().getLogger().warning("Clan name contains invalid characters.");
-            return "Clan name contains invalid characters.";
+            logger.warning("Clan name contains invalid characters.");
+            return Objects.requireNonNull(config.getString("commands.clan.create.messages.invalid-characters"));
         }
 
         // checks done, create the clan
@@ -51,7 +58,7 @@ public class ClansHandler {
         Clan clan = new Clan(name, members, owners, new ArrayList<>());
         clans.addClan(clan);
         saveClans();
-        VClans.getInstance().getLogger().fine("Player " + Bukkit.getPlayer(player).getName() + " has successfully created a clan with name " + name);
+        logger.fine("Player " + Bukkit.getPlayer(player).getName() + " has successfully created a clan with name " + name);
         return null;
     }
 
@@ -61,8 +68,8 @@ public class ClansHandler {
         // TODO: Check if player is an admin. if true then allow delete clan
         // Check if the player is the owner of the clan
         if (!clan.getOwners().contains(player)) {
-            VClans.getInstance().getLogger().warning("Player " + Bukkit.getPlayer(player).getName() + " is not the owner of the clan.");
-            return "You are not the owner of the clan.";
+            logger.warning("Player " + Bukkit.getPlayer(player).getName() + " is not the owner of the clan.");
+            return config.getString("commands.default.messages.not-owner");
         }
 
         clans.getClans().remove(clan);
@@ -72,64 +79,77 @@ public class ClansHandler {
 
     public String disbandClan(UUID player) {
         // This method will disband a clan return true if successful, false if not
-        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to disband a clan.");
+        logger.info("Player " + Bukkit.getPlayer(player).getName() + " is trying to disband a clan.");
         Clan clan = clans.getClanByMember(player);
         String error = isPlayerOwner(player, clan);
         if (error != null) {
             return error;
         }
+        if (clan.getOwners().size() > 1){
+            logger.warning("Player is not the only owner of the clan.");
+            return config.getString("commands.clan.disband.messages.not-only-owner");
+        }
 
         return deleteClan(player, clan);
     }
 
-    public String invitePlayer(UUID player, UUID target) {
+    public String invitePlayer(UUID playerUUID, String targetName) {
         // This method will invite a player to a clan return true if successful, false if not
-        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to invite player " + Bukkit.getPlayer(target).getName() + " to the clan.");
-        Clan clan = clans.getClanByOwner(player);
+        Player player = Bukkit.getPlayer(playerUUID);
+        assert player != null;
+        OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
+
+        logger.info("Player " + player.getName() + " is trying to invite player " + targetName + " to the clan.");
+
+        if (!target.hasPlayedBefore()) {
+            logger.warning("Player attempted to invite a player that has never joined the server before.");
+            return config.getString("commands.default.messages.never-joined");
+        } else if (target.equals(player)) {
+            logger.warning("Player attempted to invite themselves.");
+            return config.getString("commands.clan.invite.messages.invite-self");
+        }
+
+        Clan clan = clans.getClanByOwner(playerUUID);
         if (clan == null) {
-            VClans.getInstance().getLogger().warning("Player does not own a clan to invite players.");
-            return "You do not own a clan to invite players.";
+            logger.warning("Player does not own a clan to invite players.");
+            return config.getString("commands.clan.invite.messages.not-owner");
         }
-        if (player.equals(target)) {
-            VClans.getInstance().getLogger().warning("Player is trying to kick themselves.");
-            return "You cannot kick yourself.";
+        if (clan.getMembers().contains(target.getUniqueId())) {
+            logger.warning("Player is already in the clan.");
+            return config.getString("commands.clan.invite.messages.already-in-the-clan");
         }
-        if (clan.getMembers().contains(target)) {
-            VClans.getInstance().getLogger().warning("Player is already in the clan.");
-            return "Player is already in your clan.";
+        if (clan.getInvites().contains(target.getUniqueId())) {
+            logger.warning("Player is already invited to the clan.");
+            return config.getString("commands.clan.invite.messages.already-invited");
         }
-        if (clan.getInvites().contains(target)) {
-            VClans.getInstance().getLogger().warning("Player is already invited to the clan.");
-            return "Player is already invited to the clan.";
+        if (clans.getClanByMember(target.getUniqueId()) != null) {
+            logger.warning("Player is already in a clan.");
+            return config.getString("commands.clan.invite.messages.already-in-a-clan");
         }
-        if (clans.getClanByMember(target) != null) {
-            VClans.getInstance().getLogger().warning("Player is already in a clan.");
-            return "Player is already in a clan.";
-        }
-        clan.inviteMember(target);
+        clan.inviteMember(target.getUniqueId());
         saveClans();
         return null;
     }
 
-    public String joinClan(UUID player, String name) {
+    public String joinClan(UUID player, String clanName) {
         // This method will join a player to a clan return true if successful, false if not
-        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to join a clan with name " + name);
-        Clan clan = clans.getClanByName(name);
+        logger.info("Player " + Bukkit.getPlayer(player).getName() + " is trying to join a clan with name " + clanName);
+        Clan clan = clans.getClanByName(clanName);
         if (clan == null) {
-            VClans.getInstance().getLogger().warning("Clan with name " + name + " does not exist.");
-            return "Clan with name " + name + " does not exist.";
+            logger.warning("Clan with name " + clanName + " does not exist.");
+            return config.getString("commands.clan.join.messages.clan-not-exist").replace("{clan}", clanName);
         }
         if (clan.getMembers().contains(player)) {
-            VClans.getInstance().getLogger().warning("Player is already in the clan.");
-            return "You are already in the clan.";
+            logger.warning("Player is already in the clan.");
+            return config.getString("commands.clan.join.messages.already-in-the-clan").replace("{clan}", clanName);
         }
         if (!clan.getInvites().contains(player)) {
-            VClans.getInstance().getLogger().warning("Player is not invited to the clan.");
-            return "You are not invited to the clan.";
+            logger.warning("Player is not invited to the clan.");
+            return config.getString("commands.clan.join.messages.not-invited").replace("{clan}", clanName);
         }
         if (clans.getClanByMember(player) != null) {
-            VClans.getInstance().getLogger().warning("Player is already in a clan.");
-            return "You are already in a clan.";
+            logger.warning("Player is already in a clan.");
+            return config.getString("commands.clan.join.messages.already-in-a-clan").replace("{clan}", clanName);
         }
         clan.addMember(player);
         saveClans();
@@ -138,15 +158,15 @@ public class ClansHandler {
 
     public String leaveClan(UUID player) {
         // This method will leave a player from a clan return true if successful, false if not
-        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to leave the clan.");
+        logger.info("Player " + Bukkit.getPlayer(player).getName() + " is trying to leave the clan.");
         Clan clan = clans.getClanByMember(player);
         if (clan == null) {
-            VClans.getInstance().getLogger().warning("Player is not in a clan.");
-            return "You are not in a clan.";
+            logger.warning("Player is not in a clan.");
+            return config.getString("commands.default.messages.not-in-clan");
         }
         if (clan.isOwner(player)) {
-            VClans.getInstance().getLogger().warning("Player is the owner of the clan.");
-            return "You are the owner of the clan. Disband the clan instead.";
+            logger.warning("Player is the owner of the clan.");
+            return config.getString("commands.clan.leave.messages.owner-cant-leave");
         }
         clan.removeMember(player);
         return null;
@@ -154,37 +174,46 @@ public class ClansHandler {
 
     public String stepDownPlayer(UUID player) {
         // This method will step down a player from a clan return true if successful, false if not
-        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to step down from the clan.");
+        logger.info("Player " + Bukkit.getPlayer(player).getName() + " is trying to step down from the clan.");
         Clan clan = clans.getClanByMember(player);
         String error = isPlayerOwner(player, clan);
         if (error != null) {
             return error;
         }
         if (clan.getOwners().size() == 1) {
-            VClans.getInstance().getLogger().warning("Player is the only owner of the clan.");
-            return "You are the only owner of the clan. Disband the clan instead.";
+            logger.warning("Player is the only owner of the clan.");
+            return config.getString("commands.clan.step-down.messages.only-owner");
         }
         clan.stepDownOwner(player);
         return null;
     }
 
-    public String kickPlayer(UUID player, UUID target) {
+    public String kickPlayer(UUID playerUUID, String targetName) {
         // This method will kick a player from a clan return true if successful, false if not
-        VClans.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player).getName() + " is trying to kick player " + Bukkit.getPlayer(target).getName() + " from the clan.");
-        Clan clan = clans.getClanByMember(player);
-        String error = isPlayerOwner(player, clan);
+        Player player = Bukkit.getPlayer(playerUUID);
+        OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
+        logger.info("Player " + player.getName() + " is trying to kick player " + targetName + " from the clan.");
+        if (!target.hasPlayedBefore()) {
+            return config.getString("commands.default.messages.never-joined").replace("{name}", targetName);
+        }
+        Clan clan = clans.getClanByMember(playerUUID);
+        String error = isPlayerOwner(playerUUID, clan);
         if (error != null) {
             return error;
         }
-        if (player.equals(target)) {
-            VClans.getInstance().getLogger().warning("Player is trying to kick themselves.");
-            return "You cannot kick yourself.";
+        if (playerUUID.equals(target.getUniqueId())) {
+            logger.warning("Player is trying to kick themselves.");
+            return config.getString("commands.clan.kick.messages.cant-kick-yourself").replace("{name}", targetName);
         }
-        if (!clan.getMembers().contains(target)) {
-            VClans.getInstance().getLogger().warning("Player is not in the clan.");
-            return "Player is not in the clan.";
+        if (!clan.getMembers().contains(target.getUniqueId())) {
+            logger.warning("Player is not in the clan.");
+            return config.getString("commands.clan.kick.messages.target-not-in-clan").replace("{name}", targetName);
         }
-        clan.removeMember(target);
+        if (clan.isOwner(target.getUniqueId())) {
+            logger.warning("Player is the owner of the clan.");
+            return config.getString("commands.clan.kick.messages.cant-kick-owner").replace("{name}", targetName);
+        }
+        clan.removeMember(target.getUniqueId());
         return null;
     }
 
@@ -192,7 +221,7 @@ public class ClansHandler {
         clans = new Clans();
         List<Clan> clansList = JsonUtils.deserializeClans("clans.json");
         if (clansList == null) {
-            VClans.getInstance().getLogger().warning("Clans file is empty. Creating new clans.json file.");
+            logger.warning("Clans file is empty. Creating new clans.json file.");
             saveClans();
             return;
         }
@@ -230,13 +259,13 @@ public class ClansHandler {
         return clan.getName();
     }
 
-    public String getClanList() {
-        // This method will return the list of clans
-        StringBuilder sb = new StringBuilder();
+    public List<String> getClanList() {
+        // This method will return the list of clan names
+        List<String> names = new ArrayList<>();
         for (Clan clan : clans.getClans()) {
-            sb.append(" - ").append(clan.getName()).append("\n");
+            names.add(clan.getName());
         }
-        return sb.toString();
+        return names;
     }
 
     public String getClanMembersList(String clanName) {
@@ -267,12 +296,12 @@ public class ClansHandler {
 
     private String isPlayerOwner(UUID player, Clan clan) {
         if (clan == null) {
-            VClans.getInstance().getLogger().warning("Player is not in a clan.");
-            return "You are not in a clan.";
+            logger.warning("Player is not in a clan.");
+            return config.getString("commands.default.messages.not-in-clan");
         }
         if (!clan.isOwner(player)) {
-            VClans.getInstance().getLogger().warning("Player is not the owner of the clan.");
-            return "You are not the owner of the clan.";
+            logger.warning("Player is not the owner of the clan.");
+            return config.getString("commands.default.messages.not-owner");
         }
         return null;
     }

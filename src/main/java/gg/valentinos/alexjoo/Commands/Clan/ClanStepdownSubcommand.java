@@ -7,35 +7,28 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Objects;
 
-public class ClanStepdownSubcommand implements SubCommand {
-    @Override
-    public String getName() {
-        return "stepdown";
-    }
+public class ClanStepdownSubcommand extends SubCommand {
 
-    @Override
-    public String getDescription() {
-        return "Step down from your clan leadership.";
-    }
-
-    @Override
-    public String getUsage() {
-        return "/clan stepdown";
+    public ClanStepdownSubcommand() {
+        super("clan", "stepdown");
+        hasToBePlayer = true;
+        minArgs = 1;
+        maxArgs = 1;
+        requiredArgs = 1;
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can use this command.");
-            return true;
-        }
-        if (args.length > 1) {
-            sender.sendMessage("Usage: " + getUsage());
-            return true;
-        }
+        if (commonChecks(sender, args)) return true;
+
+        Player player = (Player) sender;
+
+        if (isOnCooldown(sender, selfCooldownQuery)) return true;
 
         String error = clansHandler.stepDownPlayer(player.getUniqueId());
-        player.sendMessage(Objects.requireNonNullElseGet(error, () -> "You stepped down from your clan leadership."));
+
+        handleCommandResult(sender, error, config.getString(configPath + "messages.success"));
+
         return true;
     }
 

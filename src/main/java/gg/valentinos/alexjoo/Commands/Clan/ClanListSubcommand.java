@@ -7,47 +7,50 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.UUID;
 
-public class ClanListSubcommand implements SubCommand {
-    @Override
-    public String getName() {
-        return "list";
-    }
+public class ClanListSubcommand extends SubCommand {
 
-    @Override
-    public String getDescription() {
-        return "Lists every clan on the server or the members of a specific clan.";
-    }
-
-    @Override
-    public String getUsage() {
-        return "/clan list [<clan name>]";
+    public ClanListSubcommand() {
+        super("clan", "list");
+        maxArgs = 2;
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (args.length > 2) {
-            sender.sendMessage("Usage: " + getUsage());
-            return true;
-        }
+        if (commonChecks(sender, args)) return true;
+
+        if (isOnCooldown(sender, selfCooldownQuery)) return true;
 
         if (args.length == 1) {
-            sender.sendMessage("Clans:");
-            sender.sendMessage(clansHandler.getClanList());
+            StringBuilder sb = new StringBuilder();
+            sb.append(config.getString(configPath + "messages.clan-list-header")).append("\n");
+            for (String clanName : clansHandler.getClanList()) {
+                sb.append(config.getString(configPath + "messages.list-item").replace("{item}", clanName)).append("\n");
+            }
+            sb.append(config.getString(configPath + "messages.clan-list-footer"));
+            sender.sendMessage(sb.toString());
         } else {
-            sender.sendMessage("Members of " + args[1] + ":");
-            List<UUID> members = clansHandler.getClanMemberUUIDs(args[1]);
+            String clanName = args[1];
+            StringBuilder sb = new StringBuilder();
+            sb.append(config.getString(configPath + "messages.member-list-header").replace("{clan}", clanName)).append("\n");
+            List<UUID> members = clansHandler.getClanMemberUUIDs(clanName);
             for (UUID member : members) {
                 OfflinePlayer player = sender.getServer().getOfflinePlayer(member);
-                sender.sendMessage(clansHandler.getClanMembersList(args[1]));
+                sb.append(config.getString(configPath + "messages.list-item").replace("{item}", player.getName())).append("\n");
             }
+            sb.append(config.getString(configPath + "messages.member-list-footer"));
+            sender.sendMessage(sb.toString());
         }
-
 
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            return List.of("list");
+        } else if (args.length == 2) {
+            return clansHandler.getClanList();
+        }
         return List.of();
     }
 }

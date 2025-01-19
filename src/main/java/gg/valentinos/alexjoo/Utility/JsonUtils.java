@@ -67,10 +67,12 @@ public class JsonUtils {
         PlayerCooldownsMap playerCooldownsMap = new PlayerCooldownsMap();
         playerCooldownsMap.setPlayerCooldownsMap(new HashMap<>());
 
-        for (Map.Entry<String, List<Cooldown>> entry : tempMap.entrySet()) {
-            UUID playerId = UUID.fromString(entry.getKey());
-            HashSet<Cooldown> cooldowns = new HashSet<>(entry.getValue());
-            playerCooldownsMap.getPlayerCooldownsMap().put(playerId, cooldowns);
+        if (tempMap != null) {
+            for (Map.Entry<String, List<Cooldown>> entry : tempMap.entrySet()) {
+                UUID playerId = UUID.fromString(entry.getKey());
+                HashSet<Cooldown> cooldowns = new HashSet<>(entry.getValue());
+                playerCooldownsMap.getPlayerCooldownsMap().put(playerId, cooldowns);
+            }
         }
 
         return playerCooldownsMap;

@@ -16,16 +16,9 @@ public class CooldownHandler {
 
     public void loadCooldowns() {
         playerCooldownsMap = JsonUtils.deserializeCooldowns("cooldowns.json");
-        ListCooldowns();
-        if (playerCooldownsMap == null) {
-            VClans.getInstance().getLogger().warning("Cooldowns file is empty. Creating new cooldowns.json file.");
-            playerCooldownsMap = new PlayerCooldownsMap();
-            saveCooldowns();
-        }
     }
 
     public void saveCooldowns() {
-        ListCooldowns();
         JsonUtils.toJsonFile(playerCooldownsMap.getPlayerCooldownsMap(), "cooldowns.json");
     }
 
@@ -47,14 +40,5 @@ public class CooldownHandler {
         }
         saveCooldowns();
         return cooldown.getTimeLeft();
-    }
-
-    private void ListCooldowns(){
-        VClans.getInstance().getLogger().info("Cooldowns: ");
-        for (UUID player : playerCooldownsMap.getPlayerCooldownsMap().keySet()) {
-            for (Cooldown cooldown : playerCooldownsMap.getPlayerCooldownsMap().get(player)) {
-                VClans.getInstance().getLogger().info(player + " is on cooldown for " + cooldown.getQuery() + " for " + cooldown.getTimeLeft());
-            }
-        }
     }
 }
