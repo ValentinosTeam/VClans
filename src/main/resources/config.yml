@@ -12,11 +12,13 @@ commands:
       not-in-clan: "You are not in a clan."
       not-owner: "You are not the owner of your clan."
       never-joined: "That player has never played on this server."
+      confirm: "'/confirm' in the next {time} seconds to confirm the action."
+      nothing-to-confirm: "There is nothing to confirm."
   clan:
     create:
       enabled: true
-      inverse: true # If true the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
-      cooldown: 5 # If inverse is false, this cooldown will be applied to the create command. I.E. You can't create a clan for 30 seconds after creating one.
+      target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
+      cooldown: 5 # This cooldown is applied to the target-cooldown, which if unspecified will be applied to itself.
       description: "Creates a new clan."
       usage: "/clan create <name>"
       messages:
@@ -28,8 +30,9 @@ commands:
         already-in-clan: "You are already in a clan. Leave your current clan to create a new one."
     disband:
       enabled: true
-      inverse: true # if true cooldown will be applied to the create command on disband.
+      target-cooldown: "clan-create"
       cooldown: 10
+      confirmation: 30 # This is the time in seconds the player has to confirm the action.
       description: "Disbands your clan."
       usage: "/clan disband"
       messages:

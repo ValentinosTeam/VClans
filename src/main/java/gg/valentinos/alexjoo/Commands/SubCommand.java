@@ -1,6 +1,7 @@
 package gg.valentinos.alexjoo.Commands;
 
 import gg.valentinos.alexjoo.Handlers.ClansHandler;
+import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,7 @@ import java.util.Objects;
 public abstract class SubCommand {
     protected final static ClansHandler clansHandler = VClans.getInstance().getClansHandler();
     protected final static CooldownHandler cooldownHandler = VClans.getInstance().getCooldownHandler();
+    protected final static ConfirmationHandler confirmationHandler = VClans.getInstance().getConfirmationHandler();
     protected final static FileConfiguration config = VClans.getInstance().getConfig();
 
     protected String name;
@@ -21,6 +23,7 @@ public abstract class SubCommand {
     protected String targetCooldownQuery;
     protected String selfCooldownQuery;
     protected long cooldownDuration;
+    protected long confirmationDuration;
 
     protected boolean hasToBePlayer = false;
     protected int minArgs = -1;
@@ -35,8 +38,12 @@ public abstract class SubCommand {
         description = config.getString(configPath + "description");
         usage = config.getString(configPath + "usage");
         cooldownDuration = config.getLong(configPath + "cooldown");
+        confirmationDuration = config.getLong(configPath + "confirmation");
         selfCooldownQuery = commandName + "-" + subcommandName;
-        targetCooldownQuery = selfCooldownQuery;
+        targetCooldownQuery = config.getString(configPath + "target-cooldown");
+        if(targetCooldownQuery == null){
+            targetCooldownQuery = selfCooldownQuery;
+        }
     }
 
     public String getName(){
@@ -51,11 +58,20 @@ public abstract class SubCommand {
         return usage;
     }
 
-    public abstract boolean execute(CommandSender sender, String[] args);
+    public final void execute(CommandSender sender, String[] args){
+        if (commonChecks(sender, args)) return;
+        if (isOnCooldown(sender, selfCooldownQuery)) return;
+
+        CommandAction action = getAction(sender, args);
+
+        handleConfirmation(sender, action);
+    }
+
+    public abstract CommandAction getAction(CommandSender sender, String[] args);
 
     public abstract List<String> onTabComplete(CommandSender sender, String[] args);
 
-    protected boolean commonChecks(CommandSender sender, String[] args){
+    private boolean commonChecks(CommandSender sender, String[] args){
         if (!config.getBoolean(configPath + "enabled")) {
             sender.sendMessage(Objects.requireNonNull(config.getString("commands.default.messages.command-disabled")));
             return true;
@@ -82,7 +98,7 @@ public abstract class SubCommand {
         return false;
     }
 
-    protected boolean isOnCooldown(CommandSender sender, String query){
+    private boolean isOnCooldown(CommandSender sender, String query){
         if (!(sender instanceof Player player))
             return false;
         if (cooldownHandler.isOnCooldown(player.getUniqueId(), query)) {
@@ -92,6 +108,13 @@ public abstract class SubCommand {
             return true;
         }
         return false;
+    }
+
+    private void handleConfirmation(CommandSender sender, CommandAction action){
+        if (sender instanceof Player player && confirmationDuration > 0)
+            confirmationHandler.addConfirmationEntry(player, confirmationDuration, action);
+        else
+            action.execute();
     }
 
     protected void handleCommandResult(CommandSender sender, String errorMessage, String successMessage){
@@ -114,4 +137,5 @@ public abstract class SubCommand {
             sender.sendMessage(errorMessage);
         }
     }
+
 }

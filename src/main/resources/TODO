@@ -1,0 +1,37 @@
+command execute {
+    commoncheck return if true
+    cooldown check return if true
+
+    create commandAction
+
+    if confirmation == true AND sender isinstanceof Player
+        send message informing to use /confirm
+        pass the commandAction to the ConfirmationHandler.addConfirmationLog(sender, commandAction){
+            create/replace confirmation log where sender.UUID is key and [commandAction, current_timestamp] as value
+        }
+    else
+        execute the commandAction
+
+    return true
+}
+
+ConfirmCommand execute {
+    if sender not Player return false
+
+    lookup the commandAction and timestamp assosiated with the players uuid in the hashmap
+    if (commandAction != null)
+        if (time now - timestamp <= time limit in config)
+            commandAction.execute()
+        else
+            remove the log
+            sendMessage(confirmation has expired)
+    else
+        sendMessage(nothing to confirm)
+
+    return true
+
+}
+
+class ConfirmationHandler(){
+    HashMap<UUID, List<CommandAction, long>> confirmations;
+}

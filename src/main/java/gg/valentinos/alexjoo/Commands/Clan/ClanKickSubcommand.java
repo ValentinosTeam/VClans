@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
+import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -20,19 +21,14 @@ public class ClanKickSubcommand extends SubCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
-        if (commonChecks(sender, args)) return true;
-
+    public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         String targetName = args[1];
 
-        if (isOnCooldown(sender, selfCooldownQuery)) return true;
-
-        String error = clansHandler.kickPlayer(player.getUniqueId(), targetName);
-
-        handleCommandResult(sender, error, config.getString(configPath + "messages.success").replace("{name}", targetName));
-
-        return true;
+        return () -> {
+            String error = clansHandler.kickPlayer(player.getUniqueId(), targetName);
+            handleCommandResult(sender, error, config.getString(configPath + "messages.success").replace("{name}", targetName));
+        };
     }
 
     @Override

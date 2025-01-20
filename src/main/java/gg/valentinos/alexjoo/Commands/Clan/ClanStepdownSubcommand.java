@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
+import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,24 +13,17 @@ public class ClanStepdownSubcommand extends SubCommand {
     public ClanStepdownSubcommand() {
         super("clan", "stepdown");
         hasToBePlayer = true;
-        minArgs = 1;
         maxArgs = 1;
-        requiredArgs = 1;
     }
 
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
-        if (commonChecks(sender, args)) return true;
-
+    public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
 
-        if (isOnCooldown(sender, selfCooldownQuery)) return true;
-
-        String error = clansHandler.stepDownPlayer(player.getUniqueId());
-
-        handleCommandResult(sender, error, config.getString(configPath + "messages.success"));
-
-        return true;
+        return () ->{
+            String error = clansHandler.stepDownPlayer(player.getUniqueId());
+            handleCommandResult(sender, error, config.getString(configPath + "messages.success"));
+        };
     }
 
     @Override

@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
+import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -16,29 +17,25 @@ public class ClanInviteSubcommand extends SubCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
-        if (commonChecks(sender, args)) return true;
-
+    public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         String targetName = args[1];
         OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
 
-        if (isOnCooldown(sender, selfCooldownQuery)) return true;
+        return () -> {
+            String error = clansHandler.invitePlayer(player.getUniqueId(), targetName);
 
-        String error = clansHandler.invitePlayer(player.getUniqueId(), targetName);
-
-        handleCommandResult(sender, error, () -> {
-            sender.sendMessage(config.getString(configPath + "messages.success").replace("{name}", targetName));
-            if (error == null && target.isOnline()) {
-                target.getPlayer().sendMessage(
-                        config.getString(configPath + "messages.invitation")
-                                .replace("{clan}", clansHandler.getClanNameOfMember(player.getUniqueId()))
-                                .replace("{name}", player.getName())
-                );
-            }
-        });
-
-        return true;
+            handleCommandResult(sender, error, () -> {
+                sender.sendMessage(config.getString(configPath + "messages.success").replace("{name}", targetName));
+                if (error == null && target.isOnline()) {
+                    target.getPlayer().sendMessage(
+                            config.getString(configPath + "messages.invitation")
+                                    .replace("{clan}", clansHandler.getClanNameOfMember(player.getUniqueId()))
+                                    .replace("{name}", player.getName())
+                    );
+                }
+            });
+        };
     }
 
     @Override

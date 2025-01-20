@@ -54,7 +54,8 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        return subCommand.execute(sender, args);
+        subCommand.execute(sender, args);
+        return true;
     }
 
     @Override

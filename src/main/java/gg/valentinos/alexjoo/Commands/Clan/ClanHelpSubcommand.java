@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
+import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import org.bukkit.command.CommandSender;
 
@@ -15,10 +16,7 @@ public class ClanHelpSubcommand extends SubCommand {
         maxArgs = 1;
     }
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
-        if (commonChecks(sender, args)) return true;
-
-        if (isOnCooldown(sender, selfCooldownQuery)) return true;
+    public CommandAction getAction(CommandSender sender, String[] args) {
 
         StringBuilder helpMessage = new StringBuilder();
         helpMessage.append(config.getString(configPath + "messages.header")).append("\n");
@@ -32,9 +30,7 @@ public class ClanHelpSubcommand extends SubCommand {
         }
         helpMessage.append(config.getString(configPath + "messages.footer"));
 
-        handleCommandResult(sender, null, helpMessage.toString());
-
-        return true;
+        return () -> handleCommandResult(sender, null, helpMessage.toString());
     }
 
     @Override

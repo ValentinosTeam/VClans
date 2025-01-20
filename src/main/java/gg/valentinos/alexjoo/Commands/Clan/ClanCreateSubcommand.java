@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
+import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,20 +19,16 @@ public class ClanCreateSubcommand extends SubCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
-        if (commonChecks(sender, args)) return true;
+    public CommandAction getAction(CommandSender sender, String[] args) {
 
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         String clanName = args[1];
 
-        if (isOnCooldown(sender, selfCooldownQuery)) return true;
-
-        String errorMessage = clansHandler.createClan(playerUUID, clanName);
-
-        handleCommandResult(sender, errorMessage, config.getString(configPath+"messages.success").replace("{name}", clanName));
-
-        return true;
+        return () -> {
+            String errorMessage = clansHandler.createClan(playerUUID, clanName);
+            handleCommandResult(sender, errorMessage, config.getString(configPath+"messages.success").replace("{name}", clanName));
+        };
     }
 
     @Override

@@ -10,3 +10,6 @@ commands:
     description: Handles all clan related commands.
     usage: /clan help
     aliases: [ c ]
+  confirm:
+    description: Confirm your action.
+    usage: /confirm
