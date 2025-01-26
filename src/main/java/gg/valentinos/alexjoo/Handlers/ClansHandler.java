@@ -74,6 +74,10 @@ public class ClansHandler {
     }
 
     public void promotePlayer(UUID playerUUID, String targetName){
+        Player player = Bukkit.getPlayer(playerUUID);
+        OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
+        Clan clan = clans.getClanByOwner(playerUUID);
+        clan.addOwner(target.getUniqueId());
     }
 
     public void kickPlayer(UUID playerUUID, String targetName) {
