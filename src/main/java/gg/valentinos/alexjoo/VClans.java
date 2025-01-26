@@ -8,16 +8,22 @@ import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
+import java.util.List;
+
 public final class VClans extends JavaPlugin {
 
     private static VClans instance;
     private ClansHandler clansHandler;
     private CooldownHandler cooldownHandler;
     private ConfirmationHandler confirmationHandler;
+    private HashMap<String, String> defaultMessages;
 
     @Override
     public void onEnable() {
         instance = this;
+
+        loadDefaultMessages();
 
         clansHandler = new ClansHandler();
         cooldownHandler = new CooldownHandler();
@@ -66,5 +72,41 @@ public final class VClans extends JavaPlugin {
 
     public ConfirmationHandler getConfirmationHandler() {
         return confirmationHandler;
+    }
+
+    public String getDefaultMessage(String key) {
+        if (!defaultMessages.containsKey(key)) {
+            getLogger().severe("Attempted to get a default message that does not exist: " + key);
+            return "ERROR";
+        }
+        if (defaultMessages.get(key) == null) {
+            getLogger().severe("Attempted to get a default message that is null: " + key);
+            return "NULL";
+        }
+        return defaultMessages.get(key);
+    }
+
+    private void loadDefaultMessages() {
+        List<String> configKeys = List.of(
+                "no-permission",
+                "player-only",
+                "not-enough-arguments",
+                "too-many-arguments",
+                "wrong-number-of-arguments",
+                "on-cooldown",
+                "command-disabled",
+                "not-in-clan",
+                "not-owner",
+                "never-joined",
+                "confirmation",
+                "nothing-to-confirm"
+        );
+        for (String key : configKeys) {
+            String message = getConfig().getString("commands.default.messages." + key);
+            if (message == null){
+                getLogger().warning("Missing message in config.yml for commands.default.messages." + key);
+            }
+            defaultMessages.put(key, message);
+        }
     }
 }

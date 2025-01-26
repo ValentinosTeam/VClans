@@ -11,33 +11,37 @@ import java.util.UUID;
 public class ClanListSubcommand extends SubCommand {
 
     public ClanListSubcommand() {
-        super("clan", "list");
+        super("clan", "list", List.of("clan-list-header", "clan-list-footer", "list-item", "member-list-header", "member-list-footer"));
         maxArgs = 2;
     }
 
     @Override
     public CommandAction getAction(CommandSender sender, String[] args) {
-
+        StringBuilder sb = new StringBuilder();
         if (args.length == 1) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(config.getString(configPath + "messages.clan-list-header")).append("\n");
-            for (String clanName : clansHandler.getClanList()) {
-                sb.append(config.getString(configPath + "messages.list-item").replace("{item}", clanName)).append("\n");
+            sb.append(messages.get("clan-list-header")).append("\n");
+            for (String clanName : clansHandler.getClanNames()) {
+                sb.append(messages.get("list-item").replace("{item}", clanName)).append("\n");
             }
-            sb.append(config.getString(configPath + "messages.clan-list-footer"));
+            sb.append(messages.get("clan-list-footer"));
             return () -> sender.sendMessage(sb.toString());
         } else {
             String clanName = args[1];
-            StringBuilder sb = new StringBuilder();
-            sb.append(config.getString(configPath + "messages.member-list-header").replace("{clan}", clanName)).append("\n");
+            sb.append(messages.get("member-list-header").replace("{clan}", clanName)).append("\n");
             List<UUID> members = clansHandler.getClanMemberUUIDs(clanName);
             for (UUID member : members) {
                 OfflinePlayer player = sender.getServer().getOfflinePlayer(member);
-                sb.append(config.getString(configPath + "messages.list-item").replace("{item}", player.getName())).append("\n");
+                if (player.getPlayer() != null)
+                    sb.append(messages.get("list-item").replace("{item}", player.getPlayer().getName())).append("\n");
             }
-            sb.append(config.getString(configPath + "messages.member-list-footer"));
-            return () -> sender.sendMessage(sb.toString());
+            sb.append(messages.get("member-list-footer"));
         }
+        return () -> sender.sendMessage(sb.toString());
+    }
+
+    @Override
+    protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
+        return false;
     }
 
     @Override
@@ -45,8 +49,9 @@ public class ClanListSubcommand extends SubCommand {
         if (args.length == 1) {
             return List.of("list");
         } else if (args.length == 2) {
-            return clansHandler.getClanList();
+            return clansHandler.getClanNames();
         }
         return List.of();
     }
+
 }

@@ -10,29 +10,35 @@ import java.util.Map;
 public class ClanHelpSubcommand extends SubCommand {
 
     private Map<String, SubCommand> subCommands;
+    private final boolean showCommandList;
 
     public ClanHelpSubcommand() {
-        super("clan", "help");
+        super("clan", "help", List.of("header", "content", "list-item", "footer"));
         maxArgs = 1;
+        showCommandList = config.getBoolean(configPath + "show-command-list");
     }
     @Override
     public CommandAction getAction(CommandSender sender, String[] args) {
-
-        StringBuilder helpMessage = new StringBuilder();
-        helpMessage.append(config.getString(configPath + "messages.header")).append("\n");
-        helpMessage.append(config.getString(configPath + "messages.content")).append("\n");
-        if (config.getBoolean(configPath + "show-command-list")) {
-            for (SubCommand subCommand : subCommands.values()) {
-                helpMessage.append(config.getString(configPath + "messages.list-item")
-                        .replace("{item}", subCommand.getName())
-                        .replace("{desc}", subCommand.getDescription())).append("\n");
+        return () ->{
+            StringBuilder helpMessage = new StringBuilder();
+            helpMessage.append(messages.get("header")).append("\n");
+            helpMessage.append(messages.get("content")).append("\n");
+            if (showCommandList) {
+                for (SubCommand subCommand : subCommands.values()) {
+                    helpMessage.append(messages.get("list-item")
+                            .replace("{item}", subCommand.getName())
+                            .replace("{desc}", subCommand.getDescription())).append("\n");
+                }
             }
-        }
-        helpMessage.append(config.getString(configPath + "messages.footer"));
-
-        return () -> handleCommandResult(sender, null, helpMessage.toString());
+            helpMessage.append(messages.get("footer"));
+            sender.sendMessage(helpMessage.toString());
+        };
     }
 
+    @Override
+    protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
+        return false;
+    }
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return List.of();

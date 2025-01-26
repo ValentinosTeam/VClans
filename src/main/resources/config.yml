@@ -12,9 +12,32 @@ commands:
       not-in-clan: "You are not in a clan."
       not-owner: "You are not the owner of your clan."
       never-joined: "That player has never played on this server."
-      confirm: "'/confirm' in the next {time} seconds to confirm the action."
+      confirmation: "'/confirm' in the next {time} seconds to confirm the action."
       nothing-to-confirm: "There is nothing to confirm."
   clan:
+    help:
+      enabled: true
+      description: "Displays the help menu."
+      usage: "/clan help"
+      show-command-list: true
+      messages:
+        header: "=============Clan Commands============="
+        content: "
+        Thank you for using Valentinos Clans plugin made by Alex_Joo!
+        To view the list of available commands, use /clan help.
+        "
+        list-item: " - {item}: {desc}" # example: " - create: Creates a new clan."
+        footer: "======================================="
+    list:
+      enabled: true
+      description: "Lists all clans."
+      usage: "/clan list"
+      messages:
+        clan-list-header: "=============Clans============="
+        clan-list-footer: "==============================="
+        list-item: " - {item}"
+        member-list-header: "============Members of {clan}============"
+        member-list-footer: "========================================="
     create:
       enabled: true
       target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
@@ -40,31 +63,29 @@ commands:
         not-in-clan: "You are not in a clan."
         not-leader: "You are not the leader of your clan."
         not-only-owner: "You are not the only owner of the clan."
-    help:
-      enabled: true
-      description: "Displays the help menu."
-      usage: "/clan help"
-      show-command-list: true
-      messages:
-        header: "=============Clan Commands============="
-        content: "
-        Thank you for using Valentinos Clans plugin made by Alex_Joo!
-        To view the list of available commands, use /clan help.
-        "
-        list-item: " - {item}: {desc}" # example: " - create: Creates a new clan."
-        footer: "======================================="
     invite:
       enabled: true
       description: "Invites a player to your clan."
       usage: "/clan invite <player>"
       messages:
         success: "You have invited {name} to your clan."
-        invitation: "You have been invited to join the clan {clan} by {player}. Use '/clan join {clan}' to accept the invitation."
+        invitation: "You have been invited to join the clan {clan} by {name}. Use '/clan join {clan}' to accept the invitation."
         invite-self: "You can't invite yourself to your clan."
         not-owner: "You can't invite players to your clan. You are not the owner."
         already-in-a-clan: "That player is already in a clan."
         already-in-the-clan: "That player is already in the clan."
         already-invited: "That player has already been invited to your clan."
+    kick:
+      enabled: true
+      description: "Kicks a player from your clan."
+      usage: "/clan kick <player>"
+      messages:
+        success: "You have kicked {name} from your clan."
+        player-kicked: "You have been kicked from the clan by {name}."
+        player-kicked-notification: "Player {target} has been kicked from the clan by {name}." # This is sent to all clan members online
+        cant-kick-yourself: "You can't kick yourself from your clan."
+        target-not-in-clan: "That player is not in your clan."
+        cant-kick-owner: "You can't kick the owner of the clan."
     join:
       enabled: true
       description: "Joins a clan if you have been invited."
@@ -76,15 +97,6 @@ commands:
         not-invited: "You have not been invited to join the clan {clan}."
         already-in-a-clan: "You are already in a clan."
         already-in-the-clan: "You are already in the clan."
-    kick:
-      enabled: true
-      description: "Kicks a player from your clan."
-      usage: "/clan kick <player>"
-      messages:
-        success: "You have kicked {name} from your clan."
-        cant-kick-yourself: "You can't kick yourself from your clan."
-        target-not-in-clan: "That player is not in your clan."
-        cant-kick-owner: "You can't kick the owner of the clan."
     leave:
       enabled: true
       description: "Leaves your current clan."
@@ -92,20 +104,22 @@ commands:
       messages:
         success: "You have left the clan {clan} successfully."
         owner-cant-leave: "You can't leave your clan. Disband it instead."
+    promote:
+      enabled: true
+      description: "Promotes a player to be the one of the owners of your clan."
+      usage: "/clan promote <player>"
+      messages:
+        success: "You have promoted {name} to be one of the owners of your clan!"
+        promoted: "You have been promoted to be one of the owners of the clan by {name}."
+        promoted-notification: "Player {target} has been promoted to be one of the owners of the clan!" # This is sent to all clan members online
+        cant-promote-yourself: "You can't promote yourself to be the leader of the clan."
+        target-not-in-clan: "That {name} is not in your clan."
+        already-owner: "That player is already an owner of the clan."
     stepdown:
       enabled: true
       description: "Steps down as the leader of your clan."
       usage: "/clan stepdown"
       messages:
         success: "You have stepped down as the leader of your clan."
+        stepdown-notification: "Player {name} has stepped down as the leader of the clan." # This is sent to all clan members online
         only-owner: "You are the only owner of the clan, you can't step down."
-    list:
-      enabled: true
-      description: "Lists all clans."
-      usage: "/clan list"
-      messages:
-        clan-list-header: "=============Clans============="
-        clan-list-footer: "==============================="
-        list-item: " - {item}"
-        member-list-header: "============Members of {clan}============"
-        member-list-footer: "========================================="

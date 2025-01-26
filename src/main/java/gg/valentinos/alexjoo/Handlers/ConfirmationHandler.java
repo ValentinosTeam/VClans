@@ -17,14 +17,14 @@ public class ConfirmationHandler {
     }
 
     public void addConfirmationEntry(Player player, long duration, CommandAction commandAction) {
-        player.sendMessage(VClans.getInstance().getConfig().getString("commands.default.messages.confirmation").replace("{time}", String.valueOf(duration)));
+        player.sendMessage(VClans.getInstance().getDefaultMessage("confirmation").replace("{time}", String.valueOf(duration)));
         confirmationEntries.put(player.getUniqueId(), new ConfirmationEntry(commandAction, duration));
     }
 
     public void executeConfirmation(Player player) {
         ConfirmationEntry entry = confirmationEntries.get(player.getUniqueId());
         if (entry == null){
-            player.sendMessage(VClans.getInstance().getConfig().getString("commands.default.messages.nothing-to-confirm"));
+            player.sendMessage(VClans.getInstance().getDefaultMessage("nothing-to-confirm"));
             return;
         }
         entry.execute();

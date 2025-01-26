@@ -29,6 +29,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ClanLeaveSubcommand());
         registerSubCommand(new ClanStepdownSubcommand());
         registerSubCommand(new ClanKickSubcommand());
+        registerSubCommand(new ClanPromoteSubcommand());
 
         clanHelpSubcommand.setSubCommands(subCommands);
     }
@@ -41,7 +42,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
             if (sender instanceof Player player){
-                String clanName = VClans.getInstance().getClansHandler().getClanNameOfMember(player.getUniqueId());
+                String clanName = VClans.getInstance().getClansHandler().getClans().getClanNameOfMember(player.getUniqueId());
                 sender.sendMessage("You are in " + (clanName == null ? "no clan" : "clan " + clanName));
             }
             sender.sendMessage("Use '/clan help' for help.");

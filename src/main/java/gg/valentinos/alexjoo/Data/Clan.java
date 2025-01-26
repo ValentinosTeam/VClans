@@ -16,6 +16,14 @@ public class Clan {
         this.invites = invites;
     }
 
+    public Clan(String name, List<UUID> members, List<UUID> owners) {
+        this.name = name;
+        this.members = members;
+        this.owners = owners;
+        this.invites = List.of();
+    }
+
+
     public List<UUID> getMembers() {
         return members;
     }
