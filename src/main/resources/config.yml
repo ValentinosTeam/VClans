@@ -1,5 +1,11 @@
 show-current-clan-on-join: true
 commands:
+  # {commandname}-notification means that the message is going to be sent to multiple players which the command affects
+  # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
+  # target-cooldown is the cooldown that is applied to the command that is specified in the target-cooldown field
+  # confirmation is the time in seconds the player has to confirm the action
+  # confirmation-message is an optional message that is sent to the player when the confirmation is required, if not set the default confirmation message is sent
+  #       {time} - the time left to confirm the action
   default:
     messages:
       no-permission: "You do not have permission to use this command."
@@ -68,6 +74,7 @@ commands:
         not-in-clan: "You are not in a clan."
         not-leader: "You are not the leader of your clan."
         not-only-owner: "You are not the only owner of the clan."
+        confirmation-message: "Are you sure you want to disband your clan? Type '/confirm' in the next {time} seconds to confirm the action."
     invite:
       # {clan-name} - the clan name the player is inviting the target to
       # {player-name} - the name of the player inviting the target
@@ -90,6 +97,7 @@ commands:
       enabled: true
       description: "Kicks a player from your clan."
       usage: "/clan kick <player>"
+      confirmation: 30
       messages:
         success: "You have kicked {target-name} from your clan."
         kicked: "You have been kicked from the clan {clan-name} by {player-name}."
@@ -97,6 +105,7 @@ commands:
         cant-kick-yourself: "You can't kick yourself from your clan."
         target-not-in-clan: "That player is not in your clan."
         cant-kick-owner: "You can't kick the owner of the clan."
+        confirmation-message: "Are you sure you want to kick {target-name} from your clan? Type '/confirm' to confirm the action."
     join:
       # {clan-name} - The clan name the player joins
       # {player-name} - The name of the player who is joining the clan
@@ -127,6 +136,8 @@ commands:
       enabled: true
       description: "Promotes a player to be the one of the owners of your clan."
       usage: "/clan promote <player>"
+      cooldown: 60*60*24*7 # 7 days
+      confirmation: 10
       messages:
         success: "You have promoted {target-name} to be one of the owners of {clan-name}"
         promoted: "You have been promoted to be one of the owners of the clan by {player-name}."
@@ -140,6 +151,7 @@ commands:
       enabled: true
       description: "Steps down as the leader of your clan."
       usage: "/clan stepdown"
+      confirmation: 10
       messages:
         success: "You have stepped down as the leader of your clan."
         stepdown-notification: "Player {name} has stepped down as the leader of the clan." # This is sent to all clan members online

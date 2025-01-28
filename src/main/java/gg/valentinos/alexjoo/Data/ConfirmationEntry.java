@@ -8,7 +8,7 @@ public class ConfirmationEntry {
     private final long timestamp;
     private final long duration;
 
-    public ConfirmationEntry(CommandAction commandAction, long duration){
+    public ConfirmationEntry(CommandAction commandAction, long duration) {
         this.commandAction = commandAction;
         this.duration = duration * 1000;
         this.timestamp = System.currentTimeMillis();

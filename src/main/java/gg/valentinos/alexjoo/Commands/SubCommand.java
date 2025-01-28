@@ -105,6 +105,14 @@ public abstract class SubCommand {
             }
             messages.put(key, message);
         }
+        if (confirmationDuration > 0){
+            String message = config.getString(configPath + "messages.confirmation-message");
+            if (message == null){
+                logger.warning("Missing confirmation message in config.yml for " + configPath + ". Using the default message.");
+                message = VClans.getInstance().getDefaultMessage("confirmation");
+            }
+            messages.put("confirmation-message", message);
+        }
     }
 
     private void loadConfigs(String commandName, String subcommandName){
@@ -172,7 +180,7 @@ public abstract class SubCommand {
 
     private void executeWithConfirmation(CommandSender sender, CommandAction action){
         if (sender instanceof Player player && confirmationDuration > 0)
-            confirmationHandler.addConfirmationEntry(player, confirmationDuration, action);
+            confirmationHandler.addConfirmationEntry(player, confirmationDuration, messages.get("confirmation-message"), action);
         else{
             action.execute();
         }
