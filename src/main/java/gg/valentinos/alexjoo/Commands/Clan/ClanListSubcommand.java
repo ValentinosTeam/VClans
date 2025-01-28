@@ -2,6 +2,7 @@ package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
+import gg.valentinos.alexjoo.Data.LogType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -18,13 +19,13 @@ public class ClanListSubcommand extends SubCommand {
     @Override
     public CommandAction getAction(CommandSender sender, String[] args) {
         StringBuilder sb = new StringBuilder();
+
         if (args.length == 1) {
             sb.append(messages.get("clan-list-header")).append("\n");
             for (String clanName : clansHandler.getClanNames()) {
                 sb.append(messages.get("list-item").replace("{item}", clanName)).append("\n");
             }
             sb.append(messages.get("clan-list-footer"));
-            return () -> sender.sendMessage(sb.toString());
         } else {
             String clanName = args[1];
             sb.append(messages.get("member-list-header").replace("{clan}", clanName)).append("\n");
@@ -36,12 +37,17 @@ public class ClanListSubcommand extends SubCommand {
             }
             sb.append(messages.get("member-list-footer"));
         }
-        return () -> sender.sendMessage(sb.toString());
+        return () -> sendFormattedMessage(sender, sb.toString(), LogType.NULL);
     }
 
     @Override
     protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
         return false;
+    }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+
     }
 
     @Override

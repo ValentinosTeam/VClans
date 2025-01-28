@@ -3,13 +3,13 @@ package gg.valentinos.alexjoo.Commands.Clan;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class ClanStepdownSubcommand extends SubCommand {
@@ -26,13 +26,14 @@ public class ClanStepdownSubcommand extends SubCommand {
 
         return () ->{
             clansHandler.stepDownPlayer(player.getUniqueId());
-            sender.sendMessage(messages.get("success"));
+            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
             List<UUID> members = clansHandler.getClanMembersUUIDs(player.getUniqueId());
             for (UUID member : members) {
                 Player p = Bukkit.getPlayer(member);
-                if (p != null && p.isOnline())
-                    p.sendMessage(messages.get("stepdown-notification").replace("{name}", player.getName()));
+                if (p != null && p.isOnline() && !p.equals(player))
+                    sendFormattedMessage(p, messages.get("stepdown-notification"), LogType.NULL);
             }
+            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
         };
     }
 
@@ -51,6 +52,21 @@ public class ClanStepdownSubcommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+        String playerName = "ERROR";
+        String clanName = "ERROR";
+        if (sender instanceof Player player) {
+            playerName = player.getName();
+            Clan clan = clansHandler.getClans().getClanByOwner(player.getUniqueId());
+            if (clan != null)
+                clanName = clan.getName();
+        }
+
+        replacements.put("{player-name}", playerName);
+        replacements.put("{clan-name}", clanName);
     }
 
     @Override

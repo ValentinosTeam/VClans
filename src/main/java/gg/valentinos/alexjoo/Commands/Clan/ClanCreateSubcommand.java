@@ -2,11 +2,10 @@ package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
-import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.LogType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,9 +22,11 @@ public class ClanCreateSubcommand extends SubCommand {
         Player player = (Player) sender;
         String clanName = args[1];
         UUID playerUUID = player.getUniqueId();
+
         return () -> {
             clansHandler.createClan(playerUUID, clanName);
-            sender.sendMessage(messages.get("success").replace("{name}", clanName));
+            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
+            cooldownHandler.createCooldown(playerUUID, selfCooldownQuery, cooldownDuration);
         };
     }
 
@@ -35,26 +36,40 @@ public class ClanCreateSubcommand extends SubCommand {
         String clanName = args[1];
         UUID playerUUID = player.getUniqueId();
         if (clansHandler.getClans().clanExists(clanName)) {
-            player.sendMessage(messages.get("already-exists"));
+            sendFormattedMessage(sender, messages.get("already-exists"), LogType.WARNING);
             return true;
         }
         if (clanName.length() > 16) {
-            player.sendMessage(messages.get("too-long"));
+            sendFormattedMessage(sender, messages.get("too-long"), LogType.WARNING);
             return true;
         }
         if (clanName.length() < 3) {
-            player.sendMessage(messages.get("too-short"));
+            sendFormattedMessage(sender, messages.get("too-short"), LogType.WARNING);
             return true;
         }
         if (clansHandler.getClans().isPlayerInClan(playerUUID)) {
-            player.sendMessage(messages.get("already-in-clan"));
+            sendFormattedMessage(sender, messages.get("already-in-clan"), LogType.WARNING);
             return true;
         }
         if (!clanName.matches("[a-zA-Z0-9]+")) {
-            player.sendMessage(messages.get("invalid-characters"));
+            sendFormattedMessage(sender, messages.get("invalid-characters"), LogType.WARNING);
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+        String playerName = "ERROR";
+        String clanName = "ERROR";
+        if (sender instanceof Player player) {
+            playerName = player.getName();
+        }
+        if (args.length > 1) {
+            clanName = args[1];
+        }
+        replacements.put("{clan-name}", clanName);
+        replacements.put("{player-name}", playerName);
     }
 
     @Override

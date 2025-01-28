@@ -3,7 +3,6 @@ package gg.valentinos.alexjoo.Handlers;
 import gg.valentinos.alexjoo.Data.Cooldown;
 import gg.valentinos.alexjoo.Data.PlayerCooldownsMap;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
-import gg.valentinos.alexjoo.VClans;
 
 import java.util.UUID;
 
@@ -23,6 +22,7 @@ public class CooldownHandler {
     }
 
     public void createCooldown(UUID player, String query, long duration) {
+        if (duration <= 0) return;
         playerCooldownsMap.addCooldown(player, query, duration);
         saveCooldowns();
     }

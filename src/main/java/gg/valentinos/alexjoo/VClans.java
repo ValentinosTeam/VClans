@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public final class VClans extends JavaPlugin {
 
@@ -31,10 +32,11 @@ public final class VClans extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
-        getCommand("clan").setExecutor(new ClanCommand());
-        getCommand("clan").setTabCompleter(new ClanCommand());
+        ClanCommand clanCommand = new ClanCommand();
+        Objects.requireNonNull(getCommand("clan")).setExecutor(clanCommand);
+        Objects.requireNonNull(getCommand("clan")).setTabCompleter(clanCommand);
 
-        getCommand("confirm").setExecutor(new ConfirmCommand());
+        Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
 
         saveDefaultConfig();
 
@@ -52,6 +54,7 @@ public final class VClans extends JavaPlugin {
         cooldownHandler = null;
 
         confirmationHandler = null;
+        defaultMessages = null;
 
         instance = null;
 
@@ -87,6 +90,7 @@ public final class VClans extends JavaPlugin {
     }
 
     private void loadDefaultMessages() {
+        defaultMessages = new HashMap<>();
         List<String> configKeys = List.of(
                 "no-permission",
                 "player-only",
@@ -99,7 +103,8 @@ public final class VClans extends JavaPlugin {
                 "not-owner",
                 "never-joined",
                 "confirmation",
-                "nothing-to-confirm"
+                "nothing-to-confirm",
+                "confirmation-expired"
         );
         for (String key : configKeys) {
             String message = getConfig().getString("commands.default.messages." + key);

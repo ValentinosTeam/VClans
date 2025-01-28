@@ -14,6 +14,7 @@ public class ConfirmCommand implements CommandExecutor {
             return false;
         }
         if (sender instanceof Player player){
+            VClans.getInstance().getLogger().info("Player " + player.getName() + " is executing confirmation command.");
             VClans.getInstance().getConfirmationHandler().executeConfirmation(player);
         }
         else{

@@ -3,18 +3,18 @@ package gg.valentinos.alexjoo.Commands.Clan;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class ClanLeaveSubcommand extends SubCommand {
 
     public ClanLeaveSubcommand() {
-        super("clan", "leave", List.of("success", "owner-cant-leave"));
+        super("clan", "leave", List.of("success", "leave-notification", "owner-cant-leave"));
         hasToBePlayer = true;
         maxArgs = 1;
     }
@@ -25,7 +25,17 @@ public class ClanLeaveSubcommand extends SubCommand {
 
         return () -> {
             clansHandler.leaveClan(player.getUniqueId());
-            sender.sendMessage(messages.get("success"));
+            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
+            List<UUID> members = clansHandler.getClanMembersUUIDs(player.getUniqueId());
+            for (UUID member : members) {
+                Player p = VClans.getInstance().getServer().getPlayer(member);
+                if (p != null && p.isOnline()){
+                    if (p.equals(player))
+                        continue;
+                    sendFormattedMessage(p, messages.get("leave-notification"), LogType.NULL);
+                }
+            }
+            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
         };
     }
 
@@ -35,14 +45,29 @@ public class ClanLeaveSubcommand extends SubCommand {
         UUID playerUUID = player.getUniqueId();
         Clan clan = clansHandler.getClans().getClanByMember(playerUUID);
         if (clan == null) {
-            sender.sendMessage(VClans.getInstance().getDefaultMessage("not-in-clan"));
+            sendFormattedMessage(sender, messages.get("not-in-clan"), LogType.WARNING);
             return true;
         }
         if (clan.isOwner(playerUUID)) {
-            sender.sendMessage(messages.get("owner-cant-leave"));
+            sendFormattedMessage(sender, messages.get("owner-cant-leave"), LogType.WARNING);
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+        String playerName = "ERROR";
+        String clanName = "ERROR";
+        if (sender instanceof Player player) {
+            playerName = player.getName();
+            Clan clan = clansHandler.getClans().getClanByOwner(player.getUniqueId());
+            if (clan != null)
+                clanName = clan.getName();
+        }
+
+        replacements.put("{clan-name}", clanName);
+        replacements.put("{player-name}", playerName);
     }
 
     @Override

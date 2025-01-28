@@ -17,6 +17,7 @@ public class ConfirmationHandler {
     }
 
     public void addConfirmationEntry(Player player, long duration, CommandAction commandAction) {
+        VClans.getInstance().getLogger().info("Adding confirmation entry for " + player.getName() + " with duration " + duration);
         player.sendMessage(VClans.getInstance().getDefaultMessage("confirmation").replace("{time}", String.valueOf(duration)));
         confirmationEntries.put(player.getUniqueId(), new ConfirmationEntry(commandAction, duration));
     }
@@ -25,8 +26,16 @@ public class ConfirmationHandler {
         ConfirmationEntry entry = confirmationEntries.get(player.getUniqueId());
         if (entry == null){
             player.sendMessage(VClans.getInstance().getDefaultMessage("nothing-to-confirm"));
+            VClans.getInstance().getLogger().info("Player " + player.getName() + " has no confirmation entry.");
             return;
         }
+        if (entry.isExpired()){
+            player.sendMessage(VClans.getInstance().getDefaultMessage("confirmation-expired"));
+            VClans.getInstance().getLogger().info("Player " + player.getName() + " has an expired confirmation entry.");
+            confirmationEntries.remove(player.getUniqueId());
+            return;
+        }
+        VClans.getInstance().getLogger().info("Executing confirmation entry for " + player.getName());
         entry.execute();
         confirmationEntries.remove(player.getUniqueId());
     }

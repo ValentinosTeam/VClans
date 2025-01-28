@@ -3,6 +3,7 @@ package gg.valentinos.alexjoo.Commands.Clan;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -14,12 +15,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClanPromoteSubcommand extends SubCommand {
-
-
     public ClanPromoteSubcommand() {
         super("clan", "promote", List.of("success", "promoted", "cant-promote-yourself", "target-not-in-clan", "already-owner", "promoted-notification"));
         hasToBePlayer = true;
-        requiredArgs = 1;
+        requiredArgs = 2;
     }
 
     @Override
@@ -30,15 +29,19 @@ public class ClanPromoteSubcommand extends SubCommand {
 
         return () -> {
             clansHandler.promotePlayer(player.getUniqueId(), targetName);
-            player.sendMessage(messages.get("success").replace("{name}", targetName));
+            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
             if (target.getPlayer() != null && target.isOnline())
-                target.getPlayer().sendMessage(messages.get("promoted").replace("{name}", player.getName()));
+                sendFormattedMessage(target.getPlayer(), messages.get("promoted"), LogType.NULL);
             List<UUID> members = clansHandler.getClanMembersUUIDs(player.getUniqueId());
             for (UUID member : members) {
                 Player p = Bukkit.getPlayer(member);
-                if (p != null && p.isOnline())
-                    p.sendMessage(messages.get("promoted-notification").replace("{name}", targetName));
+                if (p != null && p.isOnline()){
+                    if (p.equals(player))
+                        continue;
+                    sendFormattedMessage(p, messages.get("promoted-notification"), LogType.NULL);
+                }
             }
+            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
         };
     }
 
@@ -72,6 +75,27 @@ public class ClanPromoteSubcommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+        String playerName = "ERROR";
+        String targetName = "ERROR";
+        String clanName = "ERROR";
+
+        if (sender instanceof Player player){
+            playerName = player.getName();
+            Clan clan = clansHandler.getClans().getClanByOwner(player.getUniqueId());
+            if (clan != null)
+                clanName = clan.getName();
+        }
+        if (args.length > 1) {
+            targetName = args[1];
+        }
+
+        replacements.put("{target-name}", targetName);
+        replacements.put("{player-name}", playerName);
+        replacements.put("{clan-name}", clanName);
     }
 
     @Override

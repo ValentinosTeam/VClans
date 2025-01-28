@@ -3,6 +3,7 @@ package gg.valentinos.alexjoo.Commands.Clan;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,9 +23,16 @@ public class ClanDisbandSubcommand extends SubCommand {
     public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         return () -> {
-            String clanName = clansHandler.getClans().getClanByOwner(player.getUniqueId()).getName();
+            List<UUID> members = clansHandler.getClans().getClanByOwner(player.getUniqueId()).getMembers();
             clansHandler.disbandClan(player.getUniqueId());
-            sender.sendMessage(messages.get("success").replace("{clan}", clanName));
+            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
+            for (UUID member : members) {
+                Player memberPlayer = VClans.getInstance().getServer().getPlayer(member);
+                if (memberPlayer != null) {
+                    sendFormattedMessage(memberPlayer, messages.get("disband-notification"), LogType.NULL);
+                }
+            }
+            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
         };
     }
 
@@ -35,14 +43,29 @@ public class ClanDisbandSubcommand extends SubCommand {
         Clan clan = clansHandler.getClans().getClanByMember(playerUUID);
         String error = clansHandler.getPlayerIsOwnerErrorKey(playerUUID, clan);
         if (error != null) {
-            player.sendMessage(VClans.getInstance().getDefaultMessage(error));
+            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage(error), LogType.WARNING);
             return true;
         }
         if (clan.getOwners().size() > 1){
-            player.sendMessage(messages.get("not-only-owner"));
+            sendFormattedMessage(sender, messages.get("not-only-owner"), LogType.WARNING);
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+        String playerName = "ERROR";
+        String clanName = "ERROR";
+        if (sender instanceof Player player) {
+            playerName = player.getName();
+            Clan clan = clansHandler.getClans().getClanByOwner(player.getUniqueId());
+            if (clan != null)
+                clanName = clan.getName();
+        }
+
+        replacements.put("{clan-name}", clanName);
+        replacements.put("{player-name}", playerName);
     }
 
     @Override

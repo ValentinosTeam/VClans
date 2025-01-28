@@ -1,27 +1,25 @@
 package gg.valentinos.alexjoo.Data;
 
 import gg.valentinos.alexjoo.Commands.CommandAction;
-import gg.valentinos.alexjoo.VClans;
 
 public class ConfirmationEntry {
 
-    private CommandAction commandAction;
-    private long timestamp;
-    private long duration;
+    private final CommandAction commandAction;
+    private final long timestamp;
+    private final long duration;
 
     public ConfirmationEntry(CommandAction commandAction, long duration){
         this.commandAction = commandAction;
-        this.duration = duration;
+        this.duration = duration * 1000;
         this.timestamp = System.currentTimeMillis();
     }
 
     public void execute(){
-        if (!isExpired())
-            commandAction.execute();
+        commandAction.execute();
     }
 
-    private boolean isExpired(){
-        return System.currentTimeMillis() - timestamp < duration;
+    public boolean isExpired(){
+        return System.currentTimeMillis() - timestamp > duration;
     }
 
 

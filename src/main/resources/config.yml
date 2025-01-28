@@ -45,12 +45,14 @@ commands:
       description: "Creates a new clan."
       usage: "/clan create <name>"
       messages:
-        success: "You have successfully created the clan - {name}." # {name} will be replaced with the name of the clan. Works on most messages.
-        already-exists: "Clan with name {name} already exists."
+        # {clan-name} - the clan name used in the command
+        # {player-name} - the player name that sent the command
+        success: "You have successfully created the clan - {clan-name}." # {name} will be replaced with the name of the clan. Works on most messages.
+        already-exists: "Clan with name {clan-name} already exists."
         too-long: "The clan name is too long. Maximum length is 16 characters."
         too-short: "The clan name is too short. Minimum length is 3 characters."
         invalid-characters: "The clan name contains invalid characters. Only letters, numbers, and underscores are allowed."
-        already-in-clan: "You are already in a clan. Leave your current clan to create a new one."
+        already-in-clan: "You, {player-name}, are already in a clan. Leave your current clan to create a new one."
     disband:
       enabled: true
       target-cooldown: "clan-create"
@@ -59,63 +61,82 @@ commands:
       description: "Disbands your clan."
       usage: "/clan disband"
       messages:
-        success: "You have disbanded the clan {clan}."
+        # {clan-name} - The name of the clan that is going to be disbanded
+        # {player-name} - The name of the player that disbanded the clan
+        success: "You have disbanded the clan {clan-name}."
+        disband-notification: "The clan you are in, {clan-name}, has been disbanded by {player-name}."
         not-in-clan: "You are not in a clan."
         not-leader: "You are not the leader of your clan."
         not-only-owner: "You are not the only owner of the clan."
     invite:
+      # {clan-name} - the clan name the player is inviting the target to
+      # {player-name} - the name of the player inviting the target
+      # {target-name} - the name of the player the command sender is inviting
       enabled: true
       description: "Invites a player to your clan."
       usage: "/clan invite <player>"
       messages:
-        success: "You have invited {name} to your clan."
-        invitation: "You have been invited to join the clan {clan} by {name}. Use '/clan join {clan}' to accept the invitation."
+        success: "You have invited {target-name} to your clan."
+        invitation: "You have been invited to join the clan {clan-name} by {player-name}. Use '/clan join {clan-name}' to accept the invitation."
         invite-self: "You can't invite yourself to your clan."
         not-owner: "You can't invite players to your clan. You are not the owner."
-        already-in-a-clan: "That player is already in a clan."
+        already-in-a-clan: "The player {target-name} is already in a clan."
         already-in-the-clan: "That player is already in the clan."
         already-invited: "That player has already been invited to your clan."
     kick:
+      # {clan-name} - the name of the clan the player is getting kicked from
+      # {player-name} - the name of the player that is kicking the target
+      # {target-name} - the name of the player that is being kicked
       enabled: true
       description: "Kicks a player from your clan."
       usage: "/clan kick <player>"
       messages:
-        success: "You have kicked {name} from your clan."
-        player-kicked: "You have been kicked from the clan by {name}."
-        player-kicked-notification: "Player {target} has been kicked from the clan by {name}." # This is sent to all clan members online
+        success: "You have kicked {target-name} from your clan."
+        kicked: "You have been kicked from the clan {clan-name} by {player-name}."
+        kicked-notification: "Player {target-name} has been kicked from the clan by {player-name}." # This is sent to all clan members online
         cant-kick-yourself: "You can't kick yourself from your clan."
         target-not-in-clan: "That player is not in your clan."
         cant-kick-owner: "You can't kick the owner of the clan."
     join:
+      # {clan-name} - The clan name the player joins
+      # {player-name} - The name of the player who is joining the clan
       enabled: true
       description: "Joins a clan if you have been invited."
       usage: "/clan join <clan>"
       messages:
-        success: "You have joined the clan {clan} successfully!"
-        member-joined: "{player} has joined the clan!" # This will be sent to all online clan members when a player joins.
-        clan-not-exist: "The clan {clan} does not exist."
-        not-invited: "You have not been invited to join the clan {clan}."
+        success: "You have joined the clan {clan-name} successfully!"
+        joined-notification: "{player-name} has joined the clan!" # This will be sent to all online clan members when a player joins.
+        clan-not-exist: "The clan {clan-name} does not exist."
+        not-invited: "You have not been invited to join the clan {clan-name}."
         already-in-a-clan: "You are already in a clan."
         already-in-the-clan: "You are already in the clan."
     leave:
+      # {clan-name} - the name of the clan the player is leaving
+      # {player-name} - the name of the player leaving the clan
       enabled: true
       description: "Leaves your current clan."
       usage: "/clan leave"
       messages:
-        success: "You have left the clan {clan} successfully."
+        success: "You have left the clan {clan-name} successfully."
+        leave-notification: "Your fellow clan member {player-name} has left the clan."
         owner-cant-leave: "You can't leave your clan. Disband it instead."
     promote:
+      # {clan-name} - the clan name where the player is getting promoted
+      # {player-name} - the player who is promiting another player
+      # {target-name} - the player who is being promoted to rank owner
       enabled: true
       description: "Promotes a player to be the one of the owners of your clan."
       usage: "/clan promote <player>"
       messages:
-        success: "You have promoted {name} to be one of the owners of your clan!"
-        promoted: "You have been promoted to be one of the owners of the clan by {name}."
-        promoted-notification: "Player {target} has been promoted to be one of the owners of the clan!" # This is sent to all clan members online
+        success: "You have promoted {target-name} to be one of the owners of {clan-name}"
+        promoted: "You have been promoted to be one of the owners of the clan by {player-name}."
+        promoted-notification: "Player {target-name} has been promoted to be one of the owners of the clan!" # This is sent to all clan members online
         cant-promote-yourself: "You can't promote yourself to be the leader of the clan."
-        target-not-in-clan: "That {name} is not in your clan."
+        target-not-in-clan: "{target-name} is not in your clan."
         already-owner: "That player is already an owner of the clan."
     stepdown:
+      # {clan-name} - the clan name you are stepping down of
+      # {player-name} - the name of the player stepping down
       enabled: true
       description: "Steps down as the leader of your clan."
       usage: "/clan stepdown"

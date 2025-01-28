@@ -2,6 +2,7 @@ package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
+import gg.valentinos.alexjoo.Data.LogType;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -31,7 +32,8 @@ public class ClanHelpSubcommand extends SubCommand {
                 }
             }
             helpMessage.append(messages.get("footer"));
-            sender.sendMessage(helpMessage.toString());
+            sendFormattedMessage(sender, helpMessage.toString(), LogType.NULL);
+//            cooldownHandler.createCooldown(sender, selfCooldownQuery, cooldownDuration);
         };
     }
 
@@ -39,6 +41,12 @@ public class ClanHelpSubcommand extends SubCommand {
     protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
         return false;
     }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         return List.of();

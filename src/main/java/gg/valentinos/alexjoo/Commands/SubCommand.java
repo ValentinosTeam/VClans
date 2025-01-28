@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Commands;
 
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClansHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
@@ -28,6 +29,7 @@ public abstract class SubCommand {
     protected long confirmationDuration;
     protected boolean enabled = false;
     protected HashMap<String, String> messages;
+    protected HashMap<String, String> replacements;
 
     protected boolean hasToBePlayer = false;
     protected int minArgs = -1;
@@ -55,6 +57,7 @@ public abstract class SubCommand {
     }
 
     public final void execute(CommandSender sender, String[] args){
+        loadReplacementValues(sender, args);
         if (hasCommonIssues(sender, args)) return;
         if (hasSpecificErrors(sender, args)) return;
         if (isOnCooldown(sender, selfCooldownQuery)) return;
@@ -69,34 +72,38 @@ public abstract class SubCommand {
 
     protected abstract boolean hasSpecificErrors(CommandSender sender, String[] args);
 
+    protected abstract void loadReplacementValues(CommandSender sender, String[] args);
+
+    protected void sendFormattedMessage(CommandSender sender, String message, LogType type){
+        if (message == null || message.isEmpty()) {
+            logger.severe("Message is null or empty. Not sending message.");
+            return;
+        }
+        for (String key : replacements.keySet()) {
+            message = message.replace(key, replacements.get(key));
+        }
+        logger.info("Sending message: " + message);
+        logger.info("replacements: " + replacements);
+        sender.sendMessage(message);
+        if (type != LogType.NULL){
+            switch (type){
+                case FINE -> logger.fine(message);
+                case INFO -> logger.info(message);
+                case WARNING -> logger.warning(message);
+                case SEVERE -> logger.severe(message);
+            }
+        }
+    }
+
     protected void loadMessages(List<String> configKeys){
+        messages = new HashMap<>();
+        replacements = new HashMap<>();
         for (String key : configKeys) {
             String message = config.getString(configPath + "messages." + key);
             if (message == null){
                 logger.warning("Missing message in config.yml for " + configPath + "messages." + key);
             }
             messages.put(key, message);
-        }
-    }
-
-    protected void handleCommandResult(CommandSender sender, String errorMessage, String successMessage){
-        if (errorMessage == null) {
-            if (cooldownDuration != 0) {
-                cooldownHandler.createCooldown(((Player) sender).getUniqueId(), targetCooldownQuery, cooldownDuration);
-            }
-            sender.sendMessage(successMessage);
-        } else {
-            sender.sendMessage(errorMessage);
-        }
-    }
-    protected void handleCommandResult(CommandSender sender, String errorMessage, CommandAction successAction){
-        if (errorMessage == null) {
-            if (cooldownDuration != 0) {
-                cooldownHandler.createCooldown(((Player) sender).getUniqueId(), targetCooldownQuery, cooldownDuration);
-            }
-            successAction.execute();
-        } else {
-            sender.sendMessage(errorMessage);
         }
     }
 
@@ -166,7 +173,8 @@ public abstract class SubCommand {
     private void executeWithConfirmation(CommandSender sender, CommandAction action){
         if (sender instanceof Player player && confirmationDuration > 0)
             confirmationHandler.addConfirmationEntry(player, confirmationDuration, action);
-        else
+        else{
             action.execute();
+        }
     }
 }
