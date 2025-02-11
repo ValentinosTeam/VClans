@@ -82,15 +82,13 @@ public abstract class SubCommand {
         for (String key : replacements.keySet()) {
             message = message.replace(key, replacements.get(key));
         }
-        logger.info("Sending message: " + message);
-        logger.info("replacements: " + replacements);
         sender.sendMessage(message);
         if (type != LogType.NULL){
             switch (type){
-                case FINE -> logger.fine(message);
-                case INFO -> logger.info(message);
-                case WARNING -> logger.warning(message);
-                case SEVERE -> logger.severe(message);
+                case FINE -> logger.fine("Sending message: " + message);
+                case INFO -> logger.info("Sending message: " + message);
+                case WARNING -> logger.warning("Sending message: " + message);
+                case SEVERE -> logger.severe("Sending message: " + message);
             }
         }
     }

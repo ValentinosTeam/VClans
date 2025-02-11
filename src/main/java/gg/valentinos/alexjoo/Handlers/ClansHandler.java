@@ -18,7 +18,6 @@ public class ClansHandler {
 
     private Clans clans;
     private static final Logger logger = VClans.getInstance().getLogger();
-    private static final FileConfiguration config = VClans.getInstance().getConfig();
 
     public ClansHandler() {
         loadClans();
@@ -66,11 +65,15 @@ public class ClansHandler {
     public void leaveClan(UUID player) {
         Clan clan = clans.getClanByMember(player);
         clan.removeMember(player);
+        saveClans();
+        logger.fine("Player " + Bukkit.getPlayer(player).getName() + " has successfully left the clan " + clan.getName());
     }
 
     public void stepDownPlayer(UUID player) {
         Clan clan = clans.getClanByMember(player);
         clan.stepDownOwner(player);
+        saveClans();
+        logger.fine("Player " + Bukkit.getPlayer(player).getName() + " has successfully stepped down from the owner position in the clan " + clan.getName());
     }
 
     public void promotePlayer(UUID playerUUID, String targetName){
@@ -78,6 +81,8 @@ public class ClansHandler {
         OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
         Clan clan = clans.getClanByOwner(playerUUID);
         clan.addOwner(target.getUniqueId());
+        saveClans();
+        logger.fine("Player " + player.getName() + " has promoted player " + targetName + " to owner in the clan.");
     }
 
     public void kickPlayer(UUID playerUUID, String targetName) {
@@ -86,6 +91,8 @@ public class ClansHandler {
         OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
         Clan clan = clans.getClanByMember(playerUUID);
         clan.removeMember(target.getUniqueId());
+        saveClans();
+        logger.fine("Player " + player.getName() + " has kicked player " + targetName + " from the clan.");
     }
 
     public void loadClans() {
@@ -150,6 +157,16 @@ public class ClansHandler {
             return "not-owner";
         }
         return null;
+    }
+    public String getPlayerRank(UUID playerUUID) {
+        Clan clan = clans.getClanByMember(playerUUID);
+        if (clan == null)
+            return "";
+        if (clan.isOwner(playerUUID))
+            return "OWNER";
+        if (clan.isMember(playerUUID))
+            return "MEMBER";
+        return "";
     }
 
 }

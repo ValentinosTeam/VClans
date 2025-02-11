@@ -32,7 +32,7 @@ public class ClanLeaveSubcommand extends SubCommand {
                 if (p != null && p.isOnline()){
                     if (p.equals(player))
                         continue;
-                    sendFormattedMessage(p, messages.get("leave-notification"), LogType.NULL);
+                    sendFormattedMessage(p, messages.get("leave-notification"), LogType.INFO);
                 }
             }
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);

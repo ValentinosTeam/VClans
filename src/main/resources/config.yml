@@ -19,6 +19,7 @@ commands:
       not-owner: "You are not the owner of your clan."
       never-joined: "That player has never played on this server."
       confirmation: "'/confirm' in the next {time} seconds to confirm the action."
+      confirmation-expired: "The confirmation has expired."
       nothing-to-confirm: "There is nothing to confirm."
   clan:
     help:
@@ -41,7 +42,7 @@ commands:
       messages:
         clan-list-header: "=============Clans============="
         clan-list-footer: "==============================="
-        list-item: " - {item}"
+        list-item: " - {rank} {item}"
         member-list-header: "============Members of {clan}============"
         member-list-footer: "========================================="
     create:

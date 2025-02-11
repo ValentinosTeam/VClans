@@ -23,7 +23,9 @@ public class ClanListSubcommand extends SubCommand {
         if (args.length == 1) {
             sb.append(messages.get("clan-list-header")).append("\n");
             for (String clanName : clansHandler.getClanNames()) {
-                sb.append(messages.get("list-item").replace("{item}", clanName)).append("\n");
+                sb.append(messages.get("list-item")
+                                .replace("{item}", clanName).replace("{rank}", ""))
+                        .append("\n");
             }
             sb.append(messages.get("clan-list-footer"));
         } else {
@@ -32,8 +34,11 @@ public class ClanListSubcommand extends SubCommand {
             List<UUID> members = clansHandler.getClanMemberUUIDs(clanName);
             for (UUID member : members) {
                 OfflinePlayer player = sender.getServer().getOfflinePlayer(member);
-                if (player.getPlayer() != null)
-                    sb.append(messages.get("list-item").replace("{item}", player.getPlayer().getName())).append("\n");
+                if (player.getName() != null)
+                    sb.append(messages.get("list-item")
+                            .replace("{item}", player.getName())
+                            .replace("{rank}", clansHandler.getPlayerRank(player.getUniqueId())))
+                            .append("\n");
             }
             sb.append(messages.get("member-list-footer"));
         }
