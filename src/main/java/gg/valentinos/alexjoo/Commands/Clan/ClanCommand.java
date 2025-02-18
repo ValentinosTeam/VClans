@@ -27,9 +27,10 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ClanInviteSubcommand());
         registerSubCommand(new ClanJoinSubcommand());
         registerSubCommand(new ClanLeaveSubcommand());
-        registerSubCommand(new ClanStepdownSubcommand());
         registerSubCommand(new ClanKickSubcommand());
-        registerSubCommand(new ClanPromoteSubcommand());
+        //TODO: rank create, rank delete, rank setperm, rank setname, rank settitle, rank setPriority
+        //TODO: clan setname
+
 
         clanHelpSubcommand.setSubCommands(subCommands);
     }
@@ -40,10 +41,11 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        //TODO: make all messages configurable
         if (args.length == 0) {
             if (sender instanceof Player player){
-                String clanName = VClans.getInstance().getClansHandler().getClans().getClanNameOfMember(player.getUniqueId());
-                sender.sendMessage("You are in " + (clanName == null ? "no clan" : "clan " + clanName));
+                String clanName = VClans.getInstance().getClansHandler().getClanNameOfMember(player.getUniqueId());
+                sender.sendMessage(clanName == null ? "Clanless..." : "Your clan: " + clanName);
             }
             sender.sendMessage("Use '/clan help' for help.");
             return true;

@@ -20,7 +20,7 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (showCurrentClanOnJoin){
-            String clanName = VClans.getInstance().getClansHandler().getClans().getClanNameOfMember(player.getUniqueId());
+            String clanName = VClans.getInstance().getClansHandler().getClanNameOfMember(player.getUniqueId());
             player.sendMessage("Current clan: " + (clanName == null ? "None" : clanName));
         }
         List<String> invitedClanNames = VClans.getInstance().getClansHandler().getInvitingClanNames(player.getUniqueId());

@@ -10,11 +10,15 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClanCreateSubcommand extends SubCommand {
+    private int clanNameMaxLength;
+    private int clanNameMinLength;
 
     public ClanCreateSubcommand() {
         super("clan", "create", List.of("success", "already-exists", "too-long", "too-short", "invalid-characters", "already-in-clan"));
         hasToBePlayer = true;
         requiredArgs = 2;
+        clanNameMaxLength = config.getInt("settings.max-clan-name-length");
+        clanNameMinLength = config.getInt("settings.min-clan-name-length");
     }
 
     @Override
@@ -24,7 +28,7 @@ public class ClanCreateSubcommand extends SubCommand {
         UUID playerUUID = player.getUniqueId();
 
         return () -> {
-            clansHandler.createClan(playerUUID, clanName);
+            clanHandler.createClan(playerUUID, clanName);
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
             cooldownHandler.createCooldown(playerUUID, selfCooldownQuery, cooldownDuration);
         };
@@ -35,23 +39,23 @@ public class ClanCreateSubcommand extends SubCommand {
         Player player = (Player) sender;
         String clanName = args[1];
         UUID playerUUID = player.getUniqueId();
-        if (clansHandler.getClans().clanExists(clanName)) {
+        if (clanHandler.clanExists(clanName)) {
             sendFormattedMessage(sender, messages.get("already-exists"), LogType.WARNING);
             return true;
         }
-        if (clanName.length() > 16) {
+        if (clanName.length() > clanNameMaxLength) {
             sendFormattedMessage(sender, messages.get("too-long"), LogType.WARNING);
             return true;
         }
-        if (clanName.length() < 3) {
+        if (clanName.length() < clanNameMinLength) {
             sendFormattedMessage(sender, messages.get("too-short"), LogType.WARNING);
             return true;
         }
-        if (clansHandler.getClans().isPlayerInClan(playerUUID)) {
+        if (clanHandler.isPlayerInAClan(playerUUID)) {
             sendFormattedMessage(sender, messages.get("already-in-clan"), LogType.WARNING);
             return true;
         }
-        if (!clanName.matches("[a-zA-Z0-9]+")) {
+        if (!clanName.matches("[a-zA-Z0-9_-]+")) {
             sendFormattedMessage(sender, messages.get("invalid-characters"), LogType.WARNING);
             return true;
         }

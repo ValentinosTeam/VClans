@@ -1,7 +1,7 @@
 package gg.valentinos.alexjoo.Commands;
 
 import gg.valentinos.alexjoo.Data.LogType;
-import gg.valentinos.alexjoo.Handlers.ClansHandler;
+import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.VClans;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class SubCommand {
-    protected final static ClansHandler clansHandler = VClans.getInstance().getClansHandler();
+    protected final static ClanHandler clanHandler = VClans.getInstance().getClansHandler();
     protected final static CooldownHandler cooldownHandler = VClans.getInstance().getCooldownHandler();
     protected final static ConfirmationHandler confirmationHandler = VClans.getInstance().getConfirmationHandler();
     protected final static FileConfiguration config = VClans.getInstance().getConfig();

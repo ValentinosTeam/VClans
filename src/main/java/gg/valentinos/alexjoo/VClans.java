@@ -2,7 +2,7 @@ package gg.valentinos.alexjoo;
 
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
-import gg.valentinos.alexjoo.Handlers.ClansHandler;
+import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
@@ -15,7 +15,7 @@ import java.util.Objects;
 public final class VClans extends JavaPlugin {
 
     private static VClans instance;
-    private ClansHandler clansHandler;
+    private ClanHandler clanHandler;
     private CooldownHandler cooldownHandler;
     private ConfirmationHandler confirmationHandler;
     private HashMap<String, String> defaultMessages;
@@ -26,7 +26,7 @@ public final class VClans extends JavaPlugin {
 
         loadDefaultMessages();
 
-        clansHandler = new ClansHandler();
+        clanHandler = new ClanHandler();
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
 
@@ -45,9 +45,9 @@ public final class VClans extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (clansHandler != null)
-            clansHandler.saveClans();
-        clansHandler = null;
+        if (clanHandler != null)
+            clanHandler.saveClans();
+        clanHandler = null;
 
         if (cooldownHandler != null)
             cooldownHandler.saveCooldowns();
@@ -65,8 +65,8 @@ public final class VClans extends JavaPlugin {
         return instance;
     }
 
-    public ClansHandler getClansHandler() {
-        return clansHandler;
+    public ClanHandler getClansHandler() {
+        return clanHandler;
     }
 
     public CooldownHandler getCooldownHandler() {

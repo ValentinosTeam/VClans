@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class ClanKickSubcommand extends SubCommand {
 
     public ClanKickSubcommand() {
-        super("clan", "kick", List.of("success", "cant-kick-yourself", "target-not-in-clan", "cant-kick-owner", "kicked-notification", "kicked"));
+        super("clan", "kick", List.of("success", "cant-kick-yourself", "target-not-in-clan", "insufficient-rank", "kicked-notification", "kicked", "no-permission"));
         hasToBePlayer = true;
         requiredArgs = 2;
     }
@@ -27,12 +27,12 @@ public class ClanKickSubcommand extends SubCommand {
     public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         String targetName = args[1];
-        OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
+        Player target = player.getServer().getPlayer(targetName);
 
         return () -> {
-            clansHandler.kickPlayer(player.getUniqueId(), targetName);
+            clanHandler.kickPlayer(player.getUniqueId(), targetName);
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
-            List<UUID> members = clansHandler.getClanMembersUUIDs(player.getUniqueId());
+            List<UUID> members = clanHandler.getClanMembersUUIDs(player.getUniqueId());
             for (UUID member : members) {
                 Player p = Bukkit.getPlayer(member);
                 if (p != null && p.isOnline()){
@@ -41,7 +41,7 @@ public class ClanKickSubcommand extends SubCommand {
                     sendFormattedMessage(p, messages.get("kicked-notification"), LogType.NULL);
                 }
             }
-            if (target.getPlayer() != null && target.isOnline())
+            if (target != null && target.isOnline())
                 sendFormattedMessage(target.getPlayer(), messages.get("kicked"), LogType.NULL);
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
         };
@@ -53,10 +53,13 @@ public class ClanKickSubcommand extends SubCommand {
         UUID playerUUID = player.getUniqueId();
         String targetName = args[1];
         OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
-        Clan clan = clansHandler.getClans().getClanByMember(playerUUID);
-        String error = clansHandler.getPlayerIsOwnerErrorKey(playerUUID, clan);
-        if (error != null) {
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage(error), LogType.WARNING);
+        Clan clan = clanHandler.getClanByMember(playerUUID);
+        if (clan == null) {
+            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("not-in-clan"), LogType.WARNING);
+            return true;
+        }
+        if (!clan.getRank(playerUUID).canKick()){
+            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("no-permission"), LogType.WARNING);
             return true;
         }
         if (!target.hasPlayedBefore()) {
@@ -67,11 +70,11 @@ public class ClanKickSubcommand extends SubCommand {
             sendFormattedMessage(sender, messages.get("cant-kick-yourself"), LogType.WARNING);
             return true;
         }
-        if (!clan.getMembers().contains(target.getUniqueId())) {
+        if (!clan.isPlayerMember(target.getUniqueId())) {
             sendFormattedMessage(sender, messages.get("target-not-in-clan"), LogType.WARNING);
             return true;
         }
-        if (clan.isOwner(target.getUniqueId())) {
+        if (clan.getRank(playerUUID).getPriority() <= clan.getRank(target.getUniqueId()).getPriority()) {
             sendFormattedMessage(sender, messages.get("cant-kick-owner"), LogType.WARNING);
             return true;
         }
@@ -85,7 +88,7 @@ public class ClanKickSubcommand extends SubCommand {
         String clanName = "ERROR";
         if (sender instanceof Player player) {
             playerName = player.getName();
-            Clan clan = clansHandler.getClans().getClanByOwner(player.getUniqueId());
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             if (clan != null)
                 clanName = clan.getName();
         }
@@ -102,7 +105,7 @@ public class ClanKickSubcommand extends SubCommand {
         if (args.length == 1) {
             return List.of("kick");
         } else if (args.length == 2) {
-            return clansHandler.getClanMembersUUIDs(((Player) sender).getUniqueId())
+            return clanHandler.getClanMembersUUIDs(((Player) sender).getUniqueId())
                     .stream()
                     .map(Bukkit::getOfflinePlayer)
                     .map(OfflinePlayer::getName)

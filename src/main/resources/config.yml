@@ -1,4 +1,11 @@
 show-current-clan-on-join: true
+settings:
+  max-clan-name-length: 16
+  min-clan-name-length: 3
+  max-clan-size: 30
+  invite-expiration: 60*60*24*7 # 7 days
+  default-clan-owner-title: "Leader"
+  default-clan-member-title:  "Member"
 commands:
   # {commandname}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
@@ -36,15 +43,21 @@ commands:
         list-item: " - {item}: {desc}" # example: " - create: Creates a new clan."
         footer: "======================================="
     list:
+      # {clan-name} - the name of the clan
+      # {rank} - the rank title of the player
+      # {priority} - the rank priority of the player
+      # {player-name} - the name of the player
       enabled: true
       description: "Lists all clans."
       usage: "/clan list"
       messages:
         clan-list-header: "=============Clans============="
+        clan-list-item: " - {clan-name}"
         clan-list-footer: "==============================="
-        list-item: " - {rank} {item}"
-        member-list-header: "============Members of {clan}============"
+        member-list-header: "============Members of {clan-name}============"
+        member-list-item: " - {rank} {priority} {player-name}"
         member-list-footer: "========================================="
+        clan-not-found: "The clan {clan-name} does not exist."
     create:
       enabled: true
       target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
@@ -71,10 +84,8 @@ commands:
         # {clan-name} - The name of the clan that is going to be disbanded
         # {player-name} - The name of the player that disbanded the clan
         success: "You have disbanded the clan {clan-name}."
+        no-permission: "You don't have the permission to disband the clan."
         disband-notification: "The clan you are in, {clan-name}, has been disbanded by {player-name}."
-        not-in-clan: "You are not in a clan."
-        not-leader: "You are not the leader of your clan."
-        not-only-owner: "You are not the only owner of the clan."
         confirmation-message: "Are you sure you want to disband your clan? Type '/confirm' in the next {time} seconds to confirm the action."
     invite:
       # {clan-name} - the clan name the player is inviting the target to
@@ -85,12 +96,13 @@ commands:
       usage: "/clan invite <player>"
       messages:
         success: "You have invited {target-name} to your clan."
+        no-permission: "You don't have the permission to invite players to the clan."
         invitation: "You have been invited to join the clan {clan-name} by {player-name}. Use '/clan join {clan-name}' to accept the invitation."
         invite-self: "You can't invite yourself to your clan."
-        not-owner: "You can't invite players to your clan. You are not the owner."
         already-in-a-clan: "The player {target-name} is already in a clan."
         already-in-the-clan: "That player is already in the clan."
         already-invited: "That player has already been invited to your clan."
+        clan-full: "The clan {clan-name} is full."
     kick:
       # {clan-name} - the name of the clan the player is getting kicked from
       # {player-name} - the name of the player that is kicking the target
@@ -101,11 +113,12 @@ commands:
       confirmation: 30
       messages:
         success: "You have kicked {target-name} from your clan."
+        no-permission: "You don't have the permission to kick players from the clan."
         kicked: "You have been kicked from the clan {clan-name} by {player-name}."
         kicked-notification: "Player {target-name} has been kicked from the clan by {player-name}." # This is sent to all clan members online
         cant-kick-yourself: "You can't kick yourself from your clan."
         target-not-in-clan: "That player is not in your clan."
-        cant-kick-owner: "You can't kick the owner of the clan."
+        insufficient-rank: "Your rank priority is too low to kick {target-name} from the clan."
         confirmation-message: "Are you sure you want to kick {target-name} from your clan? Type '/confirm' to confirm the action."
     join:
       # {clan-name} - The clan name the player joins
@@ -120,6 +133,7 @@ commands:
         not-invited: "You have not been invited to join the clan {clan-name}."
         already-in-a-clan: "You are already in a clan."
         already-in-the-clan: "You are already in the clan."
+        clan-full: "The clan {clan-name} is full."
     leave:
       # {clan-name} - the name of the clan the player is leaving
       # {player-name} - the name of the player leaving the clan

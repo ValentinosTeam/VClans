@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ClanDisbandSubcommand extends SubCommand {
 
     public ClanDisbandSubcommand() {
-        super("clan", "disband", List.of("success", "not-in-clan", "not-leader", "not-only-owner"));
+        super("clan", "disband", List.of("success", "disband-notification", "no-permission"));
         hasToBePlayer = true;
         maxArgs = 1;
     }
@@ -23,15 +23,16 @@ public class ClanDisbandSubcommand extends SubCommand {
     public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         return () -> {
-            List<UUID> members = clansHandler.getClans().getClanByOwner(player.getUniqueId()).getMembers();
-            clansHandler.disbandClan(player.getUniqueId());
-            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
-            for (UUID member : members) {
-                Player memberPlayer = VClans.getInstance().getServer().getPlayer(member);
-                if (memberPlayer != null) {
-                    sendFormattedMessage(memberPlayer, messages.get("disband-notification"), LogType.NULL);
+            clanHandler.disbandClan(player.getUniqueId());
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+            List<UUID> memberUUIDs = clan.getMemberUUIDs();
+            for (UUID memberUUID : memberUUIDs) {
+                Player member = VClans.getInstance().getServer().getPlayer(memberUUID);
+                if (member != null && member.isOnline()) {
+                    sendFormattedMessage(member, messages.get("disband-notification"), LogType.FINE);
                 }
             }
+            sendFormattedMessage(player, messages.get("success"), LogType.FINE);
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
         };
     }
@@ -40,14 +41,13 @@ public class ClanDisbandSubcommand extends SubCommand {
     protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
-        Clan clan = clansHandler.getClans().getClanByMember(playerUUID);
-        String error = clansHandler.getPlayerIsOwnerErrorKey(playerUUID, clan);
-        if (error != null) {
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage(error), LogType.WARNING);
+        Clan clan = clanHandler.getClanByMember(playerUUID);
+        if (clan == null) {
+            sendFormattedMessage(sender, messages.get("not-in-clan"), LogType.WARNING);
             return true;
         }
-        if (clan.getOwners().size() > 1){
-            sendFormattedMessage(sender, messages.get("not-only-owner"), LogType.WARNING);
+        if (!clan.getRank(playerUUID).canDisband()) {
+            sendFormattedMessage(sender, messages.get("no-permission"), LogType.WARNING);
             return true;
         }
         return false;
@@ -59,11 +59,10 @@ public class ClanDisbandSubcommand extends SubCommand {
         String clanName = "ERROR";
         if (sender instanceof Player player) {
             playerName = player.getName();
-            Clan clan = clansHandler.getClans().getClanByOwner(player.getUniqueId());
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             if (clan != null)
                 clanName = clan.getName();
         }
-
         replacements.put("{clan-name}", clanName);
         replacements.put("{player-name}", playerName);
     }

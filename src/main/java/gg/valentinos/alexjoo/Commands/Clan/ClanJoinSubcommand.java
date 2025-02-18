@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ClanJoinSubcommand extends SubCommand {
 
     public ClanJoinSubcommand() {
-        super("clan", "join", List.of("success", "joined-notification", "clan-not-exist", "not-invited", "already-in-a-clan", "already-in-the-clan"));
+        super("clan", "join", List.of("success", "joined-notification", "clan-not-exist", "not-invited", "already-in-a-clan", "already-in-the-clan", "clan-full"));
         hasToBePlayer = true;
         requiredArgs = 2;
     }
@@ -25,15 +25,15 @@ public class ClanJoinSubcommand extends SubCommand {
         String clanName = args[1];
 
         return () -> {
-            clansHandler.joinClan(player.getUniqueId(), clanName);
+            clanHandler.joinClan(player.getUniqueId(), clanName);
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
-            List<UUID> clanMembers = clansHandler.getClanMemberUUIDs(clanName);
+            List<UUID> clanMembers = clanHandler.getClanMemberUUIDs(clanName);
             for (UUID uuid : clanMembers) {
                 Player memberPlayer = Bukkit.getPlayer(uuid);
                 if (memberPlayer != null && memberPlayer.isOnline()) {
                     if (memberPlayer.equals(player))
                         continue;
-                    sendFormattedMessage(memberPlayer.getPlayer(), messages.get("joined-notification"), LogType.NULL);
+                    sendFormattedMessage(memberPlayer.getPlayer(), messages.get("joined-notification"), LogType.FINE);
                 }
             }
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
@@ -45,21 +45,25 @@ public class ClanJoinSubcommand extends SubCommand {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         String clanName = args[1];
-        Clan clan = clansHandler.getClans().getClanByName(clanName);
+        Clan clan = clanHandler.getClanByName(clanName);
         if (clan == null) {
             sendFormattedMessage(sender, messages.get("clan-not-exist"), LogType.WARNING);
             return true;
         }
-        if (!clan.getInvites().contains(playerUUID)) {
+        if (!clan.isMemberInvited(playerUUID)) {
             sendFormattedMessage(sender, messages.get("not-invited"), LogType.WARNING);
             return true;
         }
-        if (clan.getMembers().contains(playerUUID)) {
+        if (clan.isPlayerMember(playerUUID)) {
             sendFormattedMessage(sender, messages.get("already-in-the-clan"), LogType.WARNING);
             return true;
         }
-        if (clansHandler.getClans().getClanByMember(playerUUID) != null) {
+        if (clanHandler.getClanByMember(playerUUID) != null) {
             sendFormattedMessage(sender, messages.get("already-in-a-clan"), LogType.WARNING);
+            return true;
+        }
+        if (clan.isFull()) {
+            sendFormattedMessage(sender, messages.get("clan-full"), LogType.WARNING);
             return true;
         }
         return false;
@@ -87,7 +91,7 @@ public class ClanJoinSubcommand extends SubCommand {
         if (args.length == 1) {
             return List.of("join");
         } else if (args.length == 2) {
-            return clansHandler.getInvitingClanNames(player.getUniqueId());
+            return clanHandler.getInvitingClanNames(player.getUniqueId());
         }
         else {
             return List.of();
