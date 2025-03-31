@@ -30,7 +30,8 @@ public class ClanListSubcommand extends SubCommand {
             String clanName = args[1];
             Clan clan = clanHandler.getClanByName(clanName);
             sb.append(messages.get("member-list-header").replace("{clan}", clanName)).append("\n");
-            List<UUID> members = clanHandler.getClanMemberUUIDs(clanName);
+            //List<UUID> members = clanHandler.getClanMemberUUIDs(clanName);
+            List<UUID> members = clan.getMembersSortedByPriority();
             for (UUID member : members) {
                 OfflinePlayer player = sender.getServer().getOfflinePlayer(member);
                 if (player.getName() != null)

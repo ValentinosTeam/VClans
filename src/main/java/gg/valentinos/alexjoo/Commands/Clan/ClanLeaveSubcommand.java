@@ -24,18 +24,18 @@ public class ClanLeaveSubcommand extends SubCommand {
         Player player = (Player) sender;
 
         return () -> {
-            clanHandler.leaveClan(player.getUniqueId());
-            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
+            sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
             List<UUID> members = clanHandler.getClanMembersUUIDs(player.getUniqueId());
             for (UUID member : members) {
                 Player p = VClans.getInstance().getServer().getPlayer(member);
                 if (p != null && p.isOnline()){
                     if (p.equals(player))
                         continue;
-                    sendFormattedMessage(p, messages.get("leave-notification"), LogType.INFO);
+                    sendFormattedPredefinedMessage(p, "leave-notification", LogType.INFO);
                 }
             }
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            clanHandler.leaveClan(player.getUniqueId());
         };
     }
 
@@ -45,11 +45,11 @@ public class ClanLeaveSubcommand extends SubCommand {
         UUID playerUUID = player.getUniqueId();
         Clan clan = clanHandler.getClanByMember(playerUUID);
         if (clan == null) {
-            sendFormattedMessage(sender, messages.get("not-in-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
         if (clan.isPlayerOwner(playerUUID)) {
-            sendFormattedMessage(sender, messages.get("owner-cant-leave"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "owner-cant-leave", LogType.WARNING);
             return true;
         }
         return false;

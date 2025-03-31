@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ClanInviteSubcommand extends SubCommand {
@@ -27,12 +28,12 @@ public class ClanInviteSubcommand extends SubCommand {
         String targetName = args[1];
 
         return () -> {
-            clanHandler.invitePlayer(player.getUniqueId(), targetName);
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
             OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
             if (target.getPlayer() != null && target.isOnline())
                 sendFormattedMessage(target.getPlayer(), messages.get("invitation"), LogType.INFO);
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            clanHandler.invitePlayer(player.getUniqueId(), targetName);
         };
     }
 
@@ -44,37 +45,37 @@ public class ClanInviteSubcommand extends SubCommand {
         OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
 
         if (!target.hasPlayedBefore()) {
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("never-joined"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "never-joined", LogType.WARNING);
             return true;
         }
         if (target.getUniqueId().equals(player.getUniqueId())) {
-            sendFormattedMessage(sender, messages.get("invite-self"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "invite-self", LogType.WARNING);
             return true;
         }
 
         Clan clan = clanHandler.getClanByMember(playerUUID);
         if (clan == null) {
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("not-in-a-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
         if (!clan.getRank(playerUUID).canInvite()) {
-            sendFormattedMessage(sender, messages.get("no-permission"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
         if (clan.isMemberInvited(target.getUniqueId())) {
-            sendFormattedMessage(sender, messages.get("already-invited"), LogType.WARNING);
-            return true;
-        }
-        if (clanHandler.isPlayerInAClan(target.getUniqueId())) {
-            sendFormattedMessage(sender, messages.get("already-in-a-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "already-invited", LogType.WARNING);
             return true;
         }
         if (clan.isPlayerMember(target.getUniqueId())) {
-            sendFormattedMessage(sender, messages.get("already-in-the-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "already-in-the-clan", LogType.WARNING);
+            return true;
+        }
+        if (clanHandler.isPlayerInAClan(target.getUniqueId())) {
+            sendFormattedPredefinedMessage(sender, "already-in-a-clan", LogType.WARNING);
             return true;
         }
         if (clan.isFull()) {
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("clan-full"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "clan-full", LogType.WARNING);
             return true;
         }
         return false;
@@ -109,10 +110,11 @@ public class ClanInviteSubcommand extends SubCommand {
             List<UUID> excludePlayers = new ArrayList<>();
             for (Clan clan : clanHandler.getClans())
                 excludePlayers.addAll(clan.getMemberUUIDs());
+            excludePlayers.add(((Player) sender).getUniqueId());
             return sender.getServer().getOnlinePlayers().stream()
                     .map(Player::getUniqueId)
                     .filter(uuid -> !excludePlayers.contains(uuid))
-                    .map(uuid -> VClans.getInstance().getServer().getPlayer(uuid).getName())
+                    .map(uuid -> Objects.requireNonNull(VClans.getInstance().getServer().getPlayer(uuid)).getName())
                     .toList();
         } else {
             return List.of();

@@ -7,14 +7,14 @@ settings:
   default-clan-owner-title: "Leader"
   default-clan-member-title:  "Member"
 commands:
-  # {commandname}-notification means that the message is going to be sent to multiple players which the command affects
+  # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
   # target-cooldown is the cooldown that is applied to the command that is specified in the target-cooldown field
   # confirmation is the time in seconds the player has to confirm the action
   # confirmation-message is an optional message that is sent to the player when the confirmation is required, if not set the default confirmation message is sent
-  #       {time} - the time left to confirm the action
+  #       {confirm-time} - the time left to confirm the action
   default:
-    messages:
+    messages: # general messages used by many commands
       no-permission: "You do not have permission to use this command."
       player-only: "This command can only be used by players."
       not-enough-arguments: "Not enough arguments."
@@ -25,7 +25,7 @@ commands:
       not-in-clan: "You are not in a clan."
       not-owner: "You are not the owner of your clan."
       never-joined: "That player has never played on this server."
-      confirmation: "'/confirm' in the next {time} seconds to confirm the action."
+      confirmation-message: "'/confirm' in the next {confirm-time} seconds to confirm the action."
       confirmation-expired: "The confirmation has expired."
       nothing-to-confirm: "There is nothing to confirm."
   clan:
@@ -40,7 +40,7 @@ commands:
         Thank you for using Valentinos Clans plugin made by Alex_Joo!
         To view the list of available commands, use /clan help.
         "
-        list-item: " - {item}: {desc}" # example: " - create: Creates a new clan."
+        list-item: " &7- {item}: &r&l{desc}" # example: " - create: Creates a new clan." with some extra formatting
         footer: "======================================="
     list:
       # {clan-name} - the name of the clan
@@ -55,18 +55,18 @@ commands:
         clan-list-item: " - {clan-name}"
         clan-list-footer: "==============================="
         member-list-header: "============Members of {clan-name}============"
-        member-list-item: " - {rank} {priority} {player-name}"
+        member-list-item: " - [{priority}] <{rank}> {player-name}"
         member-list-footer: "========================================="
         clan-not-found: "The clan {clan-name} does not exist."
     create:
+      # {clan-name} - the clan name used in the command
+      # {player-name} - the player name that sent the command
       enabled: true
       target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
-      cooldown: 5 # This cooldown is applied to the target-cooldown, which if unspecified will be applied to itself.
+      cooldown: 5 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
       description: "Creates a new clan."
       usage: "/clan create <name>"
       messages:
-        # {clan-name} - the clan name used in the command
-        # {player-name} - the player name that sent the command
         success: "You have successfully created the clan - {clan-name}." # {name} will be replaced with the name of the clan. Works on most messages.
         already-exists: "Clan with name {clan-name} already exists."
         too-long: "The clan name is too long. Maximum length is 16 characters."
@@ -74,6 +74,8 @@ commands:
         invalid-characters: "The clan name contains invalid characters. Only letters, numbers, and underscores are allowed."
         already-in-clan: "You, {player-name}, are already in a clan. Leave your current clan to create a new one."
     disband:
+      # {clan-name} - The name of the clan that is going to be disbanded
+      # {player-name} - The name of the player that disbanded the clan
       enabled: true
       target-cooldown: "clan-create"
       cooldown: 10
@@ -81,12 +83,10 @@ commands:
       description: "Disbands your clan."
       usage: "/clan disband"
       messages:
-        # {clan-name} - The name of the clan that is going to be disbanded
-        # {player-name} - The name of the player that disbanded the clan
         success: "You have disbanded the clan {clan-name}."
         no-permission: "You don't have the permission to disband the clan."
         disband-notification: "The clan you are in, {clan-name}, has been disbanded by {player-name}."
-        confirmation-message: "Are you sure you want to disband your clan? Type '/confirm' in the next {time} seconds to confirm the action."
+        confirmation-message: "Are you sure you want to disband your clan? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
     invite:
       # {clan-name} - the clan name the player is inviting the target to
       # {player-name} - the name of the player inviting the target
@@ -119,7 +119,7 @@ commands:
         cant-kick-yourself: "You can't kick yourself from your clan."
         target-not-in-clan: "That player is not in your clan."
         insufficient-rank: "Your rank priority is too low to kick {target-name} from the clan."
-        confirmation-message: "Are you sure you want to kick {target-name} from your clan? Type '/confirm' to confirm the action."
+        confirmation-message: "Are you sure you want to kick {target-name} from your clan? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
     join:
       # {clan-name} - The clan name the player joins
       # {player-name} - The name of the player who is joining the clan
@@ -131,6 +131,7 @@ commands:
         joined-notification: "{player-name} has joined the clan!" # This will be sent to all online clan members when a player joins.
         clan-not-exist: "The clan {clan-name} does not exist."
         not-invited: "You have not been invited to join the clan {clan-name}."
+        invite-expired: "The invitation to join the clan {clan-name} has expired."
         already-in-a-clan: "You are already in a clan."
         already-in-the-clan: "You are already in the clan."
         clan-full: "The clan {clan-name} is full."
@@ -171,3 +172,9 @@ commands:
         success: "You have stepped down as the leader of your clan."
         stepdown-notification: "Player {name} has stepped down as the leader of the clan." # This is sent to all clan members online
         only-owner: "You are the only owner of the clan, you can't step down."
+    rank:
+      enabled: true
+      description: "Changes the rank of a player in your clan."
+      usage: "/clan rank <player> <rank>"
+      messages:
+        success: "You have changed the rank of {player-name} to {rank}."

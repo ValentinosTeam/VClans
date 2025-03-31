@@ -23,7 +23,6 @@ public class ClanDisbandSubcommand extends SubCommand {
     public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         return () -> {
-            clanHandler.disbandClan(player.getUniqueId());
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             List<UUID> memberUUIDs = clan.getMemberUUIDs();
             for (UUID memberUUID : memberUUIDs) {
@@ -34,6 +33,7 @@ public class ClanDisbandSubcommand extends SubCommand {
             }
             sendFormattedMessage(player, messages.get("success"), LogType.FINE);
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            clanHandler.disbandClan(player.getUniqueId());
         };
     }
 
@@ -43,11 +43,11 @@ public class ClanDisbandSubcommand extends SubCommand {
         UUID playerUUID = player.getUniqueId();
         Clan clan = clanHandler.getClanByMember(playerUUID);
         if (clan == null) {
-            sendFormattedMessage(sender, messages.get("not-in-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
         if (!clan.getRank(playerUUID).canDisband()) {
-            sendFormattedMessage(sender, messages.get("no-permission"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
         return false;

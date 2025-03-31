@@ -5,12 +5,15 @@ import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public abstract class SubCommand {
@@ -74,6 +77,24 @@ public abstract class SubCommand {
 
     protected abstract void loadReplacementValues(CommandSender sender, String[] args);
 
+    protected void sendFormattedMessage(CommandSender sender, String message){
+        sendFormattedMessage(sender, message, LogType.NULL);
+    }
+    protected void sendFormattedPredefinedMessage(CommandSender sernder, String message){
+        sendFormattedPredefinedMessage(sernder, message, LogType.NULL);
+    }
+    protected void sendFormattedPredefinedMessage(CommandSender sender, String messageKey, LogType type){
+        String message = messages.get(messageKey);
+        if (message == null){
+            logger.info("message key " + messageKey + " not found in config.yml. Using default message.");
+            message = VClans.getInstance().getDefaultMessage(messageKey);
+            if (message == null){
+                logger.warning("message key " + messageKey + " not found in config.yml. Not sending message.");
+                return;
+            }
+        }
+        sendFormattedMessage(sender, message, type);
+    }
     protected void sendFormattedMessage(CommandSender sender, String message, LogType type){
         if (message == null || message.isEmpty()) {
             logger.severe("Message is null or empty. Not sending message.");
@@ -82,10 +103,11 @@ public abstract class SubCommand {
         for (String key : replacements.keySet()) {
             message = message.replace(key, replacements.get(key));
         }
-        sender.sendMessage(message);
+        Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+        sender.sendMessage(component);
         if (type != LogType.NULL){
             switch (type){
-                case FINE -> logger.fine("Sending message: " + message);
+                case FINE -> logger.fine("Sending message: " + component);
                 case INFO -> logger.info("Sending message: " + message);
                 case WARNING -> logger.warning("Sending message: " + message);
                 case SEVERE -> logger.severe("Sending message: " + message);
@@ -177,10 +199,15 @@ public abstract class SubCommand {
     }
 
     private void executeWithConfirmation(CommandSender sender, CommandAction action){
-        if (sender instanceof Player player && confirmationDuration > 0)
-            confirmationHandler.addConfirmationEntry(player, confirmationDuration, messages.get("confirmation-message"), action);
+        if (sender instanceof Player player && confirmationDuration > 0){
+            String confirmationTime = Objects.requireNonNullElse(String.valueOf(confirmationDuration), "ERROR");
+            replacements.put("{confirm-time}", confirmationTime);
+            sendFormattedMessage(player, messages.get("confirmation-message"), LogType.INFO);
+            confirmationHandler.addConfirmationEntry(player, confirmationDuration, action);
+        }
         else{
             action.execute();
         }
     }
+
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ClanJoinSubcommand extends SubCommand {
 
     public ClanJoinSubcommand() {
-        super("clan", "join", List.of("success", "joined-notification", "clan-not-exist", "not-invited", "already-in-a-clan", "already-in-the-clan", "clan-full"));
+        super("clan", "join", List.of("success", "joined-notification", "clan-not-exist", "not-invited", "already-in-a-clan", "already-in-the-clan", "clan-full", "invite-expired"));
         hasToBePlayer = true;
         requiredArgs = 2;
     }
@@ -25,7 +25,6 @@ public class ClanJoinSubcommand extends SubCommand {
         String clanName = args[1];
 
         return () -> {
-            clanHandler.joinClan(player.getUniqueId(), clanName);
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
             List<UUID> clanMembers = clanHandler.getClanMemberUUIDs(clanName);
             for (UUID uuid : clanMembers) {
@@ -33,10 +32,11 @@ public class ClanJoinSubcommand extends SubCommand {
                 if (memberPlayer != null && memberPlayer.isOnline()) {
                     if (memberPlayer.equals(player))
                         continue;
-                    sendFormattedMessage(memberPlayer.getPlayer(), messages.get("joined-notification"), LogType.FINE);
+                    sendFormattedPredefinedMessage(memberPlayer.getPlayer(), "joined-notification", LogType.FINE);
                 }
             }
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            clanHandler.joinClan(player.getUniqueId(), clanName);
         };
     }
 
@@ -47,23 +47,27 @@ public class ClanJoinSubcommand extends SubCommand {
         String clanName = args[1];
         Clan clan = clanHandler.getClanByName(clanName);
         if (clan == null) {
-            sendFormattedMessage(sender, messages.get("clan-not-exist"), LogType.WARNING);
-            return true;
-        }
-        if (!clan.isMemberInvited(playerUUID)) {
-            sendFormattedMessage(sender, messages.get("not-invited"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "clan-not-exist", LogType.WARNING);
             return true;
         }
         if (clan.isPlayerMember(playerUUID)) {
-            sendFormattedMessage(sender, messages.get("already-in-the-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "already-in-the-clan", LogType.WARNING);
             return true;
         }
         if (clanHandler.getClanByMember(playerUUID) != null) {
-            sendFormattedMessage(sender, messages.get("already-in-a-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "already-in-a-clan", LogType.WARNING);
+            return true;
+        }
+        if (!clan.isMemberInvited(playerUUID)) {
+            sendFormattedPredefinedMessage(sender, "not-invited", LogType.WARNING);
+            return true;
+        }
+        if (clan.isInviteExpired(playerUUID)) {
+            sendFormattedPredefinedMessage(sender, "invite-expired", LogType.WARNING);
             return true;
         }
         if (clan.isFull()) {
-            sendFormattedMessage(sender, messages.get("clan-full"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "clan-full", LogType.WARNING);
             return true;
         }
         return false;

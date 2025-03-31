@@ -1,8 +1,9 @@
 package gg.valentinos.alexjoo.Data;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import gg.valentinos.alexjoo.VClans;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Clan {
     private String name;
@@ -80,6 +81,12 @@ public class Clan {
     public boolean isFull() {
         return members.size() >= maxSize;
     }
+    public List<UUID> getMembersSortedByPriority() {
+        return members.entrySet().stream()
+                .sorted(Comparator.comparingInt(entry -> -ranks.get(entry.getValue().getRankName()).getPriority()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
 
     // Invite logic
     public void inviteMember(UUID inviterUUID, UUID inviteeUUID) {
@@ -88,17 +95,29 @@ public class Clan {
         invites.put(inviteeUUID, invite);
     }
     public boolean isMemberInvited(UUID uuid) {
-        return invites.containsKey(uuid);
+        if (invites.containsKey(uuid)) {
+            if (isInviteExpired(uuid)) {
+                invites.remove(uuid);
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
     public boolean isInviteExpired(UUID uuid) {
         ClanInvite invite = invites.get(uuid);
+        VClans.getInstance().getLogger().info("invite exists: " + (invite != null));
         if (invite == null) return true;
-        return invite.isExpired();
+        if (invite.isExpired()) {
+            invites.remove(uuid);
+            return true;
+        }
+        return false;
     }
 
     // Rank logic
     public void createRank(String name, String title) {
-        ranks.put(name, new ClanRank(name, title));
+        ranks.put(name, new ClanRank(title));
     }
     public ClanRank getRank(String name) {
         return ranks.get(name);

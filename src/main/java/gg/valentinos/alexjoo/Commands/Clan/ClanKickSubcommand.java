@@ -4,7 +4,6 @@ import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
-import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -30,20 +29,20 @@ public class ClanKickSubcommand extends SubCommand {
         Player target = player.getServer().getPlayer(targetName);
 
         return () -> {
-            clanHandler.kickPlayer(player.getUniqueId(), targetName);
-            sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
+            sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
             List<UUID> members = clanHandler.getClanMembersUUIDs(player.getUniqueId());
             for (UUID member : members) {
                 Player p = Bukkit.getPlayer(member);
                 if (p != null && p.isOnline()){
-                    if (p.equals(player))
+                    if (p.equals(player) || p.equals(target))
                         continue;
-                    sendFormattedMessage(p, messages.get("kicked-notification"), LogType.NULL);
+                    sendFormattedPredefinedMessage(p, "kicked-notification");
                 }
             }
             if (target != null && target.isOnline())
-                sendFormattedMessage(target.getPlayer(), messages.get("kicked"), LogType.NULL);
+                sendFormattedPredefinedMessage(target.getPlayer(), "kicked");
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            clanHandler.kickPlayer(player.getUniqueId(), targetName);
         };
     }
 
@@ -55,27 +54,27 @@ public class ClanKickSubcommand extends SubCommand {
         OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
         Clan clan = clanHandler.getClanByMember(playerUUID);
         if (clan == null) {
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("not-in-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
         if (!clan.getRank(playerUUID).canKick()){
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("no-permission"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
         if (!target.hasPlayedBefore()) {
-            sendFormattedMessage(sender, VClans.getInstance().getDefaultMessage("never-joined"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "never-joined", LogType.WARNING);
             return true;
         }
         if (playerUUID.equals(target.getUniqueId())) {
-            sendFormattedMessage(sender, messages.get("cant-kick-yourself"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "cant-kick-yourself", LogType.WARNING);
             return true;
         }
         if (!clan.isPlayerMember(target.getUniqueId())) {
-            sendFormattedMessage(sender, messages.get("target-not-in-clan"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "target-not-in-clan", LogType.WARNING);
             return true;
         }
         if (clan.getRank(playerUUID).getPriority() <= clan.getRank(target.getUniqueId()).getPriority()) {
-            sendFormattedMessage(sender, messages.get("cant-kick-owner"), LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "cant-kick-owner", LogType.WARNING);
             return true;
         }
         return false;
@@ -95,9 +94,11 @@ public class ClanKickSubcommand extends SubCommand {
         if (args.length > 1) {
             targetName = args[1];
         }
+
         replacements.put("{target-name}", targetName);
         replacements.put("{player-name}", playerName);
         replacements.put("{clan-name}", clanName);
+        logger.warning("replacements: " + replacements);
     }
 
     @Override

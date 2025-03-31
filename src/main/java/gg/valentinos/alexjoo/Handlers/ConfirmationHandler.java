@@ -16,9 +16,8 @@ public class ConfirmationHandler {
         confirmationEntries = new HashMap<>();
     }
 
-    public void addConfirmationEntry(Player player, long duration, String message, CommandAction commandAction) {
+    public void addConfirmationEntry(Player player, long duration, CommandAction commandAction) {
         VClans.getInstance().getLogger().info("Adding confirmation entry for " + player.getName() + " with duration " + duration);
-        player.sendMessage(message.replace("{time}", String.valueOf(duration)));
         confirmationEntries.put(player.getUniqueId(), new ConfirmationEntry(commandAction, duration));
     }
 

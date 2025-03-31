@@ -1,5 +1,7 @@
 package gg.valentinos.alexjoo.Data;
 
+import gg.valentinos.alexjoo.VClans;
+
 import java.util.UUID;
 
 public class ClanInvite {
@@ -9,7 +11,7 @@ public class ClanInvite {
 
     public ClanInvite(UUID inviter, long duration) {
         this.inviter = inviter;
-        this.duration = duration;
+        this.duration = duration * 1000;
         this.inviteTimestamp = System.currentTimeMillis();
     }
 
@@ -33,6 +35,8 @@ public class ClanInvite {
     }
 
     public boolean isExpired() {
+        VClans.getInstance().getLogger().info("invite times: " + inviteTimestamp + " " + System.currentTimeMillis() + " " + duration);
+        VClans.getInstance().getLogger().info("invite difference: " + (System.currentTimeMillis() - inviteTimestamp) + " " + duration + " " + (System.currentTimeMillis() - inviteTimestamp > duration));
         return System.currentTimeMillis() - inviteTimestamp > duration;
     }
 

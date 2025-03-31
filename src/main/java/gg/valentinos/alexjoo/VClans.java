@@ -102,7 +102,7 @@ public final class VClans extends JavaPlugin {
                 "not-in-clan",
                 "not-owner",
                 "never-joined",
-                "confirmation",
+                "confirmation-message",
                 "nothing-to-confirm",
                 "confirmation-expired"
         );

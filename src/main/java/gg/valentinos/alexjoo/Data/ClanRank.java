@@ -1,7 +1,6 @@
 package gg.valentinos.alexjoo.Data;
 
 public class ClanRank {
-    private String name;
     private String title;
     private int priority;
 
@@ -10,8 +9,7 @@ public class ClanRank {
     private boolean canKick;
     private boolean canChangeRank;
 
-    public ClanRank(String name, String title) {
-        this.name = name;
+    public ClanRank(String title) {
         this.title = title;
     }
 
@@ -38,12 +36,6 @@ public class ClanRank {
     }
     public void setCanChangeRank(boolean canChangeRank) {
         this.canChangeRank = canChangeRank;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
     }
     public String getTitle() {
         return title;

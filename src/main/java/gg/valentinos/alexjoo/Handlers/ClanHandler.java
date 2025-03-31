@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -34,13 +35,13 @@ public class ClanHandler {
         Clan clan = createDefaultClan(name, playerUUID);
         clans.addClan(clan);
         saveClans();
-        logger.fine("Player " + Bukkit.getPlayer(playerUUID).getName() + " has successfully created a clan with name " + name);
+        logger.fine("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully created a clan with name " + name);
     }
     public void disbandClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
         clans.getClans().remove(clan);
         saveClans();
-        logger.fine("Player " + Bukkit.getPlayer(playerUUID).getName() + " has successfully disbanded the clan " + clan.getName());
+        logger.fine("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getName());
     }
     public void invitePlayer(UUID playerUUID, String targetName) {
         Player player = Bukkit.getPlayer(playerUUID);
@@ -48,19 +49,19 @@ public class ClanHandler {
         Clan clan = getClanByMember(playerUUID);
         clan.inviteMember(playerUUID, target.getUniqueId());
         saveClans();
-        logger.fine("Player " + player.getName() + " has invited player " + targetName + " to the clan.");
+        logger.fine("Player " + Objects.requireNonNull(player).getName() + " has invited player " + targetName + " to the clan.");
     }
     public void joinClan(UUID playerUUID, String clanName) {
         Clan clan = getClanByName(clanName);
         clan.addDefaultMember(playerUUID);
         saveClans();
-        logger.fine("Player " + Bukkit.getPlayer(playerUUID).getName() + " has successfully joined the clan " + clanName);
+        logger.fine("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully joined the clan " + clanName);
     }
     public void leaveClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
         clan.removeMember(playerUUID);
         saveClans();
-        logger.fine("Player " + Bukkit.getPlayer(playerUUID).getName() + " has successfully left the clan " + clan.getName());
+        logger.fine("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully left the clan " + clan.getName());
     }
     public void kickPlayer(UUID playerUUID, String targetName) {
         Player player = Bukkit.getPlayer(playerUUID);
@@ -68,7 +69,7 @@ public class ClanHandler {
         Clan clan = getClanByMember(playerUUID);
         clan.removeMember(target.getUniqueId());
         saveClans();
-        logger.fine("Player " + player.getName() + " has kicked player " + targetName + " from the clan.");
+        logger.fine("Player " + Objects.requireNonNull(player).getName() + " has kicked player " + targetName + " from the clan.");
     }
 
     // saves and loads the clans
@@ -147,13 +148,14 @@ public class ClanHandler {
         Clan clan = new Clan(name, ownerUUID, defaultMaxSize);
         clan.addOwnerMember(ownerUUID);
         //TODO: make sure to read the config here for default titles
-        clan.createRank("owner", "president");
+        clan.createRank("owner", "leader");
         ClanRank ownerRank = clan.getRank("owner");
         ownerRank.setCanDisband(true);
         ownerRank.setCanInvite(true);
         ownerRank.setCanKick(true);
         ownerRank.setCanChangeRank(true);
-        clan.createRank("member", "citizen");
+        ownerRank.setPriority(99);
+        clan.createRank("default", "member");
         return clan;
     }
 }
