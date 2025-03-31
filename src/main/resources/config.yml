@@ -175,6 +175,6 @@ commands:
     rank:
       enabled: true
       description: "Changes the rank of a player in your clan."
-      usage: "/clan rank <player> <rank>"
+      usage: "/clan rank"
       messages:
         success: "You have changed the rank of {player-name} to {rank}."

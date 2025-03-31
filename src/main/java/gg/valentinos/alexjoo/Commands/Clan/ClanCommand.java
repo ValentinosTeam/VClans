@@ -29,9 +29,6 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ClanLeaveSubcommand());
         registerSubCommand(new ClanKickSubcommand());
         registerSubCommand(new ClanRankSubcommand());
-        //TODO: rank create <name>, rank delete <name>, rank setperm <permission> <value>, rank setname <name> <name>, rank settitle <name> <title>, rank setPriority <name> <priority>, rank assign <member> <name>, rank info <name>
-        //TODO: clan setname
-
 
         clanHelpSubcommand.setSubCommands(subCommands);
     }
