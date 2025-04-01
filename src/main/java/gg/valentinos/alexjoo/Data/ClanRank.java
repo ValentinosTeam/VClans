@@ -5,8 +5,8 @@ import net.kyori.adventure.text.format.TextColor;
 
 public class ClanRank {
     private String title;
-    private String id;
     private int priority;
+    private String id;
 
     private boolean canDisband;
     private boolean canInvite;
@@ -74,6 +74,9 @@ public class ClanRank {
     }
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+    public void setId(String id) {
+        this.id = id;
     }
     public String getId() {
         return id;

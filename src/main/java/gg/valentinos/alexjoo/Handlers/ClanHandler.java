@@ -74,9 +74,9 @@ public class ClanHandler {
     }
     public void assignRank(UUID targetUUID, String rankName){
         Clan clan = getClanByMember(targetUUID);
-        ClanRank rank = clan.getRank(rankName);
+        ClanRank rank = clan.getRankById(rankName);
         ClanMember member = clan.getMembers().get(targetUUID);
-        //TODO: finish this
+        member.setRankId(rankName);
     }
 
     // saves and loads the clans
@@ -156,7 +156,7 @@ public class ClanHandler {
         clan.addOwnerMember(ownerUUID);
         //TODO: make sure to read the config here for default titles
         clan.createRank("owner", "leader");
-        ClanRank ownerRank = clan.getRank("owner");
+        ClanRank ownerRank = clan.getRankById("owner");
         ownerRank.setCanDisband(true);
         ownerRank.setCanInvite(true);
         ownerRank.setCanKick(true);

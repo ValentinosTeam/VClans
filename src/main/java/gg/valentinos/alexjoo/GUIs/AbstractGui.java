@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 
@@ -24,12 +26,12 @@ public abstract class AbstractGui implements Listener {
         this.title = title;
         this.inventory = Bukkit.createInventory(null, getInventorySize(rows), Component.text(title));
         Bukkit.getPluginManager().registerEvents(this, VClans.getInstance());
-        initializeItems();
     }
 
     public void openInventory(Player player) {
-        player.openInventory(inventory);
         this.player = player;
+        initializeItems();
+        player.openInventory(inventory);
     }
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
@@ -44,12 +46,13 @@ public abstract class AbstractGui implements Listener {
         }
         inventory.setItem(row * 9 + column, item);
     }
-    protected ItemStack createItemStack(Material material, String name, String... lore) {
+    protected ItemStack createItemStack(String customTag, Material material, String name, String... lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text(name));
             meta.lore(Arrays.stream(lore).map(Component::text).toList());
+            meta.getPersistentDataContainer().set(new NamespacedKey(VClans.getInstance(), "customTag"), PersistentDataType.STRING, customTag);
             item.setItemMeta(meta);
         }
         return item;

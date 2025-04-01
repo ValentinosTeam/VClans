@@ -19,7 +19,7 @@ import static gg.valentinos.alexjoo.VClans.SendMessage;
 public class ClanRankSubcommand extends SubCommand {
 
     public ClanRankSubcommand() {
-        super("clan", "rank", List.of("success", "target-not-in-clan", "rank-not-found", "rank-priority-low"));
+        super("clan", "rank", List.of("success", "target-not-in-clan", "rank-not-found", "rank-priority-low", "rank-changed"));
         hasToBePlayer = true;
         maxArgs = 3;
     }
@@ -29,13 +29,11 @@ public class ClanRankSubcommand extends SubCommand {
         Player player = (Player) sender;
         Clan clan = clanHandler.getClanByMember(player.getUniqueId());
         return () -> {
-//            Log("args.length: " + args.length + " args: " + Arrays.toString(args), LogType.SEVERE);
-            if (args.length == 1) {     //clan rank - opens gui
+            if (args.length == 1) {
                 RankGui rankGui = new RankGui();
                 rankGui.openInventory(player);
             }
             else if (args.length == 2) {
-                //TODO: send information about the target player's rank
                 OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
                 ClanRank rank = clan.getRank(target.getUniqueId());
 
@@ -44,9 +42,14 @@ public class ClanRankSubcommand extends SubCommand {
                 SendMessage(player, component, LogType.NULL);
             }
             else if (args.length == 3) {
-                //TODO: assign rank to target player
                 OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
                 clanHandler.assignRank(target.getUniqueId(), args[2]);
+                sendFormattedPredefinedMessage(sender, "success", LogType.INFO);
+                if (target.isOnline()) {
+                    Player targetPlayer = (Player) target;
+                    sendFormattedPredefinedMessage(targetPlayer, "rank-changed", LogType.INFO);
+                }
+
             }
         };
     }
@@ -101,7 +104,7 @@ public class ClanRankSubcommand extends SubCommand {
                 return true;
             }
             if (args.length == 3) {    //clan rank <player> <rank> - assigns rank
-                ClanRank rank = clan.getRank(args[2]);
+                ClanRank rank = clan.getRankById(args[2]);
                 if (rank == null) {
                     // the rank does not exist
                     sendFormattedPredefinedMessage(sender, "rank-not-found", LogType.WARNING);

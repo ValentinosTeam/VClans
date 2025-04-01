@@ -1,19 +1,19 @@
 package gg.valentinos.alexjoo.Data;
 
 public class ClanMember {
-    private String rankName;
+    private String rankId;
     private long joinDate;
 
     public ClanMember(String rank){
-        this.rankName = rank;
+        this.rankId = rank;
         this.joinDate = System.currentTimeMillis();
     }
 
-    public String getRankName() {
-        return rankName;
+    public String getRankId() {
+        return rankId;
     }
-    public void setRankName(String rankName) {
-        this.rankName = rankName;
+    public void setRankId(String rankId) {
+        this.rankId = rankId;
     }
     public long getJoinDate() {
         return joinDate;

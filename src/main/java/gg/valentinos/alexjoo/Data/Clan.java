@@ -83,7 +83,7 @@ public class Clan {
     }
     public List<UUID> getMembersSortedByPriority() {
         return members.entrySet().stream()
-                .sorted(Comparator.comparingInt(entry -> -ranks.get(entry.getValue().getRankName()).getPriority()))
+                .sorted(Comparator.comparingInt(entry -> -ranks.get(entry.getValue().getRankId()).getPriority()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
@@ -116,25 +116,25 @@ public class Clan {
     }
 
     // Rank logic
-    public void createRank(String name, String title) {
-        ranks.put(name, new ClanRank(title, name));
+    public void createRank(String id, String title) {
+        ranks.put(id, new ClanRank(title, id));
     }
-    public ClanRank getRank(String name) {
-        return ranks.get(name);
+    public ClanRank getRankById(String id) {
+        return ranks.get(id);
     }
     public ClanRank getRank(UUID playerUUID) {
-        return getRank(members.get(playerUUID).getRankName());
+        return ranks.get(members.get(playerUUID).getRankId());
     }
     public String getMemberRankTitle(UUID playerUUID) {
-        return ranks.get(members.get(playerUUID).getRankName()).getTitle();
+        return ranks.get(members.get(playerUUID).getRankId()).getTitle();
     }
     public void removeRank(String name) {
         ranks.remove(name);
     }
-    public void setRank(UUID playerUUID, String rankName) {
+    public void setRank(UUID playerUUID, String rankId) {
         ClanMember member = members.get(playerUUID);
-        if (member != null && ranks.containsKey(rankName)) {
-            member.setRankName(rankName);
+        if (member != null && ranks.containsKey(rankId)) {
+            member.setRankId(rankId);
         }
     }
 
