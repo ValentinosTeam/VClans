@@ -33,8 +33,9 @@ public abstract class AbstractGui implements Listener {
     }
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        //TODO: fix multiple GUIs being open at once and one turning off the other
-        HandlerList.unregisterAll(this);
+        if (event.getInventory().equals(inventory)) {
+            HandlerList.unregisterAll(this);
+        }
     }
 
     protected void setItem(int row, int column, ItemStack item) {

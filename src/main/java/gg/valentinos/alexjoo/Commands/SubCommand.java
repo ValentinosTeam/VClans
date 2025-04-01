@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import static gg.valentinos.alexjoo.VClans.Log;
+import static gg.valentinos.alexjoo.VClans.SendMessage;
+
 public abstract class SubCommand {
     protected final static ClanHandler clanHandler = VClans.getInstance().getClansHandler();
     protected final static CooldownHandler cooldownHandler = VClans.getInstance().getCooldownHandler();
@@ -104,14 +107,11 @@ public abstract class SubCommand {
             message = message.replace(key, replacements.get(key));
         }
         Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
-        sender.sendMessage(component);
-        if (type != LogType.NULL){
-            switch (type){
-                case FINE -> logger.fine("Sending message: " + component);
-                case INFO -> logger.info("Sending message: " + message);
-                case WARNING -> logger.warning("Sending message: " + message);
-                case SEVERE -> logger.severe("Sending message: " + message);
-            }
+        if (sender instanceof Player player){
+            SendMessage(player, component, type);
+        }
+        else{
+            Log(String.valueOf(component), type);
         }
     }
 

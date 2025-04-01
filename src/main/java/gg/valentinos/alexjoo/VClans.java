@@ -2,10 +2,13 @@ package gg.valentinos.alexjoo;
 
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
+import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -63,6 +66,27 @@ public final class VClans extends JavaPlugin {
 
     public static VClans getInstance() {
         return instance;
+    }
+    public static void SendMessage(Player player, Component message, LogType type){
+        player.sendMessage(message);
+        if (type != LogType.NULL){
+            switch (type){
+                case FINE -> getInstance().getLogger().fine("Sending message to " + player.getName() + ": " + message);
+                case INFO -> getInstance().getLogger().info("Sending message to " + player.getName() + ": " + message);
+                case WARNING -> getInstance().getLogger().warning("Sending message to " + player.getName() + ": " + message);
+                case SEVERE -> getInstance().getLogger().severe("Sending message to " + player.getName() + ": " + message);
+            }
+        }
+    }
+    public static void Log(String message, LogType type){
+        if (type != LogType.NULL){
+            switch (type){
+                case FINE -> getInstance().getLogger().fine(message);
+                case INFO -> getInstance().getLogger().info(message);
+                case WARNING -> getInstance().getLogger().warning(message);
+                case SEVERE -> getInstance().getLogger().severe(message);
+            }
+        }
     }
 
     public ClanHandler getClansHandler() {

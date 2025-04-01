@@ -117,7 +117,7 @@ public class Clan {
 
     // Rank logic
     public void createRank(String name, String title) {
-        ranks.put(name, new ClanRank(title));
+        ranks.put(name, new ClanRank(title, name));
     }
     public ClanRank getRank(String name) {
         return ranks.get(name);
@@ -130,6 +130,12 @@ public class Clan {
     }
     public void removeRank(String name) {
         ranks.remove(name);
+    }
+    public void setRank(UUID playerUUID, String rankName) {
+        ClanMember member = members.get(playerUUID);
+        if (member != null && ranks.containsKey(rankName)) {
+            member.setRankName(rankName);
+        }
     }
 
 }

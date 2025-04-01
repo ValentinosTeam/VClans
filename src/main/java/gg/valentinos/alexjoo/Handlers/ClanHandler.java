@@ -1,6 +1,7 @@
 package gg.valentinos.alexjoo.Handlers;
 
 import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.ClanMember;
 import gg.valentinos.alexjoo.Data.ClanRank;
 import gg.valentinos.alexjoo.Data.Clans;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
@@ -70,6 +71,12 @@ public class ClanHandler {
         clan.removeMember(target.getUniqueId());
         saveClans();
         logger.fine("Player " + Objects.requireNonNull(player).getName() + " has kicked player " + targetName + " from the clan.");
+    }
+    public void assignRank(UUID targetUUID, String rankName){
+        Clan clan = getClanByMember(targetUUID);
+        ClanRank rank = clan.getRank(rankName);
+        ClanMember member = clan.getMembers().get(targetUUID);
+        //TODO: finish this
     }
 
     // saves and loads the clans
@@ -153,6 +160,9 @@ public class ClanHandler {
         ownerRank.setCanDisband(true);
         ownerRank.setCanInvite(true);
         ownerRank.setCanKick(true);
+        ownerRank.setCanEditRank(true);
+        ownerRank.setCanCreateRank(true);
+        ownerRank.setCanDeleteRank(true);
         ownerRank.setCanChangeRank(true);
         ownerRank.setPriority(99);
         clan.createRank("default", "member");
