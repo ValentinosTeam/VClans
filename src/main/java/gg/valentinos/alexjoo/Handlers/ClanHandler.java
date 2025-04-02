@@ -10,10 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class ClanHandler {
@@ -157,13 +154,15 @@ public class ClanHandler {
         //TODO: make sure to read the config here for default titles
         clan.createRank("owner", "leader");
         ClanRank ownerRank = clan.getRankById("owner");
-        ownerRank.setCanDisband(true);
-        ownerRank.setCanInvite(true);
-        ownerRank.setCanKick(true);
-        ownerRank.setCanEditRank(true);
-        ownerRank.setCanCreateRank(true);
-        ownerRank.setCanDeleteRank(true);
-        ownerRank.setCanChangeRank(true);
+        HashMap <String, Boolean> permissions = ownerRank.getPermissions();
+        permissions.put("canDisband", true);
+        permissions.put("canInvite", true);
+        permissions.put("canKick", true);
+        permissions.put("canEditRank", true);
+        permissions.put("canCreateRank", true);
+        permissions.put("canDeleteRank", true);
+        permissions.put("canChangeRank", true);
+        ownerRank.setPermissions(permissions);
         ownerRank.setPriority(99);
         clan.createRank("default", "member");
         return clan;

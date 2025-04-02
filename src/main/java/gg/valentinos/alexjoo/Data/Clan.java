@@ -142,6 +142,7 @@ public class Clan {
     }
     public void removeRank(String name) {
         ranks.remove(name);
+        //TODO: set rank to default for all members with this rank
     }
     public void setRank(UUID playerUUID, String rankId) {
         ClanMember member = members.get(playerUUID);
@@ -166,55 +167,15 @@ public class Clan {
             component = component.append(Component.text(permission + ": ")).append(temp).append(Component.newline());
         }
 
-//        Component temp = Component.text(rank.canDisband());
-//        if (!rank.canDisband())
-//            temp = temp.color(TextColor.color(255,0,0));
-//        else
-//            temp = temp.color(TextColor.color(0,255,0));
-//        component = component.append(Component.text("Can Disband: ")).append(temp).append(Component.newline());
-//        temp = Component.text(rank.canInvite());
-//        if (!rank.canInvite())
-//            temp = temp.color(TextColor.color(255,0,0));
-//        else
-//            temp = temp.color(TextColor.color(0,255,0));
-//        component = component.append(Component.text("Can Invite: ")).append(temp).append(Component.newline());
-//        temp = Component.text(rank.canKick());
-//        if (!rank.canKick())
-//            temp = temp.color(TextColor.color(255,0,0));
-//        else
-//            temp = temp.color(TextColor.color(0,255,0));
-//        component = component.append(Component.text("Can Kick: ")).append(temp).append(Component.newline());
-//        temp = Component.text(rank.canEditRank());
-//        if (!rank.canEditRank())
-//            temp = temp.color(TextColor.color(255,0,0));
-//        else
-//            temp = temp.color(TextColor.color(0,255,0));
-//        component = component.append(Component.text("Can Edit Rank: ")).append(temp).append(Component.newline());
-//        temp = Component.text(rank.canCreateRank());
-//        if (!rank.canCreateRank())
-//            temp = temp.color(TextColor.color(255,0,0));
-//        else
-//            temp = temp.color(TextColor.color(0,255,0));
-//        component = component.append(Component.text("Can Create Rank: ")).append(temp).append(Component.newline());
-//        temp = Component.text(rank.canDeleteRank());
-//        if (!rank.canDeleteRank())
-//            temp = temp.color(TextColor.color(255,0,0));
-//        else
-//            temp = temp.color(TextColor.color(0,255,0));
-//        component = component.append(Component.text("Can Delete Rank: ")).append(temp).append(Component.newline());
-//        temp = Component.text(rank.canChangeRank());
-//        if (!rank.canChangeRank())
-//            temp = temp.color(TextColor.color(255,0,0));
-//        else
-//            temp = temp.color(TextColor.color(0,255,0));
-//        component = component.append(Component.text("Can Change Rank: ")).append(temp).append(Component.newline());
-
         List<UUID> uuids = getMemberUUIDsFromRank(rank.getId());
         StringBuilder sb = new StringBuilder();
         sb.append("Members: ");
         for (UUID uuid : uuids) {
             sb.append(Bukkit.getOfflinePlayer(uuid).getName()).append(", ");
         }
+        int lastCommaIndex = sb.lastIndexOf(",");
+        if (lastCommaIndex != -1)
+            sb.setCharAt(lastCommaIndex, '.');
         component = component.append(Component.text(sb.toString()));
 
         return component;

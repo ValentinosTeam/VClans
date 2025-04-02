@@ -8,6 +8,8 @@ import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -86,6 +88,22 @@ public final class VClans extends JavaPlugin {
                 case WARNING -> getInstance().getLogger().warning(message);
                 case SEVERE -> getInstance().getLogger().severe(message);
             }
+        }
+    }
+    public static void sendFormattedMessage(CommandSender sender, String message, LogType type, HashMap<String, String> replacements) {
+        if (message == null || message.isEmpty()) {
+            getInstance().getLogger().severe("Message is null or empty. Not sending message.");
+            return;
+        }
+        for (String key : replacements.keySet()) {
+            message = message.replace(key, replacements.get(key));
+        }
+        Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+        if (sender instanceof Player player){
+            SendMessage(player, component, type);
+        }
+        else{
+            Log(String.valueOf(component), type);
         }
     }
 

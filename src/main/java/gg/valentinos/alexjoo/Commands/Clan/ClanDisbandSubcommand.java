@@ -8,6 +8,7 @@ import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,11 +43,12 @@ public class ClanDisbandSubcommand extends SubCommand {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         Clan clan = clanHandler.getClanByMember(playerUUID);
+        HashMap<String, Boolean> permissions = clan.getRank(playerUUID).getPermissions();
         if (clan == null) {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
-        if (!clan.getRank(playerUUID).canDisband()) {
+        if (!permissions.get("canDisbandClan")) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }

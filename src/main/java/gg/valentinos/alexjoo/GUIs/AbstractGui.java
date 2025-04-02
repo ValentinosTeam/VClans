@@ -38,6 +38,17 @@ public abstract class AbstractGui implements Listener {
         if (event.getInventory().equals(inventory)) {
             HandlerList.unregisterAll(this);
         }
+
+        // Prevent held item from being dropped in the inventory if he has a custom tag.
+        ItemStack cursorItem = player.getItemOnCursor();
+        ItemMeta cursorItemMeta = cursorItem.getItemMeta();
+        if (cursorItemMeta == null) {
+            return;
+        }
+        String customTag = cursorItemMeta.getPersistentDataContainer().get(new NamespacedKey(VClans.getInstance(), "customTag"), PersistentDataType.STRING);
+        if (!cursorItem.getType().isAir() && customTag != null) {
+            player.setItemOnCursor(null);
+        }
     }
 
     protected void setItem(int row, int column, ItemStack item) {

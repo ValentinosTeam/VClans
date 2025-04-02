@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -57,7 +58,8 @@ public class ClanKickSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
-        if (!clan.getRank(playerUUID).canKick()){
+        HashMap<String, Boolean> permissions = clan.getRank(playerUUID).getPermissions();
+        if (!permissions.get("canKick")){
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }

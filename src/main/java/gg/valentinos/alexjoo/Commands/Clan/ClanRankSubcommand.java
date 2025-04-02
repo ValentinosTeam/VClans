@@ -110,7 +110,8 @@ public class ClanRankSubcommand extends SubCommand {
                     sendFormattedPredefinedMessage(sender, "rank-not-found", LogType.WARNING);
                     return true;
                 }
-                if (!clan.getRank(playerUUID).canChangeRank()) {
+                HashMap<String, Boolean> permissions = rank.getPermissions();
+                if (!permissions.get("canChangeRank")) {
                     // the player does not have permission to change ranks
                     sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
                     return true;

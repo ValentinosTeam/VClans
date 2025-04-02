@@ -10,72 +10,14 @@ public class ClanRank {
     private String title;
     private int priority;
     private String id;
-
-    private boolean canDisband;
-    private boolean canInvite;
-    private boolean canKick;
-    private boolean canEditRank;
-    private boolean canCreateRank;
-    private boolean canDeleteRank;
-    private boolean canChangeRank;
-
-    @Expose(serialize = false, deserialize = false)
-    private HashMap<String, Boolean> permissions = new HashMap<>();
+    private HashMap<String, Boolean> permissions;
 
     public ClanRank(String title, String id) {
         this.title = title;
         this.id = id;
+        this.permissions = createDefaultPermissions();
     }
 
-    public boolean canDisband() {
-        return canDisband;
-    }
-    public void setCanDisband(boolean canDisband) {
-        this.canDisband = canDisband;
-        permissions.put("canDisband", canDisband);
-    }
-    public boolean canInvite() {
-        return canInvite;
-    }
-    public void setCanInvite(boolean canInvite) {
-        this.canInvite = canInvite;
-        permissions.put("canInvite", canInvite);
-    }
-    public boolean canKick() {
-        return canKick;
-    }
-    public void setCanKick(boolean canKick) {
-        this.canKick = canKick;
-        permissions.put("canKick", canKick);
-    }
-    public boolean canEditRank() {
-        return canEditRank;
-    }
-    public void setCanEditRank(boolean canEditRank) {
-        this.canEditRank = canEditRank;
-        permissions.put("canEditRank", canEditRank);
-    }
-    public boolean canCreateRank() {
-        return canCreateRank;
-    }
-    public void setCanCreateRank(boolean canCreateRank) {
-        this.canCreateRank = canCreateRank;
-        permissions.put("canCreateRank", canCreateRank);
-    }
-    public boolean canDeleteRank() {
-        return canDeleteRank;
-    }
-    public void setCanDeleteRank(boolean canDeleteRank) {
-        this.canDeleteRank = canDeleteRank;
-        permissions.put("canDeleteRank", canDeleteRank);
-    }
-    public boolean canChangeRank() {
-        return canChangeRank;
-    }
-    public void setCanChangeRank(boolean canChangeRank) {
-        this.canChangeRank = canChangeRank;
-        permissions.put("canChangeRank", canChangeRank);
-    }
     public String getTitle() {
         return title;
     }
@@ -95,6 +37,20 @@ public class ClanRank {
         return id;
     }
     public HashMap<String, Boolean> getPermissions() {
+        return permissions;
+    }
+    public void setPermissions(HashMap<String, Boolean> permissions) {
+        this.permissions = permissions;
+    }
+    public static HashMap<String, Boolean> createDefaultPermissions() {
+        HashMap<String, Boolean> permissions = new HashMap<>();
+        permissions.put("canDisband", false);
+        permissions.put("canInvite", false);
+        permissions.put("canKick", false);
+        permissions.put("canEditRank", false);
+        permissions.put("canCreateRank", false);
+        permissions.put("canDeleteRank", false);
+        permissions.put("canChangeRank", false);
         return permissions;
     }
 }
