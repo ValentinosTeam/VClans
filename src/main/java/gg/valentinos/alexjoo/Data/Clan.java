@@ -1,6 +1,9 @@
 package gg.valentinos.alexjoo.Data;
 
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,6 +75,15 @@ public class Clan {
     public List<UUID> getMemberUUIDs() {
         return List.copyOf(members.keySet());
     }
+    public List<UUID> getMemberUUIDsFromRank(String rank){
+        List<UUID> uuids = new ArrayList<>();
+        members.forEach((uuid, member) -> {
+            if (member.getRankId().equals(rank)) {
+                uuids.add(uuid);
+            }
+        });
+        return uuids;
+    }
     public boolean isPlayerMember(UUID uuid) {
         return members.containsKey(uuid);
     }
@@ -136,6 +148,76 @@ public class Clan {
         if (member != null && ranks.containsKey(rankId)) {
             member.setRankId(rankId);
         }
+    }
+    public Component getRankInfo(ClanRank rank){
+        Component component = Component.text("Rank: " + rank.getTitle()).append(Component.newline());
+        component = component.append(Component.text("Rank ID: " + rank.getId())).append(Component.newline());
+        component = component.append(Component.text("Priority: " + rank.getPriority())).append(Component.newline());
+
+        HashMap<String, Boolean> permissions = rank.getPermissions();
+        for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
+            String permission = entry.getKey();
+            boolean value = entry.getValue();
+            Component temp = Component.text(value);
+            if (!value)
+                temp = temp.color(TextColor.color(255,0,0));
+            else
+                temp = temp.color(TextColor.color(0,255,0));
+            component = component.append(Component.text(permission + ": ")).append(temp).append(Component.newline());
+        }
+
+//        Component temp = Component.text(rank.canDisband());
+//        if (!rank.canDisband())
+//            temp = temp.color(TextColor.color(255,0,0));
+//        else
+//            temp = temp.color(TextColor.color(0,255,0));
+//        component = component.append(Component.text("Can Disband: ")).append(temp).append(Component.newline());
+//        temp = Component.text(rank.canInvite());
+//        if (!rank.canInvite())
+//            temp = temp.color(TextColor.color(255,0,0));
+//        else
+//            temp = temp.color(TextColor.color(0,255,0));
+//        component = component.append(Component.text("Can Invite: ")).append(temp).append(Component.newline());
+//        temp = Component.text(rank.canKick());
+//        if (!rank.canKick())
+//            temp = temp.color(TextColor.color(255,0,0));
+//        else
+//            temp = temp.color(TextColor.color(0,255,0));
+//        component = component.append(Component.text("Can Kick: ")).append(temp).append(Component.newline());
+//        temp = Component.text(rank.canEditRank());
+//        if (!rank.canEditRank())
+//            temp = temp.color(TextColor.color(255,0,0));
+//        else
+//            temp = temp.color(TextColor.color(0,255,0));
+//        component = component.append(Component.text("Can Edit Rank: ")).append(temp).append(Component.newline());
+//        temp = Component.text(rank.canCreateRank());
+//        if (!rank.canCreateRank())
+//            temp = temp.color(TextColor.color(255,0,0));
+//        else
+//            temp = temp.color(TextColor.color(0,255,0));
+//        component = component.append(Component.text("Can Create Rank: ")).append(temp).append(Component.newline());
+//        temp = Component.text(rank.canDeleteRank());
+//        if (!rank.canDeleteRank())
+//            temp = temp.color(TextColor.color(255,0,0));
+//        else
+//            temp = temp.color(TextColor.color(0,255,0));
+//        component = component.append(Component.text("Can Delete Rank: ")).append(temp).append(Component.newline());
+//        temp = Component.text(rank.canChangeRank());
+//        if (!rank.canChangeRank())
+//            temp = temp.color(TextColor.color(255,0,0));
+//        else
+//            temp = temp.color(TextColor.color(0,255,0));
+//        component = component.append(Component.text("Can Change Rank: ")).append(temp).append(Component.newline());
+
+        List<UUID> uuids = getMemberUUIDsFromRank(rank.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Members: ");
+        for (UUID uuid : uuids) {
+            sb.append(Bukkit.getOfflinePlayer(uuid).getName()).append(", ");
+        }
+        component = component.append(Component.text(sb.toString()));
+
+        return component;
     }
 
 }

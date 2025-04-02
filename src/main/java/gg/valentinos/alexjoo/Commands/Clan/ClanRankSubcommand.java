@@ -38,7 +38,7 @@ public class ClanRankSubcommand extends SubCommand {
                 ClanRank rank = clan.getRank(target.getUniqueId());
 
                 Component component = Component.text("Rank information for " + target.getName() + ":").append(Component.newline());
-                component = component.append(rank.getRankInfo());
+                component = component.append(clan.getRankInfo(rank));
                 SendMessage(player, component, LogType.NULL);
             }
             else if (args.length == 3) {

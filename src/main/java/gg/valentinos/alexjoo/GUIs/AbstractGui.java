@@ -46,6 +46,12 @@ public abstract class AbstractGui implements Listener {
         }
         inventory.setItem(row * 9 + column, item);
     }
+    protected void setItem(int pos, ItemStack item) {
+        if (pos >= inventory.getSize()) {
+            throw new IllegalArgumentException("Pos out of bounds");
+        }
+        inventory.setItem(pos, item);
+    }
     protected ItemStack createItemStack(String customTag, Material material, String name, String... lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
