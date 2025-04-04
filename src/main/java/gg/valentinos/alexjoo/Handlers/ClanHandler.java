@@ -71,9 +71,26 @@ public class ClanHandler {
     }
     public void assignRank(UUID targetUUID, String rankName){
         Clan clan = getClanByMember(targetUUID);
-        ClanRank rank = clan.getRankById(rankName);
         ClanMember member = clan.getMembers().get(targetUUID);
         member.setRankId(rankName);
+        saveClans();
+    }
+    public void addRank(Clan clan, ClanRank newRank) {
+        ClanRank rank = new ClanRank(newRank.getTitle(), newRank.getId());
+        rank.setPriority(newRank.getPriority());
+        HashMap<String, Boolean> permissions = newRank.getPermissions();
+        rank.setPermissions(permissions);
+        clan.addRank(rank);
+        saveClans();
+    }
+    public void removeRank(Clan clan, String rankId) {
+        clan.removeRank(rankId);
+        for (ClanMember member : clan.getMembers().values()) {
+            if (member.getRankId().equals(rankId)) {
+                member.setRankId("default");
+            }
+        }
+        saveClans();
     }
 
     // saves and loads the clans

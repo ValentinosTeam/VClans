@@ -39,18 +39,25 @@ public class ClanRank {
     public HashMap<String, Boolean> getPermissions() {
         return permissions;
     }
+    public HashMap<String, Boolean> copyPermissions() {
+        HashMap<String, Boolean> newPermissions = new HashMap<>();
+        for (String key : permissions.keySet()) {
+            newPermissions.put(key, permissions.get(key));
+        }
+        return newPermissions;
+    }
     public void setPermissions(HashMap<String, Boolean> permissions) {
         this.permissions = permissions;
     }
     public static HashMap<String, Boolean> createDefaultPermissions() {
-        HashMap<String, Boolean> permissions = new HashMap<>();
-        permissions.put("canDisband", false);
-        permissions.put("canInvite", false);
-        permissions.put("canKick", false);
-        permissions.put("canEditRank", false);
-        permissions.put("canCreateRank", false);
-        permissions.put("canDeleteRank", false);
-        permissions.put("canChangeRank", false);
-        return permissions;
+        HashMap<String, Boolean> newPermissions = new HashMap<>();
+        newPermissions.put("canDisband", false);
+        newPermissions.put("canInvite", false);
+        newPermissions.put("canKick", false);
+        newPermissions.put("canEditRank", false);
+        newPermissions.put("canCreateRank", false);
+        newPermissions.put("canDeleteRank", false);
+        newPermissions.put("canChangeRank", false);
+        return newPermissions;
     }
 }

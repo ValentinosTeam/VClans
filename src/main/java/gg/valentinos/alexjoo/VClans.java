@@ -50,8 +50,8 @@ public final class VClans extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (clanHandler != null)
-            clanHandler.saveClans();
+//        if (clanHandler != null)
+//            clanHandler.saveClans();
         clanHandler = null;
 
         if (cooldownHandler != null)
@@ -90,6 +90,9 @@ public final class VClans extends JavaPlugin {
             }
         }
     }
+    public static void Log(String message){
+        getInstance().getLogger().info(message);
+    }
     public static void sendFormattedMessage(CommandSender sender, String message, LogType type, HashMap<String, String> replacements) {
         if (message == null || message.isEmpty()) {
             getInstance().getLogger().severe("Message is null or empty. Not sending message.");
@@ -97,6 +100,19 @@ public final class VClans extends JavaPlugin {
         }
         for (String key : replacements.keySet()) {
             message = message.replace(key, replacements.get(key));
+        }
+        Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+        if (sender instanceof Player player){
+            SendMessage(player, component, type);
+        }
+        else{
+            Log(String.valueOf(component), type);
+        }
+    }
+    public static void sendFormattedMessage(CommandSender sender, String message, LogType type) {
+        if (message == null || message.isEmpty()) {
+            getInstance().getLogger().severe("Message is null or empty. Not sending message.");
+            return;
         }
         Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
         if (sender instanceof Player player){

@@ -181,4 +181,4 @@ commands:
         rank-changed: "Your rank has been changed to {rank} by {player-name}."
         target-not-in-clan: "{target-name} is not in your clan."
         rank-not-found: "The rank {rank} does not exist."
-        rank-priority-low: "Your rank priority is too low to change the rank of {target-name} to {rank}."
+        rank-priority-low: "Your rank priority is too low"

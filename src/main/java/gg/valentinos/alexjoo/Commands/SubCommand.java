@@ -77,9 +77,11 @@ public abstract class SubCommand {
     public abstract List<String> onTabComplete(CommandSender sender, String[] args);
 
     protected abstract boolean hasSpecificErrors(CommandSender sender, String[] args);
+    protected abstract boolean firstAutoComplete(CommandSender sender);
 
     protected abstract void loadReplacementValues(CommandSender sender, String[] args);
 
+    // dont question this. it works
     protected void sendFormattedMessage(CommandSender sender, String message){
         sendFormattedMessage(sender, message, LogType.NULL);
     }
@@ -99,20 +101,7 @@ public abstract class SubCommand {
         sendFormattedMessage(sender, message, type);
     }
     protected void sendFormattedMessage(CommandSender sender, String message, LogType type){
-        if (message == null || message.isEmpty()) {
-            logger.severe("Message is null or empty. Not sending message.");
-            return;
-        }
-        for (String key : replacements.keySet()) {
-            message = message.replace(key, replacements.get(key));
-        }
-        Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
-        if (sender instanceof Player player){
-            SendMessage(player, component, type);
-        }
-        else{
-            Log(String.valueOf(component), type);
-        }
+        VClans.sendFormattedMessage(sender, message, type, replacements);
     }
 
     protected void loadMessages(List<String> configKeys){
@@ -136,6 +125,7 @@ public abstract class SubCommand {
     }
 
     private void loadConfigs(String commandName, String subcommandName){
+        // I now realise that this system is completely useless, but it works so I will keep it.
         configPath = "commands." + commandName + "." + subcommandName + ".";
         name = subcommandName;
         if ((description = config.getString(configPath + "description")) == null){

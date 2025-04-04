@@ -131,14 +131,8 @@ public class Clan {
     public void createRank(String id, String title) {
         ranks.put(id, new ClanRank(title, id));
     }
-    public ClanRank getRankById(String id) {
-        return ranks.get(id);
-    }
-    public ClanRank getRank(UUID playerUUID) {
-        return ranks.get(members.get(playerUUID).getRankId());
-    }
-    public String getMemberRankTitle(UUID playerUUID) {
-        return ranks.get(members.get(playerUUID).getRankId()).getTitle();
+    public void addRank(ClanRank rank){
+        ranks.put(rank.getId(), rank);
     }
     public void removeRank(String name) {
         ranks.remove(name);
@@ -149,6 +143,15 @@ public class Clan {
         if (member != null && ranks.containsKey(rankId)) {
             member.setRankId(rankId);
         }
+    }
+    public ClanRank getRankById(String id) {
+        return ranks.get(id);
+    }
+    public ClanRank getRank(UUID playerUUID) {
+        return ranks.get(members.get(playerUUID).getRankId());
+    }
+    public String getMemberRankTitle(UUID playerUUID) {
+        return ranks.get(members.get(playerUUID).getRankId()).getTitle();
     }
     public Component getRankInfo(ClanRank rank){
         Component component = Component.text("Rank: " + rank.getTitle()).append(Component.newline());

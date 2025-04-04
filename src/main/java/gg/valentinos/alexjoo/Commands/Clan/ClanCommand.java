@@ -62,9 +62,13 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if (args.length == 1) {
-            return subCommands.keySet().stream()
-                    .filter(subCommandName -> subCommandName.startsWith(args[0].toLowerCase()))
-                    .collect(Collectors.toList());
+            for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()){
+
+            }
+            return List.of();
+//            return subCommands.keySet().stream()
+//                    .filter(subCommandName -> subCommandName.startsWith(args[0].toLowerCase()))
+//                    .collect(Collectors.toList());
         } else if (args.length > 1) {
             // Delegate tab completion to the specific subcommand (if any)
             SubCommand subCommand = subCommands.get(args[0].toLowerCase());

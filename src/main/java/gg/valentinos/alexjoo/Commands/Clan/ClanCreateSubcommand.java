@@ -61,6 +61,13 @@ public class ClanCreateSubcommand extends SubCommand {
         }
         return false;
     }
+    @Override
+    protected boolean firstAutoComplete(CommandSender sender) {
+        if (sender instanceof Player player) {
+            return !clanHandler.isPlayerInAClan(player.getUniqueId());
+        }
+        return false;
+    }
 
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
