@@ -56,6 +56,15 @@ public class ClanLeaveSubcommand extends SubCommand {
     }
 
     @Override
+    public boolean suggestCommand(CommandSender sender) {
+        if (sender instanceof Player player) {
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+            return clan != null && clan.getRank(player.getUniqueId()).getPriority() != 99;
+        }
+        return false;
+    }
+
+    @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String playerName = "ERROR";
         String clanName = "ERROR";

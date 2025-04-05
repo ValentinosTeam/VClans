@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,7 +59,8 @@ public class Clan {
 
     // Member logic
     public void addMember(UUID uuid, String rank) {
-        ClanMember member = new ClanMember(rank);
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        ClanMember member = new ClanMember(player.getName(), rank);
         members.put(uuid, member);
     }
     public void addOwnerMember(UUID uuid) {

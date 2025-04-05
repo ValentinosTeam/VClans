@@ -43,14 +43,23 @@ public class ClanDisbandSubcommand extends SubCommand {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         Clan clan = clanHandler.getClanByMember(playerUUID);
-        HashMap<String, Boolean> permissions = clan.getRank(playerUUID).getPermissions();
         if (clan == null) {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
-        if (!permissions.get("canDisbandClan")) {
+        HashMap<String, Boolean> permissions = clan.getRank(playerUUID).getPermissions();
+        if (!permissions.get("canDisband")) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean suggestCommand(CommandSender sender) {
+        if (sender instanceof Player player){
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+            return clan != null && clan.getRank(player.getUniqueId()).getPermissions().get("canDisband");
         }
         return false;
     }

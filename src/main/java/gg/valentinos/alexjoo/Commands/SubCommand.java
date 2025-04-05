@@ -5,8 +5,6 @@ import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.VClans;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -17,7 +15,6 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import static gg.valentinos.alexjoo.VClans.Log;
-import static gg.valentinos.alexjoo.VClans.SendMessage;
 
 public abstract class SubCommand {
     protected final static ClanHandler clanHandler = VClans.getInstance().getClansHandler();
@@ -77,7 +74,7 @@ public abstract class SubCommand {
     public abstract List<String> onTabComplete(CommandSender sender, String[] args);
 
     protected abstract boolean hasSpecificErrors(CommandSender sender, String[] args);
-    protected abstract boolean firstAutoComplete(CommandSender sender);
+    public abstract boolean suggestCommand(CommandSender sender);
 
     protected abstract void loadReplacementValues(CommandSender sender, String[] args);
 

@@ -42,6 +42,11 @@ public class ClanHelpSubcommand extends SubCommand {
     }
 
     @Override
+    public boolean suggestCommand(CommandSender sender) {
+        return true;
+    }
+
+    @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
 
     }

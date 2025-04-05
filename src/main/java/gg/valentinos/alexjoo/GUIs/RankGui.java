@@ -38,10 +38,6 @@ public class RankGui extends AbstractGui {
     private ClanRank playerRank;
 
     private ClanRank newRank;
-//    private int newPriority = 1;
-//    private String newTitle = "New Rank";
-//    private String newRankId = "newrank";
-//    private HashMap<String, Boolean> newPermissions = ClanRank.createDefaultPermissions();
 
     public RankGui() {
         super("Rank Manager", 3);
@@ -138,6 +134,7 @@ public class RankGui extends AbstractGui {
     private void initializeTitleEditor(){
         keepAlive = true;
         InventoryView inventoryView = player.openAnvil(null, true);
+        keepAlive = false;
         if (inventoryView == null) {
             Log("bad", LogType.INFO);
         }
@@ -148,6 +145,7 @@ public class RankGui extends AbstractGui {
     private void initializeRankIdEditor(){
         keepAlive = true;
         InventoryView inventoryView = player.openAnvil(null, true);
+        keepAlive = false;
         if (inventoryView == null) {
             Log("bad", LogType.INFO);
         }
@@ -230,9 +228,16 @@ public class RankGui extends AbstractGui {
             }
             String customTag = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(VClans.getInstance(), "customTag"), PersistentDataType.STRING);
             if (customTag == null) return;
-            HashMap<String, Boolean> newPermissions = newRank.copyPermissions();
+            HashMap<String, Boolean> newPermissions;
             if (e.getInventory().getType() == InventoryType.CHEST){
                 player.sendMessage("Player " + player.getName() + " clicked on " + customTag);
+                if (!customTag.startsWith("rank-")){
+                    if (!cursorItem.getType().isAir()){
+                        player.setItemOnCursor(null);
+                        initializeRankManager();
+                        return;
+                    }
+                }
                 switch (customTag) {
                     case "createRank":
                         if (!cursorItem.getType().isAir()){
@@ -337,14 +342,13 @@ public class RankGui extends AbstractGui {
                                     }
                                     player.setItemOnCursor(null);
                                     if (heldCustomTag.equals("editRank")) {
-                                        initializeRankEditor(rank);
+                                        newRank = targetRank;
+                                        initializeRankEditor(newRank);
                                     } else if (heldCustomTag.equals("deleteRank")) {
                                         //TODO delete rank
-                                        if (targetRank.getPriority() == 99 || targetRank.getPriority() == 0) {
-                                            player.sendMessage("You cannot delete this rank.");
-                                            return;
+                                        if (targetRank.getPriority() != 99 && targetRank.getPriority() != 0) {
+                                            clanHandler.removeRank(clan, targetRank.getId());
                                         }
-                                        clanHandler.removeRank(clan, targetRank.getId());
                                         initializeRankManager();
                                     }
                                 }
@@ -406,9 +410,10 @@ public class RankGui extends AbstractGui {
                         newRank.setTitle(name);
                         inventory.clear();
                         inventory = Bukkit.createInventory(null, InventoryType.CHEST, title);
+                        keepAlive = true;
                         player.openInventory(inventory);
-                        initializeRankEditor(newRank);
                         keepAlive = false;
+                        initializeRankEditor(newRank);
                         break;
                     case "idResult":
                         String id = PlainTextComponentSerializer.plainText().serialize(item.getItemMeta().displayName());
@@ -416,9 +421,10 @@ public class RankGui extends AbstractGui {
                         newRank.setId(id);
                         inventory.clear();
                         inventory = Bukkit.createInventory(null, InventoryType.CHEST, title);
+                        keepAlive = true;
                         player.openInventory(inventory);
-//                        initializeRankEditor(newRank);
                         keepAlive = false;
+//                        initializeRankEditor(newRank);
                         clanHandler.addRank(clan, newRank);
                         initializeRankManager();
 //                        player.closeInventory();

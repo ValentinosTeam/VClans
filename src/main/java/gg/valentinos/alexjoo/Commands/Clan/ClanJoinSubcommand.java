@@ -74,6 +74,15 @@ public class ClanJoinSubcommand extends SubCommand {
     }
 
     @Override
+    public boolean suggestCommand(CommandSender sender) {
+        if (sender instanceof Player player) {
+            List<String> clanInvites = clanHandler.getInvitingClanNames(player.getUniqueId());
+            return !clanInvites.isEmpty();
+        }
+        return false;
+    }
+
+    @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String playerName = "ERROR";
         String clanName = "ERROR";

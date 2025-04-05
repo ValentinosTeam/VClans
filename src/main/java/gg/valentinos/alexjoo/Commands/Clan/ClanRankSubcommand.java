@@ -110,8 +110,8 @@ public class ClanRankSubcommand extends SubCommand {
                     sendFormattedPredefinedMessage(sender, "rank-not-found", LogType.WARNING);
                     return true;
                 }
-                HashMap<String, Boolean> permissions = rank.getPermissions();
-                if (!permissions.get("canChangeRank")) {
+                HashMap<String, Boolean> playerPermissions = clan.getRank(playerUUID).getPermissions();
+                if (!playerPermissions.get("canChangeRank")) {
                     // the player does not have permission to change ranks
                     sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
                     return true;
@@ -134,16 +134,30 @@ public class ClanRankSubcommand extends SubCommand {
     }
 
     @Override
+    public boolean suggestCommand(CommandSender sender) {
+        if (sender instanceof Player player) {
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+            return clan != null;
+        }
+        return false;
+    }
+
+    @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
+        String playerName = "ERROR";
         String targetName = "ERROR";
         String rankName = "ERROR";
+        if (sender instanceof Player player) {
+            playerName = player.getName();
+        }
         if (args.length > 1){
             targetName = args[1];
         }
         if (args.length > 2){
             rankName = args[2];
         }
-        replacements.put("target-name", targetName);
-        replacements.put("rank", rankName);
+        replacements.put("{player-name}", playerName);
+        replacements.put("{target-name}", targetName);
+        replacements.put("{rank}", rankName);
     }
 }

@@ -4,6 +4,9 @@ import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -19,8 +22,30 @@ public class ClanListSubcommand extends SubCommand {
 
     @Override
     public CommandAction getAction(CommandSender sender, String[] args) {
-        StringBuilder sb = new StringBuilder();
+//        Component component = Component.empty();
+//        if (args.length == 0){
+//            component = LegacyComponentSerializer.legacyAmpersand().deserialize(messages.get("clan-list-header"));
+//            for (String clanName : clanHandler.getClanNames()){
+//                component = component.append(LegacyComponentSerializer.legacyAmpersand().deserialize(messages.get("clan-list-item").replace("{clan-name}", clanName)));
+//            }
+//            component = component.append(LegacyComponentSerializer.legacyAmpersand().deserialize(messages.get("clan-list-footer")));
+//        } else {
+//            String clanName = args[1];
+//            Clan clan = clanHandler.getClanByName(clanName);
+//            component = LegacyComponentSerializer.legacyAmpersand().deserialize(messages.get("member-list-header").replace("{clan}", clanName));
+//            List<UUID> members = clan.getMembersSortedByPriority();
+//            for (UUID member : members) {
+//                OfflinePlayer player = sender.getServer().getOfflinePlayer(member);
+//                if (player.getName() != null)
+//                    component = component.append(LegacyComponentSerializer.legacyAmpersand().deserialize(messages.get("member-list-item")
+//                            .replace("{player-name}", player.getName())
+//                            .replace("{rank}", clanHandler.getMemberRankTitle(player.getUniqueId()))
+//                            .replace("{priority}", clan.getRank(player.getUniqueId()).getPriority() + "")));
+//            }
+//            component = component.append(LegacyComponentSerializer.legacyAmpersand().deserialize(messages.get("member-list-footer")));
+//        }
 
+        StringBuilder sb = new StringBuilder();
         if (args.length == 1) {
             sb.append(messages.get("clan-list-header")).append("\n");
             for (String clanName : clanHandler.getClanNames())
@@ -29,7 +54,7 @@ public class ClanListSubcommand extends SubCommand {
         } else {
             String clanName = args[1];
             Clan clan = clanHandler.getClanByName(clanName);
-            sb.append(messages.get("member-list-header").replace("{clan}", clanName)).append("\n");
+            sb.append(messages.get("member-list-header").replace("{clan-name}", clanName)).append("\n");
             //List<UUID> members = clanHandler.getClanMemberUUIDs(clanName);
             List<UUID> members = clan.getMembersSortedByPriority();
             for (UUID member : members) {
@@ -53,6 +78,11 @@ public class ClanListSubcommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean suggestCommand(CommandSender sender) {
+        return true;
     }
 
     @Override

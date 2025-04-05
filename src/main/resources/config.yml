@@ -52,10 +52,10 @@ commands:
       usage: "/clan list"
       messages:
         clan-list-header: "=============Clans============="
-        clan-list-item: " - {clan-name}"
+        clan-list-item: "&8 -&r {clan-name}"
         clan-list-footer: "==============================="
         member-list-header: "============Members of {clan-name}============"
-        member-list-item: " - [{priority}] <{rank}> {player-name}"
+        member-list-item: "&8 - [{priority}]&r {rank}&r {player-name}"
         member-list-footer: "========================================="
         clan-not-found: "The clan {clan-name} does not exist."
     create:
@@ -177,7 +177,7 @@ commands:
       description: "Changes the rank of a player in your clan."
       usage: "/clan rank"
       messages:
-        success: "You have changed the rank of {player-name} to {rank}."
+        success: "You have changed the rank of {target-name} to {rank}."
         rank-changed: "Your rank has been changed to {rank} by {player-name}."
         target-not-in-clan: "{target-name} is not in your clan."
         rank-not-found: "The rank {rank} does not exist."

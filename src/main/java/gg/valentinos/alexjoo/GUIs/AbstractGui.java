@@ -43,13 +43,37 @@ public abstract class AbstractGui implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         //TODO: fix when the player closes the inventory by pressing esc
-        if (keepAlive && event.getPlayer() == player && event.getInventory().equals(inventory)) {
-            Log("Inventory closed, but keep alive is true " + event.getInventory().getType(), LogType.INFO);
-            return;
-        }
-        if (event.getInventory().equals(inventory)) {
+//        Log("Inventory closed " + event.getInventory().getType() + " inventory == inventory: " + event.getInventory().equals(inventory), LogType.INFO);
+//        if (keepAlive && event.getPlayer() == player && event.getInventory().equals(inventory)) {
+//            Log("Inventory closed, but keep alive is true " + event.getInventory().getType(), LogType.INFO);
+//            if (event.getInventory().getType() == InventoryType.ANVIL) {
+//                event.getInventory().clear();
+//                keepAlive = false;
+//            }
+//            return;
+//        }
+//        if (event.getInventory().equals(inventory)) {
+//            HandlerList.unregisterAll(this);
+//        }
+
+        if (event.getPlayer().equals(player)) {
+            if (event.getInventory().getType() == InventoryType.ANVIL) {
+                if (keepAlive) {
+                    event.getInventory().clear();
+                    return;
+                }
+                event.getInventory().clear();
+                HandlerList.unregisterAll(this);
+                return;
+            } else if (event.getInventory().getType() == InventoryType.CHEST) {
+                if (keepAlive) {
+                    return;
+                }
+            }
+            event.getInventory().clear();
             HandlerList.unregisterAll(this);
         }
+
         // Prevent held item from being dropped in the inventory if he has a custom tag.
         ItemStack cursorItem = player.getItemOnCursor();
         ItemMeta cursorItemMeta = cursorItem.getItemMeta();

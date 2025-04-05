@@ -9,10 +9,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ClanCommand implements CommandExecutor, TabCompleter {
@@ -62,13 +59,18 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if (args.length == 1) {
+            List<String> suggestions = new ArrayList<>();
             for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()){
-
+                String commandName = entry.getKey();
+                SubCommand subCommand = entry.getValue();
+                if (subCommand.suggestCommand(sender)){
+                    suggestions.add(commandName);
+                }
             }
-            return List.of();
 //            return subCommands.keySet().stream()
 //                    .filter(subCommandName -> subCommandName.startsWith(args[0].toLowerCase()))
 //                    .collect(Collectors.toList());
+            return suggestions;
         } else if (args.length > 1) {
             // Delegate tab completion to the specific subcommand (if any)
             SubCommand subCommand = subCommands.get(args[0].toLowerCase());
