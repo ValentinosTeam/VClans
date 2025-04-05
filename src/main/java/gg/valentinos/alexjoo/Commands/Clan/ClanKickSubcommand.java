@@ -109,7 +109,6 @@ public class ClanKickSubcommand extends SubCommand {
         replacements.put("{target-name}", targetName);
         replacements.put("{player-name}", playerName);
         replacements.put("{clan-name}", clanName);
-        logger.warning("replacements: " + replacements);
     }
 
     @Override

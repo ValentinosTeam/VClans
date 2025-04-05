@@ -142,7 +142,7 @@ public class ClanHandler {
     public String getClanNameOfMember(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
         if (clan == null)
-            return "";
+            return null;
         return clan.getName();
     }
     public String getMemberRankTitle(UUID playerUUID) {

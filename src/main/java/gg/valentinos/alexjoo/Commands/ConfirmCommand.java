@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Commands;
 
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,11 +19,11 @@ public class ConfirmCommand implements CommandExecutor, TabCompleter {
             return false;
         }
         if (sender instanceof Player player){
-            VClans.getInstance().getLogger().info("Player " + player.getName() + " is executing confirmation command.");
+            VClans.sendFormattedMessage(sender, "Player " + player.getName() + " is executing confirmation command.", LogType.INFO);
             VClans.getInstance().getConfirmationHandler().executeConfirmation(player);
         }
         else{
-            sender.sendMessage("Only players can use this command.");
+            VClans.sendFormattedMessage(sender, "Only players can use this command.", LogType.WARNING);
         }
         return true;
     }

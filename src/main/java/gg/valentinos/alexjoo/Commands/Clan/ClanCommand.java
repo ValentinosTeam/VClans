@@ -1,6 +1,7 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.SubCommand;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ClanCommand implements CommandExecutor, TabCompleter {
     private final Map<String, SubCommand> subCommands = new HashMap<>();
@@ -36,19 +36,20 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        //TODO: make all messages configurable
         if (args.length == 0) {
             if (sender instanceof Player player){
                 String clanName = VClans.getInstance().getClansHandler().getClanNameOfMember(player.getUniqueId());
-                sender.sendMessage(clanName == null ? "Clanless..." : "Your clan: " + clanName);
+                if (clanName != null) {
+                    VClans.sendFormattedMessage(sender, "Your current clan: " + clanName, LogType.FINE);
+                }
             }
-            sender.sendMessage("Use '/clan help' for help.");
+            VClans.sendFormattedMessage(sender, "Use '/clan help' for help.", LogType.FINE);
             return true;
         }
 
         SubCommand subCommand = subCommands.get(args[0].toLowerCase());
         if (subCommand == null) {
-            sender.sendMessage("Unknown subcommand. Use /clan for help.");
+            VClans.sendFormattedMessage(sender, "Unknown subcommand. Use '/clan help' for help.", LogType.FINE);
             return true;
         }
 
@@ -67,14 +68,9 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
                     suggestions.add(commandName);
                 }
             }
-//            return subCommands.keySet().stream()
-//                    .filter(subCommandName -> subCommandName.startsWith(args[0].toLowerCase()))
-//                    .collect(Collectors.toList());
             return suggestions;
         } else if (args.length > 1) {
-            // Delegate tab completion to the specific subcommand (if any)
             SubCommand subCommand = subCommands.get(args[0].toLowerCase());
-
             if (subCommand != null) {
                 return subCommand.onTabComplete(sender, args);
             }

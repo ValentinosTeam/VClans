@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import static gg.valentinos.alexjoo.VClans.Log;
 
@@ -21,7 +20,6 @@ public abstract class SubCommand {
     protected final static CooldownHandler cooldownHandler = VClans.getInstance().getCooldownHandler();
     protected final static ConfirmationHandler confirmationHandler = VClans.getInstance().getConfirmationHandler();
     protected final static FileConfiguration config = VClans.getInstance().getConfig();
-    protected final static Logger logger = VClans.getInstance().getLogger();
 
     protected String name;
     protected String description;
@@ -42,7 +40,7 @@ public abstract class SubCommand {
     protected String configPath;
 
     public SubCommand(String commandName, String subcommandName, List<String> configKeys){
-        logger.info("Loading command " + commandName + " " + subcommandName);
+        Log("Loading command " + commandName + " " + subcommandName, LogType.INFO);
         loadConfigs(commandName, subcommandName);
         loadMessages(configKeys);
     }
@@ -88,10 +86,10 @@ public abstract class SubCommand {
     protected void sendFormattedPredefinedMessage(CommandSender sender, String messageKey, LogType type){
         String message = messages.get(messageKey);
         if (message == null){
-            logger.info("message key " + messageKey + " not found in config.yml. Using default message.");
+            Log("message key " + messageKey + " not found in config.yml. Using default message.", LogType.WARNING);
             message = VClans.getInstance().getDefaultMessage(messageKey);
             if (message == null){
-                logger.warning("message key " + messageKey + " not found in config.yml. Not sending message.");
+                Log("message key " + messageKey + " not found in config.yml. Not sending message.", LogType.WARNING);
                 return;
             }
         }
@@ -107,14 +105,14 @@ public abstract class SubCommand {
         for (String key : configKeys) {
             String message = config.getString(configPath + "messages." + key);
             if (message == null){
-                logger.warning("Missing message in config.yml for " + configPath + "messages." + key);
+                Log("Missing message in config.yml for " + configPath + "messages." + key, LogType.WARNING);
             }
             messages.put(key, message);
         }
         if (confirmationDuration > 0){
             String message = config.getString(configPath + "messages.confirmation-message");
             if (message == null){
-                logger.warning("Missing confirmation message in config.yml for " + configPath + ". Using the default message.");
+                Log("Missing confirmation message in config.yml for " + configPath + "messages.confirmation-message", LogType.WARNING);
                 message = VClans.getInstance().getDefaultMessage("confirmation");
             }
             messages.put("confirmation-message", message);
@@ -122,19 +120,19 @@ public abstract class SubCommand {
     }
 
     private void loadConfigs(String commandName, String subcommandName){
-        // I now realise that this system is completely useless, but it works so I will keep it.
+        // I now realise that this system is completely useless, but it works, so I will keep it.
         configPath = "commands." + commandName + "." + subcommandName + ".";
         name = subcommandName;
         if ((description = config.getString(configPath + "description")) == null){
-            logger.severe("No description provided for command " + commandName + " " + subcommandName + ". Disabling command.");
+            Log("No description provided for command " + commandName + " " + subcommandName + ". Disabling command.", LogType.SEVERE);
             return;
         }
         if ((usage = config.getString(configPath + "usage")) == null){
-            logger.severe("No usage provided for command " + commandName + " " + subcommandName + ". Disabling command.");
+            Log("No usage provided for command " + commandName + " " + subcommandName + ". Disabling command.", LogType.SEVERE);
             return;
         }
         if (!(enabled = config.getBoolean(configPath + "enabled"))){
-            logger.severe("Command not enabled " + commandName + " " + subcommandName + ". Disabling command.");
+            Log("Command not enabled " + commandName + " " + subcommandName + ". Disabling command.", LogType.SEVERE);
             return;
         }
         cooldownDuration = config.getLong(configPath + "cooldown");

@@ -16,25 +16,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
-import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.inventory.view.AnvilView;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static gg.valentinos.alexjoo.VClans.Log;
 import static gg.valentinos.alexjoo.VClans.SendMessage;
 
 public class RankGui extends AbstractGui {
     private Clan clan;
-    private ClanHandler clanHandler = VClans.getInstance().getClansHandler();
+    private final ClanHandler clanHandler = VClans.getInstance().getClansHandler();
     private ClanRank playerRank;
 
     private ClanRank newRank;
@@ -100,9 +97,21 @@ public class RankGui extends AbstractGui {
         setItem(0, 1, createItemStack("setTitle", Material.NAME_TAG, LegacyComponentSerializer.legacyAmpersand().deserialize(newRank.getTitle()), Component.text("This is the current ranks title."), Component.text("Click this to set the title of the rank.")));
         setItem(0,8, createItemStack("goBack",Material.BARRIER, "Go Back", "Click this to go back.", "Any unsaved changes will be lost."));
 
+        if (rank == null) { // rank is null, we are creating a new rank
+            newRank = new ClanRank("New Rank", "newrank");
+            newRank.setPriority(1);
+            setItem(0, 4, createItemStack("priority", Material.OAK_HANGING_SIGN, "Priority number: " + playerRank.getPriority(), "This number determines the hierarchy of the rank.", "The higher the number, the higher the rank."));
+        }
+        else{ // rank is not null, we are editing an existing rank
+            newRank = new ClanRank(rank.getTitle(), rank.getId());
+            newRank.setPriority(rank.getPriority());
+            newRank.setPermissions(rank.copyPermissions());
+            setItem(0, 4, createItemStack("priority", Material.OAK_HANGING_SIGN, "Priority number: " + rank.getPriority(), "This number determines the hierarchy of the rank.", "The higher the number, the higher the rank."));
+        }
         if (rank != null && (rank.getPriority() == 99 || rank.getPriority() == 0)) {
             return;
         }
+
         setItem(0, 2, createItemStack("priority-10", Material.SOUL_LANTERN, "decrease priority by 10", "-10 to the priority number."));
         setItem(0, 3, createItemStack("priority-1", Material.SOUL_TORCH, "decrease priority by 1", "-1 to the priority number."));
         // the priority number is set further down when we read the rank.
@@ -116,40 +125,29 @@ public class RankGui extends AbstractGui {
         }
         setItem(0, 7, playerHead);
 
-        // rank configuration
-        if (rank == null) { // rank is null, we are creating a new rank
-            newRank = new ClanRank("New Rank", "newrank");
-            newRank.setPriority(1);
-            setItem(0, 4, createItemStack("priority", Material.OAK_HANGING_SIGN, "Priority number: " + playerRank.getPriority(), "This number determines the hiarchy of the rank.", "The higher the number, the higher the rank."));
-        }
-        else{ // rank is not null, we are editing an existing rank
-            newRank = new ClanRank(rank.getTitle(), rank.getId());
-            newRank.setPriority(rank.getPriority());
-            newRank.setPermissions(rank.copyPermissions());
-            setItem(0, 4, createItemStack("priority", Material.OAK_HANGING_SIGN, "Priority number: " + rank.getPriority(), "This number determines the hiarchy of the rank.", "The higher the number, the higher the rank."));
-        }
         initializeRankPermissions(newRank.getPermissions());
         updatePriorityNumber();
     }
-    private void initializeTitleEditor(){
+    private Inventory createAnvilUI(){
         keepAlive = true;
         InventoryView inventoryView = player.openAnvil(null, true);
         keepAlive = false;
         if (inventoryView == null) {
-            Log("bad", LogType.INFO);
+            Log("Couldn't load anvil UI", LogType.SEVERE);
+            player.closeInventory();
+            return null;
         }
-        inventory = inventoryView.getTopInventory();
+        return inventoryView.getTopInventory();
+    }
+    private void initializeTitleEditor(){
+        inventory = createAnvilUI();
+        if (inventory == null) return;
         ItemStack item = createItemStack("currentTitle", Material.NAME_TAG, Component.text(newRank.getTitle()), Component.text("The current title is: ").append(LegacyComponentSerializer.legacyAmpersand().deserialize(newRank.getTitle())), Component.text("Input the new name in the anvil."));
         inventory.setItem(0, item);
     }
     private void initializeRankIdEditor(){
-        keepAlive = true;
-        InventoryView inventoryView = player.openAnvil(null, true);
-        keepAlive = false;
-        if (inventoryView == null) {
-            Log("bad", LogType.INFO);
-        }
-        inventory = inventoryView.getTopInventory();
+        inventory = createAnvilUI();
+        if (inventory == null) return;
         ItemStack item = createItemStack("currentId", Material.NETHER_STAR, Component.text(newRank.getTitle()), Component.text("The current rank ID is: ").append(Component.text(newRank.getTitle())), Component.text("Input a valid ID in the anvil."));
         inventory.setItem(0, item);
     }
@@ -170,7 +168,7 @@ public class RankGui extends AbstractGui {
         if (newRank.getPriority() > 98){
             newRank.setPriority(98);
         }
-        setItem(0, 4, createItemStack("priority", Material.OAK_HANGING_SIGN, Component.text("Priority number: ").append(Component.text(newRank.getPriority(), TextColor.color(255,215,0))), Component.text("This number determines the hiarchy of the rank."), Component.text("The higher the number, the higher the rank.")));
+        setItem(0, 4, createItemStack("priority", Material.OAK_HANGING_SIGN, Component.text("Priority number: ").append(Component.text(newRank.getPriority(), TextColor.color(255,215,0))), Component.text("This number determines the hierarchy of the rank."), Component.text("The higher the number, the higher the rank.")));
     }
     private ItemStack createPermissionBlock(String permission, boolean value){
         String customTag = "perm-"+permission;
@@ -214,7 +212,6 @@ public class RankGui extends AbstractGui {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-//        if ((e.getView().title().equals(title) && e.getWhoClicked() == player) || (e.getInventory().getType() == InventoryType.ANVIL && e.getWhoClicked() == player)) {
         if (e.getWhoClicked() == player) {
             e.setCancelled(true);
             ItemStack item = e.getCurrentItem();
@@ -226,11 +223,17 @@ public class RankGui extends AbstractGui {
                 }
                 return;
             }
+            Component displayName = item.getItemMeta().displayName();
+
             String customTag = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(VClans.getInstance(), "customTag"), PersistentDataType.STRING);
             if (customTag == null) return;
+            if (displayName == null) {
+                Log("Display name is null", LogType.SEVERE);
+                player.closeInventory();
+                return;
+            }
             HashMap<String, Boolean> newPermissions;
             if (e.getInventory().getType() == InventoryType.CHEST){
-                player.sendMessage("Player " + player.getName() + " clicked on " + customTag);
                 if (!customTag.startsWith("rank-")){
                     if (!cursorItem.getType().isAir()){
                         player.setItemOnCursor(null);
@@ -275,14 +278,13 @@ public class RankGui extends AbstractGui {
                         }
                         else{
                             if (clan.getRankById(newRank.getId()) != null) {
-                                // rank exists owerwrite it
+                                // rank exists overwrite it
                                 clanHandler.addRank(clan, newRank);
                                 keepAlive = false;
                                 initializeRankManager();
-//                                player.closeInventory();
                             }
                             else{
-                                // rank doesnt exist, open anvil gui to set the id.
+                                // rank doesn't exist, open anvil gui to set the id.
                                 initializeRankIdEditor();
                             }
                         }
@@ -317,11 +319,11 @@ public class RankGui extends AbstractGui {
                                 if (rank != null) {
                                     SendMessage(player, clan.getRankInfo(rank), LogType.NULL);
                                 } else {
-                                    player.sendMessage("Rank not found.");
+                                    SendMessage(player, Component.text("Rank not found.", TextColor.color(255,0,0)), LogType.SEVERE);
                                 }
                                 player.closeInventory();
                             }
-                            else { // has an item like deletion or editing equiped
+                            else { // has an item like deletion or editing equipped
                                 ItemMeta cursorItemMeta = cursorItem.getItemMeta();
                                 if (cursorItemMeta == null) {
                                     SendMessage(player, Component.text("The item meta is null. You shouldn't be able to see this message").color(TextColor.color(255,0,0)), LogType.SEVERE);
@@ -332,7 +334,7 @@ public class RankGui extends AbstractGui {
                                     Log("Player " + player.getName() + " clicked on " + heldCustomTag, LogType.INFO);
                                     ClanRank targetRank = clan.getRankById(rankId);
                                     if (targetRank == null) {
-                                        player.sendMessage("Rank not found.");
+                                        SendMessage(player, Component.text("Rank not found.", TextColor.color(255,0,0)), LogType.SEVERE);
                                         return;
                                     }
                                     if (playerRank.getPriority() <= targetRank.getPriority() && playerRank.getPriority() != 99) {
@@ -369,7 +371,7 @@ public class RankGui extends AbstractGui {
                         else if (customTag.startsWith("priority")){
                             // should change the priority, +1 or -1
                             if (customTag.equals("priority")){
-                                player.sendMessage("You clicked on the priority item.");
+                                SendMessage(player, Component.text("This ranks priority number is: " + newRank.getPriority()), LogType.INFO);
                                 return;
                             }
                             else{
@@ -384,9 +386,6 @@ public class RankGui extends AbstractGui {
                                 newRank.setPriority(newPriority);
                                 updatePriorityNumber();
                             }
-                        }
-                        else{
-                            player.sendMessage("Unknown item clicked.");
                         }
                         break;
                 }
@@ -404,38 +403,30 @@ public class RankGui extends AbstractGui {
                         break;
                     case "titleResult":
                         // set the new title to newTitle and go back to the rank editor
-//                        String name = PlainTextComponentSerializer.plainText().serialize(item.getItemMeta().displayName());
-                        String name = LegacyComponentSerializer.legacyAmpersand().serialize(item.getItemMeta().displayName());
-                        Log("getting result: " + name + item.getItemMeta().displayName());
+                        String name = LegacyComponentSerializer.legacyAmpersand().serialize(displayName);
                         newRank.setTitle(name);
                         inventory.clear();
                         inventory = Bukkit.createInventory(null, InventoryType.CHEST, title);
+                        initializeRankEditor(newRank);
                         keepAlive = true;
                         player.openInventory(inventory);
                         keepAlive = false;
-                        initializeRankEditor(newRank);
                         break;
                     case "idResult":
-                        String id = PlainTextComponentSerializer.plainText().serialize(item.getItemMeta().displayName());
-                        Log("getting result: " + id + item.getItemMeta().displayName());
+                        String id = PlainTextComponentSerializer.plainText().serialize(displayName);
                         newRank.setId(id);
                         inventory.clear();
                         inventory = Bukkit.createInventory(null, InventoryType.CHEST, title);
+                        clanHandler.addRank(clan, newRank);
+                        initializeRankManager();
                         keepAlive = true;
                         player.openInventory(inventory);
                         keepAlive = false;
-//                        initializeRankEditor(newRank);
-                        clanHandler.addRank(clan, newRank);
-                        initializeRankManager();
-//                        player.closeInventory();
                         break;
                     default:
-                        Log("Somethings wrong i can feel it", LogType.INFO);
+                        Log("Somethings wrong i can feel it", LogType.SEVERE);
                         break;
                 }
-            }
-            else{
-                player.sendMessage("Player clicked on nothing.");
             }
         }
     }
@@ -452,8 +443,6 @@ public class RankGui extends AbstractGui {
                     if (newName == null) return;
                     Component name;
                     name = LegacyComponentSerializer.legacyAmpersand().deserialize(newName);
-                    Log("new name is " + newName, LogType.INFO);
-                    SendMessage(player, name, LogType.NULL);
                     meta.displayName(name);
                     result.setItemMeta(meta);
                     String strippedName = stripMessage(newName);
@@ -486,6 +475,7 @@ public class RankGui extends AbstractGui {
             }
         }
     }
+
     private static String stripMessage(String str) {
         // Remove all non-alphanumeric characters and underscores
         final List<String> allowedCodes = List.of(

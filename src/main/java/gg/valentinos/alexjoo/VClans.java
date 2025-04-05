@@ -9,6 +9,7 @@ import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -71,12 +72,13 @@ public final class VClans extends JavaPlugin {
     }
     public static void SendMessage(Player player, Component message, LogType type){
         player.sendMessage(message);
+        String text = PlainTextComponentSerializer.plainText().serialize(message);
         if (type != LogType.NULL){
             switch (type){
-                case FINE -> getInstance().getLogger().fine("Sending message to " + player.getName() + ": " + message);
-                case INFO -> getInstance().getLogger().info("Sending message to " + player.getName() + ": " + message);
-                case WARNING -> getInstance().getLogger().warning("Sending message to " + player.getName() + ": " + message);
-                case SEVERE -> getInstance().getLogger().severe("Sending message to " + player.getName() + ": " + message);
+                case FINE -> getInstance().getLogger().fine("Sending message to " + player.getName() + ": " + text);
+                case INFO -> getInstance().getLogger().info("Sending message to " + player.getName() + ": " + text);
+                case WARNING -> getInstance().getLogger().warning("Sending message to " + player.getName() + ": " + text);
+                case SEVERE -> getInstance().getLogger().severe("Sending message to " + player.getName() + ": " + text);
             }
         }
     }
@@ -91,7 +93,7 @@ public final class VClans extends JavaPlugin {
         }
     }
     public static void Log(String message){
-        getInstance().getLogger().info(message);
+        Log(message, LogType.INFO);
     }
     public static void sendFormattedMessage(CommandSender sender, String message, LogType type, HashMap<String, String> replacements) {
         if (message == null || message.isEmpty()) {

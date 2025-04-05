@@ -19,7 +19,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static gg.valentinos.alexjoo.VClans.Log;
 
@@ -42,20 +41,6 @@ public abstract class AbstractGui implements Listener {
     }
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        //TODO: fix when the player closes the inventory by pressing esc
-//        Log("Inventory closed " + event.getInventory().getType() + " inventory == inventory: " + event.getInventory().equals(inventory), LogType.INFO);
-//        if (keepAlive && event.getPlayer() == player && event.getInventory().equals(inventory)) {
-//            Log("Inventory closed, but keep alive is true " + event.getInventory().getType(), LogType.INFO);
-//            if (event.getInventory().getType() == InventoryType.ANVIL) {
-//                event.getInventory().clear();
-//                keepAlive = false;
-//            }
-//            return;
-//        }
-//        if (event.getInventory().equals(inventory)) {
-//            HandlerList.unregisterAll(this);
-//        }
-
         if (event.getPlayer().equals(player)) {
             if (event.getInventory().getType() == InventoryType.ANVIL) {
                 if (keepAlive) {
@@ -89,13 +74,15 @@ public abstract class AbstractGui implements Listener {
 
     protected void setItem(int row, int column, ItemStack item) {
         if (row < 0 || row >= inventory.getSize() / 9 || column < 0 || column >= 9) {
-            throw new IllegalArgumentException("Row or column out of bounds");
+            Log("Row or column out of bounds", LogType.SEVERE);
+            return;
         }
         inventory.setItem(row * 9 + column, item);
     }
     protected void setItem(int pos, ItemStack item) {
         if (pos >= inventory.getSize()) {
-            throw new IllegalArgumentException("Pos out of bounds");
+            Log("Pos out of bounds", LogType.SEVERE);
+            return;
         }
         inventory.setItem(pos, item);
     }
