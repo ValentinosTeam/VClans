@@ -214,6 +214,9 @@ public class RankGui extends AbstractGui {
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.getWhoClicked() == player) {
             e.setCancelled(true);
+            if (e.isRightClick() || e.isShiftClick()) {
+                return;
+            }
             ItemStack item = e.getCurrentItem();
             ItemStack cursorItem = player.getItemOnCursor();
             if (item == null || item.getType() == Material.AIR) {

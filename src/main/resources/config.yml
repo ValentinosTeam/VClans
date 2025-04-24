@@ -145,22 +145,6 @@ commands:
         success: "You have left the clan {clan-name} successfully."
         leave-notification: "Your fellow clan member {player-name} has left the clan."
         owner-cant-leave: "You can't leave your clan. Disband it instead."
-    promote:
-      # {clan-name} - the clan name where the player is getting promoted
-      # {player-name} - the player who is promiting another player
-      # {target-name} - the player who is being promoted to rank owner
-      enabled: true
-      description: "Promotes a player to be the one of the owners of your clan."
-      usage: "/clan promote <player>"
-      cooldown: 60*60*24*7 # 7 days
-      confirmation: 10
-      messages:
-        success: "You have promoted {target-name} to be one of the owners of {clan-name}"
-        promoted: "You have been promoted to be one of the owners of the clan by {player-name}."
-        promoted-notification: "Player {target-name} has been promoted to be one of the owners of the clan!" # This is sent to all clan members online
-        cant-promote-yourself: "You can't promote yourself to be the leader of the clan."
-        target-not-in-clan: "{target-name} is not in your clan."
-        already-owner: "That player is already an owner of the clan."
     stepdown:
       # {clan-name} - the clan name you are stepping down of
       # {player-name} - the name of the player stepping down
