@@ -3,7 +3,9 @@ package gg.valentinos.alexjoo.Handlers;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.ClanChunk;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ public class ChunkHandler {
     private final ClanHandler clanHandler;
     private HashMap<ChunkPos, ClanChunk> chunks = new HashMap<>();
     private final int maxChunkAmount;
+    private HashMap<Player, ChunkRadar> radars = new HashMap<>();
 
     private record ChunkPos(int x, int z){}
 
@@ -40,13 +43,42 @@ public class ChunkHandler {
         ClanChunk newChunk = new ClanChunk(x, z, worldName, clanName);
         addChunk(newChunk, clan);
     }
-
     public void unclaimChunk(int x, int z, String clanName) {
         Clan clan = clanHandler.getClanByName(clanName);
         ClanChunk chunkToRemove = chunks.get(new ChunkPos(x, z));
         removeChunk(chunkToRemove, clan);
     }
+    public void unclaimChunks(String clanName) {
+        Clan clan = clanHandler.getClanByName(clanName);
+        for (ClanChunk chunk : clan.getChunks()) {
+            removeChunk(chunk, clan);
+        }
+    }
+    public void toggleChunkRadar(Player player){
+        if (radars.containsKey(player)) {
+            Log("Closing radar for player: " + player.getName(), LogType.FINE);
+            ChunkRadar radar = radars.get(player);
+            if (radar != null) {
+                radar.closeRadar();
+                radars.remove(player);
+            }
+        }else{
+            Log("Opening radar for player: " + player.getName(), LogType.FINE);
+            ChunkRadar chunkRadar = new ChunkRadar(player);
+            chunkRadar.initializeRadar();
+            radars.put(player, chunkRadar);
+        }
+    }
+    public void updateChunkRadar(Player player, int x, int z){
+        ChunkRadar radar = radars.get(player);
+        if (radar != null) {
+            radar.updateRadar(x, z);
+        }
+    }
 
+    public int getMaxChunkAmount() {
+        return maxChunkAmount;
+    }
     public String getChunkInfo(int x, int z) {
         ClanChunk chunk = getChunk(x, z);
         // TODO: make this configurable.
@@ -59,12 +91,15 @@ public class ChunkHandler {
                 "World: " + chunk.getWorld() + "\n" +
                 "Clan Name: " + chunk.getClanName() + "\n";
     }
-
-    public int getMaxChunkAmount() {
-        return maxChunkAmount;
-    }
     public String getWorldName() {
         return worldName;
+    }
+    public String getClanNameByChunk(int x, int z) {
+        ClanChunk chunk = getChunk(x, z);
+        if (chunk == null) {
+            return null;
+        }
+        return chunk.getClanName();
     }
     public boolean isChunkClaimedByClan(int x, int z, String clanName) {
         ClanChunk chunk = getChunk(x, z);
@@ -99,7 +134,6 @@ public class ChunkHandler {
         }
         return false;
     }
-
     public List<ClanChunk> getAdjacentChunks(int x, int z) {
         List<ClanChunk> adjacentChunks = new ArrayList<>();
         int[][] offsets = {
@@ -116,6 +150,7 @@ public class ChunkHandler {
         }
         return adjacentChunks;
     }
+
     private void addChunk(ClanChunk chunk, Clan clan) {
         chunks.put(new ChunkPos(chunk.getX(), chunk.getZ()), chunk);
         clan.addChunk(chunk);

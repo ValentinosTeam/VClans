@@ -22,6 +22,7 @@ public class ChunkCommand  implements CommandExecutor, TabCompleter {
     public ChunkCommand() {
         registerSubCommand(new ChunkClaimSubcommand());
         registerSubCommand(new ChunkUnclaimSubcommand());
+        registerSubCommand(new ChunkRadarSubcommand());
     }
 
     @Override

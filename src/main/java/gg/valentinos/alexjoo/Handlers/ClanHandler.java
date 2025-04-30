@@ -34,6 +34,7 @@ public class ClanHandler {
     }
     public void disbandClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
+        VClans.getInstance().getChunkHandler().unclaimChunks(clan.getName());
         clans.getClans().remove(clan);
         saveClans();
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getName());
@@ -182,9 +183,7 @@ public class ClanHandler {
         clan.createRank("owner", "leader");
         ClanRank ownerRank = clan.getRankById("owner");
         HashMap <String, Boolean> permissions = ownerRank.getPermissions();
-        for (String key : permissions.keySet()) {
-            permissions.put(key, true);
-        }
+        permissions.replaceAll((k, v) -> true);
         ownerRank.setPermissions(permissions);
         ownerRank.setPriority(99);
         clan.createRank("default", "member");

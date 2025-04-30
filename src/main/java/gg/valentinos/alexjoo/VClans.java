@@ -8,6 +8,7 @@ import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
+import gg.valentinos.alexjoo.Listeners.ChunkListener;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -41,6 +42,7 @@ public final class VClans extends JavaPlugin {
         chunkHandler = new ChunkHandler();
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        getServer().getPluginManager().registerEvents(new ChunkListener(), this);
 
         ClanCommand clanCommand = new ClanCommand();
         Objects.requireNonNull(getCommand("clan")).setExecutor(clanCommand);

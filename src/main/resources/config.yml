@@ -192,3 +192,8 @@ commands:
         not-claimed: "This chunk is not claimed by your clan. Currently claimed by {clan-name}."
         no-permission: "You don't have the permission to unclaim chunks."
         territory-split: "You can't unclaim this chunk because it would split your clan's territory."
+    radar:
+      enabled: true
+      description: "Displays the radar of your clan's claimed chunks."
+      usage: "/chunk radar"
+
