@@ -1,0 +1,101 @@
+package gg.valentinos.alexjoo.Commands.Chunk;
+
+import gg.valentinos.alexjoo.Commands.CommandAction;
+import gg.valentinos.alexjoo.Commands.SubCommand;
+import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Handlers.ChunkHandler;
+import gg.valentinos.alexjoo.VClans;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.List;
+
+public class ChunkUnclaimSubcommand extends SubCommand {
+    private final ChunkHandler chunkHandler;
+
+    public ChunkUnclaimSubcommand() {
+        super("chunk", "unclaim", List.of("success", "not-claimed", "no-permission", "territory-split"));
+        hasToBePlayer = true;
+        requiredArgs = 1;
+        this.chunkHandler = VClans.getInstance().getChunkHandler();
+    }
+
+    @Override
+    public CommandAction getAction(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        int x = player.getChunk().getX();
+        int z = player.getChunk().getZ();
+        Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+        String clanName = clan.getName();
+
+        return () -> {
+            sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
+            chunkHandler.unclaimChunk(x, z, clanName);
+        };
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            return List.of("unclaim");
+        }
+        else{
+            return List.of();
+        }
+    }
+
+    @Override
+    protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        int x = player.getChunk().getX();
+        int z = player.getChunk().getZ();
+        Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+        if (clan == null) {
+            sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
+            return true;
+        }
+        String clanName = clan.getName();
+        HashMap<String, Boolean> permissions = clan.getRank(player.getUniqueId()).getPermissions();
+        if (!permissions.get("canUnclaimChunks")) {
+            sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
+            return true;
+        }
+        if (!chunkHandler.isChunkClaimedByClan(x, z, clanName)) {
+            sendFormattedPredefinedMessage(sender, "not-claimed", LogType.WARNING);
+            return true;
+        }
+        if (chunkHandler.unclaimWillSplit(x, z, clanName)) {
+            sendFormattedPredefinedMessage(sender, "territory-split", LogType.WARNING);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean suggestCommand(CommandSender sender) {
+        if (sender instanceof Player player) {
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+            return clan != null && clan.getRank(player.getUniqueId()).getPermissions().get("canUnclaimChunks");
+        }
+        return false;
+    }
+
+    @Override
+    protected void loadReplacementValues(CommandSender sender, String[] args) {
+        String clanName = "ERROR";
+
+        if (sender instanceof Player player) {
+            int x = player.getChunk().getX();
+            int z = player.getChunk().getZ();
+            Clan clan = clanHandler.getClanByChunkLocation(x, z);
+            if (clan != null) {
+                clanName = clan.getName();
+            }
+        }
+
+        replacements.put("{clan-name}", clanName);
+
+    }
+}

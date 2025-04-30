@@ -3,9 +3,12 @@ settings:
   max-clan-name-length: 16
   min-clan-name-length: 3
   max-clan-size: 30
+  max-chunks: 5
   invite-expiration: 60*60*24*7 # 7 days
   default-clan-owner-title: "Leader"
   default-clan-member-title:  "Member"
+chunks:
+  world-name: "world" # The world name where the plugin will be enabled
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
@@ -166,3 +169,26 @@ commands:
         target-not-in-clan: "{target-name} is not in your clan."
         rank-not-found: "The rank {rank} does not exist."
         rank-priority-low: "Your rank priority is too low"
+  chunk:
+    claim:
+      enabled: true
+      description: "Claims a chunk for your clan."
+      usage: "/chunk claim"
+      messages:
+        # {clan-name} - the clan that owns the chunk the player is standing in
+        # {max-chunks} - the maximum number of chunks the clan can claim
+        success: "You have claimed the chunk for your clan."
+        already-claimed: "This chunk is already claimed by the clan - {clan-name}."
+        no-permission: "You don't have the permission to claim chunks."
+        max-chunks: "You have reached the maximum number ({max-chunks}) of chunks your clan can claim."
+        not-adjacent: "You can only claim chunks that are adjacent to your clan's claimed chunks."
+        too-close: "You can't claim this chunk because it is too close to another clan's claimed chunk."
+    unclaim:
+      enabled: true
+      description: "Unclaims a chunk for your clan."
+      usage: "/chunk unclaim"
+      messages:
+        success: "You have unclaimed the chunk for your clan."
+        not-claimed: "This chunk is not claimed by your clan. Currently claimed by {clan-name}."
+        no-permission: "You don't have the permission to unclaim chunks."
+        territory-split: "You can't unclaim this chunk because it would split your clan's territory."

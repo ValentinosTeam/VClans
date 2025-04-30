@@ -1,8 +1,10 @@
 package gg.valentinos.alexjoo;
 
+import gg.valentinos.alexjoo.Commands.Chunk.ChunkCommand;
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
@@ -24,6 +26,7 @@ public final class VClans extends JavaPlugin {
     private ClanHandler clanHandler;
     private CooldownHandler cooldownHandler;
     private ConfirmationHandler confirmationHandler;
+    private ChunkHandler chunkHandler;
     private HashMap<String, String> defaultMessages;
 
     @Override
@@ -35,12 +38,16 @@ public final class VClans extends JavaPlugin {
         clanHandler = new ClanHandler();
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
+        chunkHandler = new ChunkHandler();
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         ClanCommand clanCommand = new ClanCommand();
         Objects.requireNonNull(getCommand("clan")).setExecutor(clanCommand);
         Objects.requireNonNull(getCommand("clan")).setTabCompleter(clanCommand);
+        ChunkCommand chunkCommand = new ChunkCommand();
+        Objects.requireNonNull(getCommand("chunk")).setExecutor(chunkCommand);
+        Objects.requireNonNull(getCommand("chunk")).setTabCompleter(chunkCommand);
 
         Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
 
@@ -60,6 +67,7 @@ public final class VClans extends JavaPlugin {
         cooldownHandler = null;
 
         confirmationHandler = null;
+        chunkHandler = null;
         defaultMessages = null;
 
         instance = null;
@@ -70,6 +78,7 @@ public final class VClans extends JavaPlugin {
     public static VClans getInstance() {
         return instance;
     }
+
     public static void SendMessage(Player player, Component message, LogType type){
         player.sendMessage(message);
         String text = PlainTextComponentSerializer.plainText().serialize(message);
@@ -125,7 +134,7 @@ public final class VClans extends JavaPlugin {
         }
     }
 
-    public ClanHandler getClansHandler() {
+    public ClanHandler getClanHandler() {
         return clanHandler;
     }
 
@@ -135,6 +144,10 @@ public final class VClans extends JavaPlugin {
 
     public ConfirmationHandler getConfirmationHandler() {
         return confirmationHandler;
+    }
+
+    public ChunkHandler getChunkHandler() {
+        return chunkHandler;
     }
 
     public String getDefaultMessage(String key) {

@@ -38,7 +38,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
             if (sender instanceof Player player){
-                String clanName = VClans.getInstance().getClansHandler().getClanNameOfMember(player.getUniqueId());
+                String clanName = VClans.getInstance().getClanHandler().getClanNameOfMember(player.getUniqueId());
                 if (clanName != null) {
                     VClans.sendFormattedMessage(sender, "Your current clan: " + clanName, LogType.FINE);
                 }

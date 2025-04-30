@@ -16,10 +16,10 @@ import java.util.Objects;
 import static gg.valentinos.alexjoo.VClans.Log;
 
 public abstract class SubCommand {
-    protected final static ClanHandler clanHandler = VClans.getInstance().getClansHandler();
-    protected final static CooldownHandler cooldownHandler = VClans.getInstance().getCooldownHandler();
-    protected final static ConfirmationHandler confirmationHandler = VClans.getInstance().getConfirmationHandler();
-    protected final static FileConfiguration config = VClans.getInstance().getConfig();
+    protected final ClanHandler clanHandler;
+    protected final CooldownHandler cooldownHandler;
+    protected final ConfirmationHandler confirmationHandler;
+    protected final FileConfiguration config;
 
     protected String name;
     protected String description;
@@ -40,6 +40,10 @@ public abstract class SubCommand {
     protected String configPath;
 
     public SubCommand(String commandName, String subcommandName, List<String> configKeys){
+        this.clanHandler = VClans.getInstance().getClanHandler();
+        this.cooldownHandler = VClans.getInstance().getCooldownHandler();
+        this.confirmationHandler = VClans.getInstance().getConfirmationHandler();
+        this.config = VClans.getInstance().getConfig();
         Log("Loading command " + commandName + " " + subcommandName, LogType.INFO);
         loadConfigs(commandName, subcommandName);
         loadMessages(configKeys);

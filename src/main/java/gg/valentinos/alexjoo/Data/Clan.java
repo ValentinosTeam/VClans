@@ -16,12 +16,14 @@ public class Clan {
     private HashMap<String, ClanRank> ranks;
     private HashMap<UUID, ClanMember> members;
     private HashMap<UUID, ClanInvite> invites;
+    private HashSet<ClanChunk> chunks;
 
     public Clan(String name, UUID owner, int maxSize) {
         this.name = name;
         this.members = new HashMap<>();
         this.invites = new HashMap<>();
         this.ranks = new HashMap<>();
+        this.chunks = new HashSet<>();
         this.maxSize = maxSize;
         this.owner = owner;
     }
@@ -49,6 +51,12 @@ public class Clan {
     }
     public void setRanks(HashMap<String, ClanRank> ranks) {
         this.ranks = ranks;
+    }
+    public HashSet<ClanChunk> getChunks() {
+        return chunks;
+    }
+    public void setChunks(HashSet<ClanChunk> chunks) {
+        this.chunks = chunks;
     }
     public int getMaxSize() {
         return maxSize;
@@ -184,6 +192,22 @@ public class Clan {
         component = component.append(Component.text(sb.toString()));
 
         return component;
+    }
+
+    // Chunk logic
+    public void addChunk(ClanChunk chunk) {
+        chunks.add(chunk);
+    }
+    public void removeChunk(ClanChunk chunk) {
+        chunks.remove(chunk);
+    }
+    public ClanChunk getChunkByLocation(int x, int z) {
+        for (ClanChunk chunk : chunks) {
+            if (chunk.getX() == x && chunk.getZ() == z) {
+                return chunk;
+            }
+        }
+        return null;
     }
 
 }

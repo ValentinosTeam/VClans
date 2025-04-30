@@ -31,13 +31,14 @@ import static gg.valentinos.alexjoo.VClans.SendMessage;
 
 public class RankGui extends AbstractGui {
     private Clan clan;
-    private final ClanHandler clanHandler = VClans.getInstance().getClansHandler();
+    private final ClanHandler clanHandler;
     private ClanRank playerRank;
 
     private ClanRank newRank;
 
     public RankGui() {
         super("Rank Manager", 3);
+        clanHandler = VClans.getInstance().getClanHandler();
     }
 
     @Override

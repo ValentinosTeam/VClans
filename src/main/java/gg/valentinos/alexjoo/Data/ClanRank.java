@@ -1,9 +1,5 @@
 package gg.valentinos.alexjoo.Data;
 
-import com.google.gson.annotations.Expose;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-
 import java.util.HashMap;
 
 public class ClanRank {
@@ -58,6 +54,8 @@ public class ClanRank {
         newPermissions.put("canCreateRank", false);
         newPermissions.put("canDeleteRank", false);
         newPermissions.put("canChangeRank", false);
+        newPermissions.put("canClaimChunks", false);
+        newPermissions.put("canUnclaimChunks", false);
         return newPermissions;
     }
 }
