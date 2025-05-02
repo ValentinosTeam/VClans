@@ -6,11 +6,6 @@ public class ClanChunk {
     private String world;
     private String clanName;
 
-    private int minPriority = 0;
-    private boolean cancelInteraction = true;
-    private boolean cancelBuild = true;
-    private boolean cancelBreak = true;
-
     public ClanChunk(int x, int z, String world, String clanName) {
         this.x = x;
         this.z = z;
@@ -42,30 +37,4 @@ public class ClanChunk {
     public void setClanName(String clanName) {
         this.clanName = clanName;
     }
-    public int getMinPriority() {
-        return minPriority;
-    }
-    public void setMinPriority(int minPriority) {
-        this.minPriority = minPriority;
-    }
-    public boolean isCancelInteraction() {
-        return cancelInteraction;
-    }
-    public void setCancelInteraction(boolean cancelInteraction) {
-        this.cancelInteraction = cancelInteraction;
-    }
-    public boolean isCancelBuild() {
-        return cancelBuild;
-    }
-    public void setCancelBuild(boolean cancelBuild) {
-        this.cancelBuild = cancelBuild;
-    }
-    public boolean isCancelBreak() {
-        return cancelBreak;
-    }
-    public void setCancelBreak(boolean cancelBreak) {
-        this.cancelBreak = cancelBreak;
-    }
-
-
 }
