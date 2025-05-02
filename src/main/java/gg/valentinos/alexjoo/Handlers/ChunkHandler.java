@@ -38,19 +38,23 @@ public class ChunkHandler {
         this.maxChunkAmount = VClans.getInstance().getConfig().getInt("settings.max-chunks");
     }
 
-    public void claimChunk(int x, int z, String clanName) {
+    public void claimChunk(int x, int z, Player player) {
+        String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
         Clan clan = clanHandler.getClanByName(clanName);
         ClanChunk newChunk = new ClanChunk(x, z, worldName, clanName);
         addChunk(newChunk, clan);
+        updateChunkRadar(player, x, z);
     }
-    public void unclaimChunk(int x, int z, String clanName) {
+    public void unclaimChunk(int x, int z, Player player) {
+        String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
         Clan clan = clanHandler.getClanByName(clanName);
         ClanChunk chunkToRemove = chunks.get(new ChunkPos(x, z));
         removeChunk(chunkToRemove, clan);
+        updateChunkRadar(player, x, z);
     }
     public void unclaimChunks(String clanName) {
         Clan clan = clanHandler.getClanByName(clanName);
-        for (ClanChunk chunk : clan.getChunks()) {
+        for (ClanChunk chunk : new HashSet<>(clan.getChunks())) {
             removeChunk(chunk, clan);
         }
     }
@@ -111,15 +115,15 @@ public class ChunkHandler {
             Log("Clan not found", LogType.SEVERE);
             return false;
         }
-        for (ClanChunk chunk : getAdjacentChunks(x, z)) {
-            if (chunk != null && getAdjacentChunks(chunk.getX(), chunk.getZ()).size() <= 1){
+        for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
+            if (chunk != null && getAdjacentChunks(chunk.getX(), chunk.getZ(), false).size() <= 1){
                 return true;
             }
         }
         return false;
     }
     public boolean isChunkAdjacentToClan(int x, int z, String clanName) {
-        for (ClanChunk chunk : getAdjacentChunks(x, z)) {
+        for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
             if (chunk != null && chunk.getClanName().equals(clanName)){
                 return true;
             }
@@ -127,21 +131,35 @@ public class ChunkHandler {
         return false;
     }
     public boolean isChunkAdjacentToEnemyClan(int x, int z, String clanName) {
-        for (ClanChunk chunk : getAdjacentChunks(x, z)) {
+        for (ClanChunk chunk : getAdjacentChunks(x, z, true)) {
             if (chunk != null && !chunk.getClanName().equals(clanName)){
                 return true;
             }
         }
         return false;
     }
-    public List<ClanChunk> getAdjacentChunks(int x, int z) {
+    public List<ClanChunk> getAdjacentChunks(int x, int z, boolean includeCorners) {
         List<ClanChunk> adjacentChunks = new ArrayList<>();
-        int[][] offsets = {
-                {1, 0}, // right
-                {-1, 0}, // left
-                {0, 1}, // up
-                {0, -1} // down
-        };
+        int[][] offsets;
+        if (includeCorners) {
+            offsets = new int[][]{
+                    {1, 0},  // right
+                    {-1, 0}, // left
+                    {0, 1},  // up
+                    {0, -1}, // down
+                    {1, 1},  // top-right
+                    {1, -1}, // bottom-right
+                    {-1, 1}, // top-left
+                    {-1, -1} // bottom-left
+            };
+        } else {
+            offsets = new int[][]{
+                    {1, 0},  // right
+                    {-1, 0}, // left
+                    {0, 1},  // up
+                    {0, -1}  // down
+            };
+        }
         for (int[] offset : offsets) {
             int newX = x + offset[0];
             int newZ = z + offset[1];

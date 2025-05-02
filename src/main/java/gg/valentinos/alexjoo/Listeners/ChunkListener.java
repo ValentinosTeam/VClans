@@ -17,12 +17,12 @@ public class ChunkListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.getFrom().getChunk().equals(event.getTo().getChunk())) {
-            return; // Same chunk, do nothing
-        }
+        Chunk fromChunk = event.getFrom().getChunk();
         Chunk toChunk = event.getTo().getChunk();
+        if (!fromChunk.equals(toChunk)) { // update the chunk radar and notify if player entered or left a chunk
+            Player player = event.getPlayer();
+            chunkHandler.updateChunkRadar(player, toChunk.getX(), toChunk.getZ());
+        }
 
-        Player player = event.getPlayer();
-        chunkHandler.updateChunkRadar(player, toChunk.getX(), toChunk.getZ());
     }
 }

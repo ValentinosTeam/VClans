@@ -5,6 +5,7 @@ import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
@@ -34,28 +35,13 @@ public class ChunkRadar {
 
         Log("Initializing radar for player: " + player.getName());
 
-        objective = scoreboard.registerNewObjective("Chunk Radar", Criteria.DUMMY, Component.text("Chunk Radar"));
+        objective = scoreboard.registerNewObjective("Chunk Radar", Criteria.DUMMY, Component.text("Chunk Radar").decorate(TextDecoration.UNDERLINED).color(TextColor.color(255,85,85)));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-//        Team team = scoreboard.registerNewTeam("test");
-//        Component test = Component.text("■").color(TextColor.color(100,0,0));
-//        test = test.append(Component.text("■").color(TextColor.color(0,100,0)));
-//        test = test.append(Component.text("■").color(TextColor.color(0,0,100)));
-//        team.suffix(test);
-//        team.addEntry("0");
-//        objective.getScore("0").setScore(50);
-//
-//        Team team2 = scoreboard.registerNewTeam("test2");
-//        team2.suffix(test);
-//        team2.addEntry("1");
-//        objective.getScore("1").setScore(60);
-
-
 
         updateRadar(player.getChunk().getX(), player.getChunk().getZ());
     }
     public void updateRadar(int posX, int posZ){
-        final char radarSymbol = '■';
+        final String radarSymbol = "■ ";
         final int radarSize = 5; // HAS TO BE ODD!!!
         final int mid = (radarSize-1)/2;
         Log("Updating radar for player: " + player.getName());
@@ -63,8 +49,6 @@ public class ChunkRadar {
             Component row = Component.text(" ".repeat(i));
             int dz = mid - i;
             for (int j = 0; j < radarSize; j++){
-                //  0  1  2  3  4
-                // -2 -1  0  1  2
                 int dx = j - mid;
                 int x = posX + dx;
                 int z = posZ + dz;

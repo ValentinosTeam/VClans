@@ -27,12 +27,10 @@ public class ChunkClaimSubcommand extends SubCommand {
         Player player = (Player) sender;
         int x = player.getChunk().getX();
         int z = player.getChunk().getZ();
-        Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-        String clanName = clan.getName();
 
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
-            chunkHandler.claimChunk(x, z, clanName);
+            chunkHandler.claimChunk(x, z, player);
         };
     }
 
