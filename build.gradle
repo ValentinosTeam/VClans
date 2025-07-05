@@ -64,3 +64,19 @@ tasks.register('buildAndDeploy') {
         }
     }
 }
+
+tasks.register('buildAndDeploy2') {
+    dependsOn build
+
+    doLast {
+        copy {
+            from "build/libs/VClans-${version}.jar"
+            into 'C:\\Users\\alexa\\Projects\\MinecraftServer\\data\\plugins'
+        }
+
+        exec {
+            commandLine 'docker', 'restart', 'mcserver'
+            ignoreExitValue = true
+        }
+    }
+}
