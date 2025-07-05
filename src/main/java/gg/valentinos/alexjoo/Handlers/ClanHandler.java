@@ -156,6 +156,10 @@ public class ClanHandler {
     public boolean clanExists(String name) {
         return clans.getClans().stream().anyMatch(c -> c.getName().equalsIgnoreCase(name));
     }
+    public boolean isPlayerInClan(UUID playerUUID, String clanName) {
+        Clan clan = getClanByMember(playerUUID);
+        return clan != null && clan.getName().equals(clanName);
+    }
 
     public Clan getClanByName(String name) {
         return clans.getClans().stream().filter(c -> c.getName().equalsIgnoreCase(name)).findFirst().orElse(null);

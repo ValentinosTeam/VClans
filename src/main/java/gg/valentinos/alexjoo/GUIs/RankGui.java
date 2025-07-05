@@ -465,8 +465,6 @@ public class RankGui extends AbstractGui {
                 if (meta != null) {
                     String newName = e.getView().getRenameText();
                     if (newName == null) return;
-                    Log("new name is " + newName, LogType.INFO);
-                    SendMessage(player, Component.text(newName), LogType.NULL);
                     meta.displayName(Component.text(newName));
                     result.setItemMeta(meta);
                     if (stringValid(newName) && newName.length() > 3 && newName.length() < 16 && clan.getRankById(newName) == null) {
