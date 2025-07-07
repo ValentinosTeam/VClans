@@ -16,7 +16,7 @@ public class ChunkClaimSubcommand extends SubCommand {
     private final ChunkHandler chunkHandler;
 
     public ChunkClaimSubcommand() {
-        super("chunk", "claim", List.of("success", "already-claimed", "no-permission", "max-chunks", "not-adjacent", "too-close"));
+        super("chunk", "claim", List.of("success", "already-claimed", "no-permission", "max-chunks", "not-adjacent", "too-close", "wrong-world"));
         hasToBePlayer = true;
         requiredArgs = 1;
         this.chunkHandler = VClans.getInstance().getChunkHandler();
@@ -38,8 +38,7 @@ public class ChunkClaimSubcommand extends SubCommand {
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         if (args.length == 1) {
             return List.of("claim");
-        }
-        else{
+        } else {
             return List.of();
         }
     }
@@ -47,6 +46,10 @@ public class ChunkClaimSubcommand extends SubCommand {
     @Override
     protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
         Player player = (Player) sender;
+        if (!chunkHandler.isChunkInValidWorld(player.getWorld().getName())) {
+            sendFormattedPredefinedMessage(sender, "wrong-world", LogType.WARNING);
+            return true;
+        }
         int x = player.getChunk().getX();
         int z = player.getChunk().getZ();
         Clan clan = clanHandler.getClanByMember(player.getUniqueId());
@@ -65,7 +68,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "already-claimed", LogType.WARNING);
             return true;
         }
-        if (chunkHandler.isChunkAdjacentToEnemyClan(x, z, clanName)) {
+        if (chunkHandler.isChunkCloseToEnemyClan(x, z, clanName)) {
             sendFormattedPredefinedMessage(sender, "too-close", LogType.WARNING);
             return true;
         }

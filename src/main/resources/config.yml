@@ -2,13 +2,13 @@ show-current-clan-on-join: true
 settings:
   max-clan-name-length: 16
   min-clan-name-length: 3
-  max-clan-size: 30
-  max-chunks: 5
+  max-clan-size: 30 # max amount of players in per clan
+  max-chunks: 5 # max amount of claimed chunks per clan
+  enemy-proximity-radius: 3 # the minimum area between two different clan chunk claims
   invite-expiration: 60*60*24*7 # 7 days
   default-clan-owner-title: "Leader"
-  default-clan-member-title:  "Member"
-chunks:
-  world-name: "world" # The world name where the plugin will be enabled
+  default-clan-member-title: "Member"
+  world-name: "world" # The world name where chunk claiming will be enabled
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
@@ -183,6 +183,7 @@ commands:
         max-chunks: "You have reached the maximum number ({max-chunks}) of chunks your clan can claim."
         not-adjacent: "You can only claim chunks that are adjacent to your clan's claimed chunks."
         too-close: "You can't claim this chunk because it is too close to another clan's claimed chunk."
+        wrong-world: "You can't claim chunks in this world."
     unclaim:
       enabled: true
       description: "Unclaims a chunk for your clan."
@@ -194,6 +195,6 @@ commands:
         territory-split: "You can't unclaim this chunk because it would split your clan's territory."
     radar:
       enabled: true
-      description: "Displays the radar of your clan's claimed chunks."
+      description: "Displays the radar of your claimed chunks around you in a 5x5 grid."
       usage: "/chunk radar"
 

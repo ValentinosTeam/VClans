@@ -20,13 +20,15 @@ public class ChunkHandler {
     private final ClanHandler clanHandler;
     private HashMap<ChunkPos, ClanChunk> chunks = new HashMap<>();
     private final int maxChunkAmount;
+    private final int enemyProximityRadius;
     private HashMap<Player, ChunkRadar> radars = new HashMap<>();
 
-    private record ChunkPos(int x, int z){}
+    private record ChunkPos(int x, int z) {
+    }
 
     public ChunkHandler() {
         this.clanHandler = VClans.getInstance().getClanHandler();
-        this.worldName = VClans.getInstance().getConfig().getString("chunks.world-name");
+        this.worldName = VClans.getInstance().getConfig().getString("settings.world-name");
         for (Clan clan : clanHandler.getClans()) {
             if (clan.getChunks() == null) {
                 clan.setChunks(new HashSet<>());
@@ -36,6 +38,7 @@ public class ChunkHandler {
             }
         }
         this.maxChunkAmount = VClans.getInstance().getConfig().getInt("settings.max-chunks");
+        this.enemyProximityRadius = VClans.getInstance().getConfig().getInt("settings.enemy-proximity-radius");
     }
 
     public void claimChunk(int x, int z, Player player) {
@@ -58,7 +61,7 @@ public class ChunkHandler {
             removeChunk(chunk, clan);
         }
     }
-    public void toggleChunkRadar(Player player){
+    public void toggleChunkRadar(Player player) {
         if (radars.containsKey(player)) {
             Log("Closing radar for player: " + player.getName(), LogType.FINE);
             ChunkRadar radar = radars.get(player);
@@ -66,14 +69,14 @@ public class ChunkHandler {
                 radar.closeRadar();
                 radars.remove(player);
             }
-        }else{
+        } else {
             Log("Opening radar for player: " + player.getName(), LogType.FINE);
             ChunkRadar chunkRadar = new ChunkRadar(player);
             chunkRadar.initializeRadar();
             radars.put(player, chunkRadar);
         }
     }
-    public void updateChunkRadar(Player player, int x, int z){
+    public void updateChunkRadar(Player player, int x, int z) {
         ChunkRadar radar = radars.get(player);
         if (radar != null) {
             radar.updateRadar(x, z);
@@ -111,12 +114,12 @@ public class ChunkHandler {
     }
     public boolean unclaimWillSplit(int x, int z, String clanName) {
         Clan clan = clanHandler.getClanByName(clanName);
-        if (clan == null){
+        if (clan == null) {
             Log("Clan not found", LogType.SEVERE);
             return false;
         }
         for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
-            if (chunk != null && getAdjacentChunks(chunk.getX(), chunk.getZ(), false).size() <= 1){
+            if (chunk != null && getAdjacentChunks(chunk.getX(), chunk.getZ(), false).size() <= 1) {
                 return true;
             }
         }
@@ -124,20 +127,36 @@ public class ChunkHandler {
     }
     public boolean isChunkAdjacentToClan(int x, int z, String clanName) {
         for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
-            if (chunk != null && chunk.getClanName().equals(clanName)){
+            if (chunk != null && chunk.getClanName().equals(clanName)) {
                 return true;
             }
         }
         return false;
     }
     public boolean isChunkAdjacentToEnemyClan(int x, int z, String clanName) {
+        // Not used anymore use isChunkCloseToEnemyClan
         for (ClanChunk chunk : getAdjacentChunks(x, z, true)) {
-            if (chunk != null && !chunk.getClanName().equals(clanName)){
+            if (chunk != null && !chunk.getClanName().equals(clanName)) {
                 return true;
             }
         }
         return false;
     }
+    public boolean isChunkInValidWorld(String name) {
+        Log("config world: " + this.worldName + ". given world: " + name + ". Equal? " + name.equals(this.worldName), LogType.INFO);
+        return name.equals(this.worldName);
+    }
+    public boolean isChunkCloseToEnemyClan(int x, int z, String clanName) {
+        for (int dx = -enemyProximityRadius; dx <= enemyProximityRadius; dx++) {
+            for (int dz = -enemyProximityRadius; dz <= enemyProximityRadius; dz++) {
+                if (dx == 0 && dz == 0) continue;
+                ClanChunk chunk = getChunk(dx + x, dz + z);
+                if (chunk != null && !chunk.getClanName().equals(clanName)) return true;
+            }
+        }
+        return false;
+    }
+
     public List<ClanChunk> getAdjacentChunks(int x, int z, boolean includeCorners) {
         List<ClanChunk> adjacentChunks = new ArrayList<>();
         int[][] offsets;
@@ -179,7 +198,7 @@ public class ChunkHandler {
         clan.removeChunk(chunk);
         clanHandler.saveClans();
     }
-    private ClanChunk getChunk(int x, int z){
+    private ClanChunk getChunk(int x, int z) {
         return chunks.get(new ChunkPos(x, z));
     }
 }
