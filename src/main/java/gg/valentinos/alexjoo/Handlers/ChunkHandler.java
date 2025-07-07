@@ -133,15 +133,6 @@ public class ChunkHandler {
         }
         return false;
     }
-    public boolean isChunkAdjacentToEnemyClan(int x, int z, String clanName) {
-        // Not used anymore use isChunkCloseToEnemyClan
-        for (ClanChunk chunk : getAdjacentChunks(x, z, true)) {
-            if (chunk != null && !chunk.getClanName().equals(clanName)) {
-                return true;
-            }
-        }
-        return false;
-    }
     public boolean isChunkInValidWorld(String name) {
         Log("config world: " + this.worldName + ". given world: " + name + ". Equal? " + name.equals(this.worldName), LogType.INFO);
         return name.equals(this.worldName);
