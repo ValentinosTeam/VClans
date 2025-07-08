@@ -17,12 +17,16 @@ repositories {
         url = "https://oss.sonatype.org/content/groups/public/"
     }
     maven { url 'https://jitpack.io' }
+//    maven { url "https://repo.mikeprimm.com/" }
+    maven { url 'https://repo.bluecolored.de/releases' }
 
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+//    compileOnly "us.dynmap:DynmapCoreAPI:3.7-SNAPSHOT"
+    compileOnly 'de.bluecolored:bluemap-api:2.7.4'
 }
 
 def targetJavaVersion = 21

@@ -4,10 +4,7 @@ import gg.valentinos.alexjoo.Commands.Chunk.ChunkCommand;
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
 import gg.valentinos.alexjoo.Data.LogType;
-import gg.valentinos.alexjoo.Handlers.ChunkHandler;
-import gg.valentinos.alexjoo.Handlers.ClanHandler;
-import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
-import gg.valentinos.alexjoo.Handlers.CooldownHandler;
+import gg.valentinos.alexjoo.Handlers.*;
 import gg.valentinos.alexjoo.Listeners.ChunkListener;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
 import net.kyori.adventure.text.Component;
@@ -30,6 +27,8 @@ public final class VClans extends JavaPlugin {
     private CooldownHandler cooldownHandler;
     private ConfirmationHandler confirmationHandler;
     private ChunkHandler chunkHandler;
+    //    private DynmapHandler dynmapHandler;
+    private BlueMapHandler blueMapHandler;
     private HashMap<String, String> defaultMessages;
     private Economy economy = null;
 
@@ -51,6 +50,10 @@ public final class VClans extends JavaPlugin {
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();
 
+//        dynmapHandler = new DynmapHandler();
+//        DynmapCommonAPIListener.register(dynmapHandler);
+        blueMapHandler = new BlueMapHandler();
+
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new ChunkListener(), this);
 
@@ -66,6 +69,7 @@ public final class VClans extends JavaPlugin {
         saveDefaultConfig();
 
         getLogger().info("vClans has been enabled!");
+
     }
 
     @Override
@@ -80,6 +84,12 @@ public final class VClans extends JavaPlugin {
 
         confirmationHandler = null;
         chunkHandler = null;
+
+//        DynmapCommonAPIListener.unregister(dynmapHandler);
+//        dynmapHandler = null;
+
+        blueMapHandler = null;
+
         defaultMessages = null;
 
         instance = null;
