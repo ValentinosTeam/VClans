@@ -5,12 +5,18 @@ import gg.valentinos.alexjoo.Data.ClanChunk;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static gg.valentinos.alexjoo.VClans.Log;
 
@@ -22,6 +28,13 @@ public class ChunkHandler {
     private final int maxChunkAmount;
     private final int enemyProximityRadius;
     private HashMap<Player, ChunkRadar> radars = new HashMap<>();
+
+    // formula evaluation relevant fields
+    private String chunkCostFormula;
+    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private static final Pattern SAFE_MATH_PATTERN = Pattern.compile("^[0-9xX+\\-*/^().\\sMath]*$");
+    private static final String DEFAULT_CHUNK_FORMULA = "100*x^2";
+
 
     private record ChunkPos(int x, int z) {
     }
@@ -39,11 +52,28 @@ public class ChunkHandler {
         }
         this.maxChunkAmount = VClans.getInstance().getConfig().getInt("settings.max-chunks");
         this.enemyProximityRadius = VClans.getInstance().getConfig().getInt("settings.enemy-proximity-radius");
+
+        chunkCostFormula = VClans.getInstance().getConfig().getString("settings.chunk-cost-formula");
+        if (chunkCostFormula == null) {
+            Log("Formula Not Found - make sure to fill settings.chunk-cost-formula with a correct mathematical formula like. Defaulting to " + DEFAULT_CHUNK_FORMULA, LogType.SEVERE);
+            chunkCostFormula = DEFAULT_CHUNK_FORMULA;
+        } else if (!isSafeFormula(chunkCostFormula)) {
+            Log("Unsafe characters detected in chunk-cost-formula!" + chunkCostFormula + " Defaulting to " + DEFAULT_CHUNK_FORMULA, LogType.SEVERE);
+            chunkCostFormula = DEFAULT_CHUNK_FORMULA;
+        }
+        Log("chunk-cost-formula is: " + chunkCostFormula);
     }
 
     public void claimChunk(int x, int z, Player player) {
         String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
         Clan clan = clanHandler.getClanByName(clanName);
+        Economy economy = VClans.getInstance().getEconomy();
+
+        if (economy != null) {
+            double price = getNewChunkPrice(clan);
+            EconomyResponse response = economy.withdrawPlayer(player, price);
+        }
+
         ClanChunk newChunk = new ClanChunk(x, z, worldName, clanName);
         addChunk(newChunk, clan);
         updateChunkRadar(player, x, z);
@@ -85,6 +115,27 @@ public class ChunkHandler {
 
     public int getMaxChunkAmount() {
         return maxChunkAmount;
+    }
+    public double getNewChunkPrice(@NotNull Clan clan) {
+        Economy economy = VClans.getInstance().getEconomy();
+        if (economy == null) return 0;
+
+        int chunkAmount = clan.getChunks().size();
+        double price;
+        try {
+            Log("chunk-cost-formula is: " + chunkCostFormula);
+            String expr = chunkCostFormula.replace("x", String.valueOf(chunkAmount)).replace("^", "**");
+            Object result = engine.eval(expr);
+            price = Double.parseDouble(result.toString());
+        } catch (Exception e) {
+            Log("Error evaluating chunk-cost-formula: " + chunkCostFormula, LogType.SEVERE);
+            throw new RuntimeException(e);
+        }
+        if (Double.isNaN(price) || Double.isInfinite(price) || price < 0) {
+            Log("Invalid chunk cost formula result: " + price + " for x=" + chunkAmount, LogType.WARNING);
+            return 0;
+        }
+        return price;
     }
     public String getChunkInfo(int x, int z) {
         ClanChunk chunk = getChunk(x, z);
@@ -147,6 +198,16 @@ public class ChunkHandler {
         }
         return false;
     }
+    public boolean canAffordNewChunk(Player player) {
+        Economy economy = VClans.getInstance().getEconomy();
+        if (economy == null) return true;
+        Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+        if (clan == null) return false;
+
+        double price = getNewChunkPrice(clan);
+
+        return economy.getBalance(player) >= price;
+    }
 
     public List<ClanChunk> getAdjacentChunks(int x, int z, boolean includeCorners) {
         List<ClanChunk> adjacentChunks = new ArrayList<>();
@@ -191,5 +252,8 @@ public class ChunkHandler {
     }
     private ClanChunk getChunk(int x, int z) {
         return chunks.get(new ChunkPos(x, z));
+    }
+    private boolean isSafeFormula(String formula) {
+        return SAFE_MATH_PATTERN.matcher(formula).matches();
     }
 }

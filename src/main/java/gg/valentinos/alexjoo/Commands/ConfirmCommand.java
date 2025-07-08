@@ -15,14 +15,13 @@ import java.util.List;
 public class ConfirmCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if (args.length > 0){
+        if (args.length > 0) {
             return false;
         }
-        if (sender instanceof Player player){
-            VClans.sendFormattedMessage(sender, "Player " + player.getName() + " is executing confirmation command.", LogType.INFO);
+        if (sender instanceof Player player) {
+            VClans.Log("Player " + player.getName() + " is executing confirmation command.", LogType.INFO);
             VClans.getInstance().getConfirmationHandler().executeConfirmation(player);
-        }
-        else{
+        } else {
             VClans.sendFormattedMessage(sender, "Only players can use this command.", LogType.WARNING);
         }
         return true;

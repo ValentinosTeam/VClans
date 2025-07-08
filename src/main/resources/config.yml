@@ -9,6 +9,7 @@ settings:
   default-clan-owner-title: "Leader"
   default-clan-member-title: "Member"
   world-name: "world" # The world name where chunk claiming will be enabled
+  chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
@@ -174,16 +175,20 @@ commands:
       enabled: true
       description: "Claims a chunk for your clan."
       usage: "/chunk claim"
+      confirmation: 30
       messages:
         # {clan-name} - the clan that owns the chunk the player is standing in
         # {max-chunks} - the maximum number of chunks the clan can claim
+        # {price} - how much a chunk costs to claim
         success: "You have claimed the chunk for your clan."
+        confirmation-message: "Are you sure you want to claim this chunk for the cost of ${price}? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
         already-claimed: "This chunk is already claimed by the clan - {clan-name}."
         no-permission: "You don't have the permission to claim chunks."
         max-chunks: "You have reached the maximum number ({max-chunks}) of chunks your clan can claim."
         not-adjacent: "You can only claim chunks that are adjacent to your clan's claimed chunks."
         too-close: "You can't claim this chunk because it is too close to another clan's claimed chunk."
         wrong-world: "You can't claim chunks in this world."
+        cant-afford: "You can't afford this chunk: ${price}."
     unclaim:
       enabled: true
       description: "Unclaims a chunk for your clan."

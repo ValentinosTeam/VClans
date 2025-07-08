@@ -13,8 +13,10 @@ import gg.valentinos.alexjoo.Listeners.PlayerListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -29,12 +31,20 @@ public final class VClans extends JavaPlugin {
     private ConfirmationHandler confirmationHandler;
     private ChunkHandler chunkHandler;
     private HashMap<String, String> defaultMessages;
+    private Economy economy = null;
 
     @Override
     public void onEnable() {
         instance = this;
 
         loadDefaultMessages();
+
+        if (!setupEconomy()) {
+            getLogger().warning("VClans requires Vault to be installed to be fully functional");
+//            getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getName()));
+//            getServer().getPluginManager().disablePlugin(this);
+//            return;
+        }
 
         clanHandler = new ClanHandler();
         cooldownHandler = new CooldownHandler();
@@ -81,21 +91,22 @@ public final class VClans extends JavaPlugin {
         return instance;
     }
 
-    public static void SendMessage(Player player, Component message, LogType type){
+    public static void SendMessage(Player player, Component message, LogType type) {
         player.sendMessage(message);
         String text = PlainTextComponentSerializer.plainText().serialize(message);
-        if (type != LogType.NULL){
-            switch (type){
+        if (type != LogType.NULL) {
+            switch (type) {
                 case FINE -> getInstance().getLogger().fine("Sending message to " + player.getName() + ": " + text);
                 case INFO -> getInstance().getLogger().info("Sending message to " + player.getName() + ": " + text);
-                case WARNING -> getInstance().getLogger().warning("Sending message to " + player.getName() + ": " + text);
+                case WARNING ->
+                        getInstance().getLogger().warning("Sending message to " + player.getName() + ": " + text);
                 case SEVERE -> getInstance().getLogger().severe("Sending message to " + player.getName() + ": " + text);
             }
         }
     }
-    public static void Log(String message, LogType type){
-        if (type != LogType.NULL){
-            switch (type){
+    public static void Log(String message, LogType type) {
+        if (type != LogType.NULL) {
+            switch (type) {
                 case FINE -> getInstance().getLogger().fine(message);
                 case INFO -> getInstance().getLogger().info(message);
                 case WARNING -> getInstance().getLogger().warning(message);
@@ -103,7 +114,7 @@ public final class VClans extends JavaPlugin {
             }
         }
     }
-    public static void Log(String message){
+    public static void Log(String message) {
         Log(message, LogType.INFO);
     }
     public static void sendFormattedMessage(CommandSender sender, String message, LogType type, HashMap<String, String> replacements) {
@@ -115,10 +126,9 @@ public final class VClans extends JavaPlugin {
             message = message.replace(key, replacements.get(key));
         }
         Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
-        if (sender instanceof Player player){
+        if (sender instanceof Player player) {
             SendMessage(player, component, type);
-        }
-        else{
+        } else {
             Log(String.valueOf(component), type);
         }
     }
@@ -128,10 +138,9 @@ public final class VClans extends JavaPlugin {
             return;
         }
         Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
-        if (sender instanceof Player player){
+        if (sender instanceof Player player) {
             SendMessage(player, component, type);
-        }
-        else{
+        } else {
             Log(String.valueOf(component), type);
         }
     }
@@ -139,17 +148,17 @@ public final class VClans extends JavaPlugin {
     public ClanHandler getClanHandler() {
         return clanHandler;
     }
-
     public CooldownHandler getCooldownHandler() {
         return cooldownHandler;
     }
-
     public ConfirmationHandler getConfirmationHandler() {
         return confirmationHandler;
     }
-
     public ChunkHandler getChunkHandler() {
         return chunkHandler;
+    }
+    public Economy getEconomy() {
+        return economy;
     }
 
     public String getDefaultMessage(String key) {
@@ -183,10 +192,21 @@ public final class VClans extends JavaPlugin {
         );
         for (String key : configKeys) {
             String message = getConfig().getString("commands.default.messages." + key);
-            if (message == null){
+            if (message == null) {
                 getLogger().warning("Missing message in config.yml for commands.default.messages." + key);
             }
             defaultMessages.put(key, message);
         }
+    }
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        economy = rsp.getProvider();
+        return economy != null;
     }
 }

@@ -16,7 +16,7 @@ public class ChunkClaimSubcommand extends SubCommand {
     private final ChunkHandler chunkHandler;
 
     public ChunkClaimSubcommand() {
-        super("chunk", "claim", List.of("success", "already-claimed", "no-permission", "max-chunks", "not-adjacent", "too-close", "wrong-world"));
+        super("chunk", "claim", List.of("success", "already-claimed", "no-permission", "max-chunks", "not-adjacent", "too-close", "wrong-world", "cant-afford"));
         hasToBePlayer = true;
         requiredArgs = 1;
         this.chunkHandler = VClans.getInstance().getChunkHandler();
@@ -80,6 +80,10 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "max-chunks", LogType.WARNING);
             return true;
         }
+        if (!chunkHandler.canAffordNewChunk(player)) {
+            sendFormattedPredefinedMessage(sender, "cant-afford", LogType.WARNING);
+            return true;
+        }
         return false;
     }
 
@@ -96,17 +100,25 @@ public class ChunkClaimSubcommand extends SubCommand {
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String clanName = "None";
         String maxAmount = String.valueOf(chunkHandler.getMaxChunkAmount());
+        String price = "NULL";
 
         if (sender instanceof Player player) {
             int x = player.getChunk().getX();
             int z = player.getChunk().getZ();
-            Clan clan = clanHandler.getClanByChunkLocation(x, z);
-            if (clan != null) {
-                clanName = clan.getName();
+            Clan chunkClan = clanHandler.getClanByChunkLocation(x, z);
+
+            if (chunkClan != null) {
+                clanName = chunkClan.getName();
+            }
+
+            Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
+            if (playerClan != null) {
+                price = String.valueOf(chunkHandler.getNewChunkPrice(playerClan));
             }
         }
 
         replacements.put("{max-chunks}", maxAmount);
         replacements.put("{clan-name}", clanName);
+        replacements.put("{price}", price);
     }
 }
