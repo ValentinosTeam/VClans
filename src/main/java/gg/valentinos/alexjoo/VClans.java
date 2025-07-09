@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo;
 
+import gg.valentinos.alexjoo.Commands.CancelCommand;
 import gg.valentinos.alexjoo.Commands.Chunk.ChunkCommand;
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
@@ -65,6 +66,7 @@ public final class VClans extends JavaPlugin {
         Objects.requireNonNull(getCommand("chunk")).setTabCompleter(chunkCommand);
 
         Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
+        Objects.requireNonNull(getCommand("cancel")).setExecutor(new CancelCommand());
 
         saveDefaultConfig();
 

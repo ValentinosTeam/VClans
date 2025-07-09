@@ -2,11 +2,15 @@ package gg.valentinos.alexjoo.Handlers;
 
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Data.ConfirmationEntry;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.UUID;
+
+import static gg.valentinos.alexjoo.VClans.SendMessage;
 
 public class ConfirmationHandler {
 
@@ -17,25 +21,38 @@ public class ConfirmationHandler {
     }
 
     public void addConfirmationEntry(Player player, long duration, CommandAction commandAction) {
-        VClans.getInstance().getLogger().info("Adding confirmation entry for " + player.getName() + " with duration " + duration);
         confirmationEntries.put(player.getUniqueId(), new ConfirmationEntry(commandAction, duration));
     }
 
+    //TODO: reformat all the player.sendMessage with my own SendMessage
+
     public void executeConfirmation(Player player) {
         ConfirmationEntry entry = confirmationEntries.get(player.getUniqueId());
-        if (entry == null){
+        if (entry == null) {
             player.sendMessage(VClans.getInstance().getDefaultMessage("nothing-to-confirm"));
-            VClans.getInstance().getLogger().info("Player " + player.getName() + " has no confirmation entry.");
             return;
         }
-        if (entry.isExpired()){
+        if (entry.isExpired()) {
             player.sendMessage(VClans.getInstance().getDefaultMessage("confirmation-expired"));
-            VClans.getInstance().getLogger().info("Player " + player.getName() + " has an expired confirmation entry.");
             confirmationEntries.remove(player.getUniqueId());
             return;
         }
-        VClans.getInstance().getLogger().info("Executing confirmation entry for " + player.getName());
         entry.execute();
         confirmationEntries.remove(player.getUniqueId());
+    }
+
+    public void cancelConfirmation(Player player) {
+        ConfirmationEntry entry = confirmationEntries.get(player.getUniqueId());
+        if (entry == null) {
+            player.sendMessage(VClans.getInstance().getDefaultMessage("nothing-to-cancel"));
+            return;
+        }
+        if (entry.isExpired()) {
+            player.sendMessage(VClans.getInstance().getDefaultMessage("confirmation-expired"));
+            confirmationEntries.remove(player.getUniqueId());
+            return;
+        }
+        confirmationEntries.remove(player.getUniqueId());
+        SendMessage(player, Component.text("Command canceled"), LogType.FINE);
     }
 }

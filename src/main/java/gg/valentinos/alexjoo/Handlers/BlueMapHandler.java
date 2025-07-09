@@ -68,9 +68,10 @@ public class BlueMapHandler {
 
 
     }
-
     private void onDisable(BlueMapAPI api) {
         Log("BlueMap API is disabled.");
         markerSet = null;
     }
+
+     
 }
