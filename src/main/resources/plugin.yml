@@ -23,4 +23,6 @@ commands:
   cancel:
     description: Cancels your action.
     usage: /cancel
-
+  test:
+    description: This is VClans test command. you should not see this
+    usage: /test

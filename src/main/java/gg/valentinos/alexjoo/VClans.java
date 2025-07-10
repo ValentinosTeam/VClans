@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.Commands.CancelCommand;
 import gg.valentinos.alexjoo.Commands.Chunk.ChunkCommand;
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
+import gg.valentinos.alexjoo.Commands.TestCommand;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.*;
 import gg.valentinos.alexjoo.Listeners.ChunkListener;
@@ -37,6 +38,7 @@ public final class VClans extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+
         loadDefaultMessages();
 
         if (!setupEconomy()) {
@@ -67,6 +69,8 @@ public final class VClans extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
         Objects.requireNonNull(getCommand("cancel")).setExecutor(new CancelCommand());
+
+        getCommand("test").setExecutor(new TestCommand());
 
         saveDefaultConfig();
 
@@ -168,6 +172,9 @@ public final class VClans extends JavaPlugin {
     }
     public ChunkHandler getChunkHandler() {
         return chunkHandler;
+    }
+    public BlueMapHandler getBlueMapHandler() {
+        return blueMapHandler;
     }
     public Economy getEconomy() {
         return economy;
