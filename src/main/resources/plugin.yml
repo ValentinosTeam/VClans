@@ -5,9 +5,12 @@ api-version: '1.21'
 authors: [ Alex_Joo ]
 description: VClans, short for Valentinos Clans, is a faction-like plugin where you can create your own faction, claim your own land, declare war with other or choose to be a pacifist.
 website: valentinos.gg
+depend:
+  - BlueMap
 softdepend:
-  - bluemap
   - vault
+#libraries:
+#  - "com.flowpowered:flow-math:1.0.3"
 commands:
   clan:
     description: Handles all clan related commands.

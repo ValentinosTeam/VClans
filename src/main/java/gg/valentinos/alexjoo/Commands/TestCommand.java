@@ -21,7 +21,7 @@ public class TestCommand implements CommandExecutor, TabCompleter {
 
         if (sender instanceof Player player) {
             Clan clan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
-//            VClans.getInstance().getBlueMapHandler().drawClanTerritory2(clan);
+            VClans.getInstance().getBlueMapHandler().drawClanTerritory(clan);
         }
 
         return true;

@@ -19,8 +19,9 @@ dependencies {
     compileOnly "io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly "de.bluecolored:bluemap-api:2.7.4"
-    implementation "com.technicjelle:BMUtils:4.3.1"
-    compileOnly "com.flowpowered:flow-math:1.0.3"
+    implementation("com.technicjelle:BMUtils:4.3.1") {
+        exclude group: "com.flowpowered", module: "flow-math"
+    }
 }
 
 tasks.build {
