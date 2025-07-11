@@ -77,6 +77,10 @@ public class ChunkHandler {
         ClanChunk newChunk = new ClanChunk(x, z, worldName, clanName);
         addChunk(newChunk, clan);
         updateChunkRadar(player, x, z);
+        BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
+        if (blueMapHandler != null) {
+            blueMapHandler.drawClanTerritory(clan);
+        }
     }
     public void unclaimChunk(int x, int z, Player player) {
         String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
@@ -84,6 +88,10 @@ public class ChunkHandler {
         ClanChunk chunkToRemove = chunks.get(new ChunkPos(x, z));
         removeChunk(chunkToRemove, clan);
         updateChunkRadar(player, x, z);
+        BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
+        if (blueMapHandler != null) {
+            blueMapHandler.drawClanTerritory(clan);
+        }
     }
     public void unclaimChunks(String clanName) {
         Clan clan = clanHandler.getClanByName(clanName);

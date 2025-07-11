@@ -31,8 +31,8 @@ import java.util.Objects;
 public class ChunkListener implements Listener {
     private final ChunkHandler chunkHandler;
     private final ClanHandler clanHandler;
-    private final TextColor RED = TextColor.color(255, 70, 70);
-    private final TextColor GREEN = TextColor.color(70, 255, 70);
+    private static final TextColor RED = TextColor.color(255, 70, 70);
+    private static final TextColor GREEN = TextColor.color(70, 255, 70);
 
     public ChunkListener() {
         this.chunkHandler = VClans.getInstance().getChunkHandler();
@@ -54,12 +54,17 @@ public class ChunkListener implements Listener {
     private void enterExitNotification(Player player, Chunk fromChunk, Chunk toChunk) {
         String fromClanName = chunkHandler.getClanNameByChunk(fromChunk.getX(), fromChunk.getZ());
         String toClanName = chunkHandler.getClanNameByChunk(toChunk.getX(), toChunk.getZ());
+        TextColor color = TextColor.color(125, 125, 125);
+        if (toClanName != null) {
+            Clan toClan = clanHandler.getClanByName(toClanName);
+            color = TextColor.color(toClan.getColor().get(0), toClan.getColor().get(1), toClan.getColor().get(2));
+        }
         Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
         Component title = null;
         Component subtitle = null;
 
         if (fromClanName == null && toClanName != null) {
-            title = Component.text(toClanName);
+            title = Component.text(toClanName).color(color);
             if (playerClan != null && playerClan.getName().equals(toClanName)) {
                 subtitle = Component.text("Entered your territory").color(GREEN);
             } else {
@@ -67,9 +72,10 @@ public class ChunkListener implements Listener {
             }
         } else if (fromClanName != null && toClanName == null) {
             title = Component.text("");
-            subtitle = Component.text("Left territory").color(RED);
+            subtitle = Component.text("Left territory");
         } else if (!Objects.equals(fromClanName, toClanName)) {
-            title = Component.text(toClanName);
+            Clan toClan = clanHandler.getClanByName(toClanName);
+            title = Component.text(toClanName).color(TextColor.color(toClan.getColor().get(0), toClan.getColor().get(1), toClan.getColor().get(2)));
             if (playerClan != null && playerClan.getName().equals(toClanName)) {
                 subtitle = Component.text("Entered your territory").color(GREEN);
             } else {

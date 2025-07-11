@@ -17,6 +17,7 @@ public class Clan {
     private HashMap<UUID, ClanMember> members;
     private HashMap<UUID, ClanInvite> invites;
     private HashSet<ClanChunk> chunks;
+    private List<Integer> color;
 
     public Clan(String name, UUID owner, int maxSize) {
         this.name = name;
@@ -26,6 +27,7 @@ public class Clan {
         this.chunks = new HashSet<>();
         this.maxSize = maxSize;
         this.owner = owner;
+        this.color = List.of(211, 211, 211);
     }
 
     public HashMap<UUID, ClanMember> getMembers() {
@@ -64,6 +66,12 @@ public class Clan {
     public void setMaxSize(int maxSize) {
         this.maxSize = maxSize;
     }
+    public List<Integer> getColor() {
+        return color;
+    }
+    public void setColor(List<Integer> color) {
+        this.color = color;
+    }
 
     // Member logic
     public void addMember(UUID uuid, String rank) {
@@ -85,7 +93,7 @@ public class Clan {
     public List<UUID> getMemberUUIDs() {
         return List.copyOf(members.keySet());
     }
-    public List<UUID> getMemberUUIDsFromRank(String rank){
+    public List<UUID> getMemberUUIDsFromRank(String rank) {
         List<UUID> uuids = new ArrayList<>();
         members.forEach((uuid, member) -> {
             if (member.getRankId().equals(rank)) {
@@ -141,7 +149,7 @@ public class Clan {
     public void createRank(String id, String title) {
         ranks.put(id, new ClanRank(title, id));
     }
-    public void addRank(ClanRank rank){
+    public void addRank(ClanRank rank) {
         ranks.put(rank.getId(), rank);
     }
     public void removeRank(String name) {
@@ -163,7 +171,7 @@ public class Clan {
     public String getMemberRankTitle(UUID playerUUID) {
         return ranks.get(members.get(playerUUID).getRankId()).getTitle();
     }
-    public Component getRankInfo(ClanRank rank){
+    public Component getRankInfo(ClanRank rank) {
         Component component = Component.text("Rank: " + rank.getTitle()).append(Component.newline());
         component = component.append(Component.text("Rank ID: " + rank.getId())).append(Component.newline());
         component = component.append(Component.text("Priority: " + rank.getPriority())).append(Component.newline());
@@ -174,9 +182,9 @@ public class Clan {
             boolean value = entry.getValue();
             Component temp = Component.text(value);
             if (!value)
-                temp = temp.color(TextColor.color(255,0,0));
+                temp = temp.color(TextColor.color(255, 0, 0));
             else
-                temp = temp.color(TextColor.color(0,255,0));
+                temp = temp.color(TextColor.color(0, 255, 0));
             component = component.append(Component.text(permission + ": ")).append(temp).append(Component.newline());
         }
 
@@ -210,4 +218,11 @@ public class Clan {
         return null;
     }
 
+    // Color logic
+    public void setColor(int r, int g, int b) {
+        this.color = List.of(r, g, b);
+    }
+    public Component getColoredName() {
+        return Component.text(name).color(TextColor.color(color.get(0), color.get(1), color.get(2)));
+    }
 }

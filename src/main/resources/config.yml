@@ -10,6 +10,8 @@ settings:
   default-clan-member-title: "Member"
   world-name: "world" # The world name where chunk claiming will be enabled
   chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
+  extrude-max-y: 120 # the highest       ...        points on an area marker in BlueMap
+  extrude-min-y: -120 # ... and respectively lowest ...
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
@@ -170,6 +172,13 @@ commands:
         target-not-in-clan: "{target-name} is not in your clan."
         rank-not-found: "The rank {rank} does not exist."
         rank-priority-low: "Your rank priority is too low"
+    color:
+      enabled: true
+      description: "Changes the color of the clan. Write down "
+      usage: "/clan color <0-255> <0-255> <0-255>"
+      messages:
+        success: "You have successfully changed the clan color!"
+        invalid-input: "Invalid RGB Input, only accepts: /clan color <0-255> <0-255> <0-255>"
   chunk:
     claim:
       enabled: true

@@ -37,6 +37,10 @@ public class ClanHandler {
         VClans.getInstance().getChunkHandler().unclaimChunks(clan.getName());
         clans.getClans().remove(clan);
         saveClans();
+        BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
+        if (blueMapHandler != null) {
+            blueMapHandler.drawClanTerritory(clan);
+        }
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getName());
     }
     public void invitePlayer(UUID playerUUID, String targetName) {
@@ -67,7 +71,7 @@ public class ClanHandler {
         saveClans();
         Log("Player " + Objects.requireNonNull(player).getName() + " has kicked player " + targetName + " from the clan.");
     }
-    public void assignRank(UUID targetUUID, String rankName){
+    public void assignRank(UUID targetUUID, String rankName) {
         Clan clan = getClanByMember(targetUUID);
         ClanMember member = clan.getMembers().get(targetUUID);
         member.setRankId(rankName);
@@ -89,6 +93,14 @@ public class ClanHandler {
             }
         }
         saveClans();
+    }
+    public void setClanColor(Clan clan, int r, int g, int b) {
+        clan.setColor(r, g, b);
+        saveClans();
+        BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
+        if (blueMapHandler != null) {
+            blueMapHandler.drawClanTerritory(clan);
+        }
     }
 
     // saves and loads the clans
@@ -124,7 +136,7 @@ public class ClanHandler {
         }
         return names;
     }
-    public List<UUID> getClanMembersUUIDs(UUID playerUUID){
+    public List<UUID> getClanMembersUUIDs(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
         if (clan == null)
             return List.of();
@@ -167,7 +179,7 @@ public class ClanHandler {
     public Clan getClanByMember(UUID memberUUID) {
         return clans.getClans().stream().filter(c -> c.getMembers().containsKey(memberUUID)).findFirst().orElse(null);
     }
-    public Clan getClanByChunkLocation(int x, int z){
+    public Clan getClanByChunkLocation(int x, int z) {
         for (Clan clan : clans.getClans()) {
             if (clan.getChunks() == null || clan.getChunks().isEmpty()) {
                 continue;
@@ -186,7 +198,7 @@ public class ClanHandler {
         //TODO: make sure to read the config here for default titles
         clan.createRank("owner", "leader");
         ClanRank ownerRank = clan.getRankById("owner");
-        HashMap <String, Boolean> permissions = ownerRank.getPermissions();
+        HashMap<String, Boolean> permissions = ownerRank.getPermissions();
         permissions.replaceAll((k, v) -> true);
         ownerRank.setPermissions(permissions);
         ownerRank.setPriority(99);

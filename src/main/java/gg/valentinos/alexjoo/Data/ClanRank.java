@@ -56,6 +56,7 @@ public class ClanRank {
         newPermissions.put("canChangeRank", false);
         newPermissions.put("canClaimChunks", false);
         newPermissions.put("canUnclaimChunks", false);
+        newPermissions.put("canColor", false);
         return newPermissions;
     }
 }

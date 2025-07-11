@@ -26,6 +26,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ClanLeaveSubcommand());
         registerSubCommand(new ClanKickSubcommand());
         registerSubCommand(new ClanRankSubcommand());
+        registerSubCommand(new ClanColorSubcommand());
 
         clanHelpSubcommand.setSubCommands(subCommands);
     }
@@ -37,7 +38,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            if (sender instanceof Player player){
+            if (sender instanceof Player player) {
                 String clanName = VClans.getInstance().getClanHandler().getClanNameOfMember(player.getUniqueId());
                 if (clanName != null) {
                     VClans.sendFormattedMessage(sender, "Your current clan: " + clanName, LogType.FINE);
@@ -61,10 +62,10 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if (args.length == 1) {
             List<String> suggestions = new ArrayList<>();
-            for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()){
+            for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()) {
                 String commandName = entry.getKey();
                 SubCommand subCommand = entry.getValue();
-                if (subCommand.suggestCommand(sender)){
+                if (subCommand.suggestCommand(sender)) {
                     suggestions.add(commandName);
                 }
             }
