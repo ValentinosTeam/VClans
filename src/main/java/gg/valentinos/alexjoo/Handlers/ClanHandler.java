@@ -39,7 +39,7 @@ public class ClanHandler {
         saveClans();
         BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
         if (blueMapHandler != null) {
-            blueMapHandler.drawClanTerritory(clan);
+            blueMapHandler.removeClanTerritory(clan);
         }
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getName());
     }

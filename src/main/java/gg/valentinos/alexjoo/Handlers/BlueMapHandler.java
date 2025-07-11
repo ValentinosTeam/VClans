@@ -80,4 +80,8 @@ public class BlueMapHandler {
 
     }
 
+    public void removeClanTerritory(Clan clan) {
+        markerSet.getMarkers().keySet().removeIf(key -> key.startsWith("clan-") && key.contains("-segment-") && key.contains(clan.getName()));
+    }
+
 }

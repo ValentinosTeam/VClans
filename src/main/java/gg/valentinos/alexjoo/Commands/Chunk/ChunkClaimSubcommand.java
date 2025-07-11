@@ -76,7 +76,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "not-adjacent", LogType.WARNING);
             return true;
         }
-        if (clan.getChunks().size() + 1 > chunkHandler.getMaxChunkAmount()) {
+        if (clan.getChunks().size() + 1 > chunkHandler.getClanMaxChunkAmount(clan)) {
             sendFormattedPredefinedMessage(sender, "max-chunks", LogType.WARNING);
             return true;
         }
@@ -99,7 +99,7 @@ public class ChunkClaimSubcommand extends SubCommand {
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String clanName = "None";
-        String maxAmount = String.valueOf(chunkHandler.getMaxChunkAmount());
+        String maxAmount = "NULL";
         String price = "NULL";
 
         if (sender instanceof Player player) {
@@ -114,6 +114,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
             if (playerClan != null) {
                 price = String.valueOf(chunkHandler.getNewChunkPrice(playerClan));
+                maxAmount = String.valueOf(chunkHandler.getClanMaxChunkAmount(playerClan));
             }
         }
 

@@ -12,6 +12,8 @@ settings:
   chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
   extrude-max-y: 120 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: -120 # ... and respectively lowest ...
+  starting-chunk-amount: 5
+  chunks-per-player: 2
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list

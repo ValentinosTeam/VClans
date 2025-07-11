@@ -25,16 +25,18 @@ public class ChunkHandler {
     private final String worldName;
     private final ClanHandler clanHandler;
     private HashMap<ChunkPos, ClanChunk> chunks = new HashMap<>();
-    private final int maxChunkAmount;
     private final int enemyProximityRadius;
     private HashMap<Player, ChunkRadar> radars = new HashMap<>();
 
-    // formula evaluation relevant fields
+    // formula evaluation relevant fields for chunk cost
     private String chunkCostFormula;
     private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
     private static final Pattern SAFE_MATH_PATTERN = Pattern.compile("^[0-9xX+\\-*/^().\\sMath]*$");
     private static final String DEFAULT_CHUNK_FORMULA = "100*x^2";
 
+    // relevant fields for max chunk amount
+    private final int startingChunkAmount;
+    private final int chunksPerPlayer;
 
     private record ChunkPos(int x, int z) {
     }
@@ -50,7 +52,8 @@ public class ChunkHandler {
                 chunks.put(new ChunkPos(chunk.getX(), chunk.getZ()), chunk);
             }
         }
-        this.maxChunkAmount = VClans.getInstance().getConfig().getInt("settings.max-chunks");
+        this.startingChunkAmount = VClans.getInstance().getConfig().getInt("settings.starting-chunk-amount");
+        this.chunksPerPlayer = VClans.getInstance().getConfig().getInt("settings.chunks-per-player");
         this.enemyProximityRadius = VClans.getInstance().getConfig().getInt("settings.enemy-proximity-radius");
 
         chunkCostFormula = VClans.getInstance().getConfig().getString("settings.chunk-cost-formula");
@@ -121,8 +124,10 @@ public class ChunkHandler {
         }
     }
 
-    public int getMaxChunkAmount() {
-        return maxChunkAmount;
+    public int getClanMaxChunkAmount(Clan clan) {
+        int amount = startingChunkAmount;
+        amount += clan.getMembers().size() * chunksPerPlayer;
+        return amount;
     }
     public double getNewChunkPrice(@NotNull Clan clan) {
         Economy economy = VClans.getInstance().getEconomy();
@@ -263,5 +268,8 @@ public class ChunkHandler {
     }
     private boolean isSafeFormula(String formula) {
         return SAFE_MATH_PATTERN.matcher(formula).matches();
+    }
+    private void updateClanMaxChunkAmount(Clan clan) {
+
     }
 }
