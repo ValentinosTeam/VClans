@@ -183,7 +183,7 @@ public class ChunkHandler {
             return false;
         }
         for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
-            if (chunk != null && getAdjacentChunks(chunk.getX(), chunk.getZ(), false).size() <= 1) {
+            if (getAdjacentChunks(chunk.getX(), chunk.getZ(), false).size() <= 1) {
                 return true;
             }
         }
@@ -248,7 +248,7 @@ public class ChunkHandler {
             int newX = x + offset[0];
             int newZ = z + offset[1];
             ClanChunk chunk = getChunk(newX, newZ);
-            adjacentChunks.add(chunk);
+            if (chunk != null) adjacentChunks.add(chunk);
         }
         return adjacentChunks;
     }
@@ -268,8 +268,5 @@ public class ChunkHandler {
     }
     private boolean isSafeFormula(String formula) {
         return SAFE_MATH_PATTERN.matcher(formula).matches();
-    }
-    private void updateClanMaxChunkAmount(Clan clan) {
-
     }
 }
