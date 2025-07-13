@@ -12,8 +12,8 @@ settings:
   invite-expiration: 60*60*24*7 # 7 days
   default-clan-owner-title: "Leader"
   default-clan-member-title: "Member"
-  extrude-max-y: 120 # the highest       ...        points on an area marker in BlueMap
-  extrude-min-y: -50 # ... and respectively the lowest ...
+  extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
+  extrude-min-y: 50 # ... and respectively the lowest ...
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list

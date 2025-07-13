@@ -3,6 +3,7 @@ package gg.valentinos.alexjoo.GUIs;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
+import gg.valentinos.alexjoo.Handlers.WorldGuardHandler;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -16,6 +17,7 @@ import static gg.valentinos.alexjoo.VClans.Log;
 public class ChunkRadar {
     private final ChunkHandler chunkHandler;
     private final ClanHandler clanHandler;
+    private final WorldGuardHandler worldGuardHandler;
     private final Player player;
     private final ScoreboardManager manager;
     private Scoreboard scoreboard;
@@ -30,6 +32,7 @@ public class ChunkRadar {
     public ChunkRadar(Player player) {
         this.chunkHandler = VClans.getInstance().getChunkHandler();
         this.clanHandler = VClans.getInstance().getClanHandler();
+        this.worldGuardHandler = VClans.getInstance().getWorldGuardHandler();
         this.player = player;
         this.manager = Bukkit.getScoreboardManager();
     }
@@ -63,7 +66,9 @@ public class ChunkRadar {
                     Clan clan = clanHandler.getClanByName(clanName);
                     color = TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2));
                 }
-                String playerClanName = clanHandler.getClanNameOfMember(player.getUniqueId());
+                if (worldGuardHandler.isChunkOverlappingWithRegion(x, z)) {
+                    color = TextColor.color(worldGuardHandler.getColor().getRed(), worldGuardHandler.getColor().getGreen(), worldGuardHandler.getColor().getBlue());
+                }
 
                 if (x == posX && z == posZ) {
                     if (color == null) {
