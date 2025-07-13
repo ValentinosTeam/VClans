@@ -1,5 +1,5 @@
 name: VClans
-version: '0.4'
+version: '0.5'
 main: gg.valentinos.alexjoo.VClans
 api-version: '1.21'
 authors: [ Alex_Joo ]
@@ -8,6 +8,7 @@ website: valentinos.gg
 softdepend:
   - BlueMap
   - Vault
+  - WorldGuard
 commands:
   clan:
     description: Handles all clan related commands.

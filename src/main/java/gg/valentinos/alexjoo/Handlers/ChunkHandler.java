@@ -1,12 +1,24 @@
 package gg.valentinos.alexjoo.Handlers;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.ClanChunk;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Data.WorldGuardFlags;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +38,7 @@ public class ChunkHandler {
     private final ClanHandler clanHandler;
     private HashMap<ChunkPos, ClanChunk> chunks = new HashMap<>();
     private final int enemyProximityRadius;
+    private final int regionProximityRadius;
     private HashMap<Player, ChunkRadar> radars = new HashMap<>();
 
     // formula evaluation relevant fields for chunk cost
@@ -55,6 +68,7 @@ public class ChunkHandler {
         this.startingChunkAmount = VClans.getInstance().getConfig().getInt("settings.starting-chunk-amount");
         this.chunksPerPlayer = VClans.getInstance().getConfig().getInt("settings.chunks-per-player");
         this.enemyProximityRadius = VClans.getInstance().getConfig().getInt("settings.enemy-proximity-radius");
+        this.regionProximityRadius = VClans.getInstance().getConfig().getInt("settings.region-proximity-radius");
 
         chunkCostFormula = VClans.getInstance().getConfig().getString("settings.chunk-cost-formula");
         if (chunkCostFormula == null) {
@@ -64,7 +78,6 @@ public class ChunkHandler {
             Log("Unsafe characters detected in chunk-cost-formula!" + chunkCostFormula + " Defaulting to " + DEFAULT_CHUNK_FORMULA, LogType.SEVERE);
             chunkCostFormula = DEFAULT_CHUNK_FORMULA;
         }
-        Log("chunk-cost-formula is: " + chunkCostFormula);
     }
 
     public void claimChunk(int x, int z, Player player) {
@@ -182,6 +195,7 @@ public class ChunkHandler {
             Log("Clan not found", LogType.SEVERE);
             return false;
         }
+        if (chunks.size() == 2) return false;
         for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
             if (getAdjacentChunks(chunk.getX(), chunk.getZ(), false).size() <= 1) {
                 return true;
@@ -209,6 +223,48 @@ public class ChunkHandler {
                 if (chunk != null && !chunk.getClanName().equals(clanName)) return true;
             }
         }
+        return false;
+    }
+    public boolean isChunkCloseToRegion(int x, int z) {
+        String worldName = VClans.getInstance().getConfig().getString("settings.world-name");
+        if (worldName == null) {
+            Log("Couldn't find world-name in config.yml!", LogType.SEVERE);
+            return false;
+        }
+        org.bukkit.World bukkitWorld = Bukkit.getWorld(worldName);
+        if (bukkitWorld == null) {
+            Log("Couldn't find world " + worldName, LogType.SEVERE);
+            return false;
+        }
+        try {
+            World world = BukkitAdapter.adapt(bukkitWorld);
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionManager regionManager = container.get(world);
+            if (regionManager == null) return false;
+
+
+            int minX = (x - regionProximityRadius) << 4;
+            int minZ = (z - regionProximityRadius) << 4;
+            int maxX = ((x + regionProximityRadius + 1) << 4) - 1;
+            int maxZ = ((z + regionProximityRadius + 1) << 4) - 1;
+
+            BlockVector3 min = BlockVector3.at(minX, 0, minZ);
+            BlockVector3 max = BlockVector3.at(maxX, bukkitWorld.getMaxHeight(), maxZ);
+
+            ProtectedRegion tempChunkRegion = new ProtectedCuboidRegion("__temp", min, max);
+            ApplicableRegionSet overlapping = regionManager.getApplicableRegions(tempChunkRegion);
+
+            for (ProtectedRegion region : overlapping) {
+                StateFlag.State state = region.getFlag(WorldGuardFlags.VCLANS_PROTECTED_REGION);
+                if (state == StateFlag.State.ALLOW) {
+                    return true;
+                }
+            }
+        } catch (NoClassDefFoundError e) {
+            Log("Couldn't find WorldGuard Class");
+            return false;
+        }
+
         return false;
     }
     public boolean canAffordNewChunk(Player player) {

@@ -16,7 +16,7 @@ public class ChunkClaimSubcommand extends SubCommand {
     private final ChunkHandler chunkHandler;
 
     public ChunkClaimSubcommand() {
-        super("chunk", "claim", List.of("success", "already-claimed", "no-permission", "max-chunks", "not-adjacent", "too-close", "wrong-world", "cant-afford"));
+        super("chunk", "claim", List.of("success", "already-claimed", "no-permission", "max-chunks", "not-adjacent", "too-close", "too-close-region", "wrong-world", "cant-afford"));
         hasToBePlayer = true;
         requiredArgs = 1;
         this.chunkHandler = VClans.getInstance().getChunkHandler();
@@ -70,6 +70,10 @@ public class ChunkClaimSubcommand extends SubCommand {
         }
         if (chunkHandler.isChunkCloseToEnemyClan(x, z, clanName)) {
             sendFormattedPredefinedMessage(sender, "too-close", LogType.WARNING);
+            return true;
+        }
+        if (chunkHandler.isChunkCloseToRegion(x, z)) {
+            sendFormattedPredefinedMessage(sender, "too-close-region", LogType.WARNING);
             return true;
         }
         if (!clan.getChunks().isEmpty() && !chunkHandler.isChunkAdjacentToClan(x, z, clanName)) {

@@ -1,19 +1,19 @@
 show-current-clan-on-join: true
 settings:
+  world-name: "world" # The world name where chunk claiming will be enabled
   max-clan-name-length: 16
   min-clan-name-length: 3
   max-clan-size: 30 # max amount of players in per clan
-  max-chunks: 5 # max amount of claimed chunks per clan
-  enemy-proximity-radius: 3 # the minimum area between two different clan chunk claims
+  starting-chunk-amount: 5
+  chunks-per-player: 2
+  chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
+  enemy-proximity-radius: 3 # the minimum amount of chunks between two different clan chunk claims
+  region-proximity-radius: 3 # the minimum amount of chunks between a claimed chunk and a VClans protected WorldGuard region
   invite-expiration: 60*60*24*7 # 7 days
   default-clan-owner-title: "Leader"
   default-clan-member-title: "Member"
-  world-name: "world" # The world name where chunk claiming will be enabled
-  chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
   extrude-max-y: 120 # the highest       ...        points on an area marker in BlueMap
-  extrude-min-y: -120 # ... and respectively lowest ...
-  starting-chunk-amount: 5
-  chunks-per-player: 2
+  extrude-min-y: -50 # ... and respectively the lowest ...
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
@@ -198,6 +198,7 @@ commands:
         max-chunks: "You have reached the maximum number ({max-chunks}) of chunks your clan can claim."
         not-adjacent: "You can only claim chunks that are adjacent to your clan's claimed chunks."
         too-close: "You can't claim this chunk because it is too close to another clan's claimed chunk."
+        too-close-region: "You can't claim this chunk because it is too close to a VClans protected WorldGuard region."
         wrong-world: "You can't claim chunks in this world."
         cant-afford: "You can't afford this chunk: ${price}."
     unclaim:

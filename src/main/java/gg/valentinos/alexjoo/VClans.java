@@ -1,11 +1,18 @@
 package gg.valentinos.alexjoo;
 
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import gg.valentinos.alexjoo.Commands.CancelCommand;
 import gg.valentinos.alexjoo.Commands.Chunk.ChunkCommand;
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
 import gg.valentinos.alexjoo.Commands.TestCommand;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Data.WorldGuardFlags;
 import gg.valentinos.alexjoo.Handlers.*;
 import gg.valentinos.alexjoo.Listeners.ChunkListener;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
@@ -13,8 +20,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,10 +38,10 @@ public final class VClans extends JavaPlugin {
     private CooldownHandler cooldownHandler;
     private ConfirmationHandler confirmationHandler;
     private ChunkHandler chunkHandler;
-    //    private DynmapHandler dynmapHandler;
-    private BlueMapHandler blueMapHandler;
+    private BlueMapHandler blueMapHandler = null;
     private HashMap<String, String> defaultMessages;
     private Economy economy = null;
+
 
     @Override
     public void onEnable() {
@@ -42,10 +51,7 @@ public final class VClans extends JavaPlugin {
         loadDefaultMessages();
 
         if (!setupEconomy()) {
-            getLogger().warning("VClans requires Vault to be installed to be fully functional");
-//            getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getName()));
-//            getServer().getPluginManager().disablePlugin(this);
-//            return;
+            Log("Vault plugin not found, chunks are going to be free!", LogType.WARNING);
         }
 
         clanHandler = new ClanHandler();
@@ -53,9 +59,10 @@ public final class VClans extends JavaPlugin {
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();
 
-//        dynmapHandler = new DynmapHandler();
-//        DynmapCommonAPIListener.register(dynmapHandler);
-        blueMapHandler = new BlueMapHandler();
+        if (!setupBlueMap()) {
+            Log("BlueMap plugin not found, download bluemap if you want to see the chunks in the browser!", LogType.WARNING);
+        }
+
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new ChunkListener(), this);
@@ -76,6 +83,13 @@ public final class VClans extends JavaPlugin {
 
         getLogger().info("vClans has been enabled!");
 
+    }
+
+    @Override
+    public void onLoad() {
+        if (!setupWorldGuard()) {
+            Log("WorldGuard plugin not found. This plugin has support for it, just so u know :)", LogType.WARNING);
+        }
     }
 
     @Override
@@ -226,6 +240,31 @@ public final class VClans extends JavaPlugin {
             return false;
         }
         economy = rsp.getProvider();
-        return economy != null;
+        return true;
+    }
+    private boolean setupBlueMap() {
+        if (getServer().getPluginManager().getPlugin("BlueMap") == null) {
+            return false;
+        }
+        blueMapHandler = new BlueMapHandler();
+        return true;
+    }
+    private boolean setupWorldGuard() {
+        Plugin wgPlugin = Bukkit.getPluginManager().getPlugin("WorldGuard");
+        if (!(wgPlugin instanceof WorldGuardPlugin)) return false;
+
+        FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+        try {
+            registry.register(WorldGuardFlags.VCLANS_PROTECTED_REGION);
+        } catch (FlagConflictException e) {
+            Flag<?> existing = registry.get("vclans-protected");
+            if (existing instanceof StateFlag) {
+                WorldGuardFlags.VCLANS_PROTECTED_REGION = (StateFlag) existing;
+            } else {
+                Log("vclans-protected flag conflict with incompatible type.", LogType.SEVERE);
+                return false;
+            }
+        }
+        return true;
     }
 }

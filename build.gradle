@@ -5,7 +5,7 @@ plugins {
 
 description = 'VClans is a plugin that allows players to create and manage clans in Minecraft. Developing for the Valentinos Minecraft server.'
 group = 'gg.valentinos'
-version = '0.4'
+version = '0.5'
 
 repositories {
     mavenCentral()
@@ -13,6 +13,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/groups/public/" }
     maven { url "https://jitpack.io" }
     maven { url "https://repo.bluecolored.de/releases" }
+    maven { url "https://maven.enginehub.org/repo/" }
 }
 
 dependencies {
@@ -22,6 +23,7 @@ dependencies {
     implementation("com.technicjelle:BMUtils:4.3.1") {
         exclude group: "com.flowpowered", module: "flow-math"
     }
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.12'
 }
 
 tasks.build {
