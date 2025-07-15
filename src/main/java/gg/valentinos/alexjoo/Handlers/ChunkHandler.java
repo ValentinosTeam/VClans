@@ -12,11 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static gg.valentinos.alexjoo.VClans.Log;
 
@@ -183,13 +181,36 @@ public class ChunkHandler {
             Log("Clan not found", LogType.SEVERE);
             return false;
         }
-        if (chunks.size() == 2) return false;
-        for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
-            if (getAdjacentChunks(chunk.getX(), chunk.getZ(), false).size() <= 1) {
-                return true;
+        Set<ChunkPos> chunks = clan.getChunks().stream()
+                .map(c -> new ChunkPos(c.getX(), c.getZ()))
+                .collect(Collectors.toSet());
+        ChunkPos toRemove = new ChunkPos(x, z);
+        if (!chunks.contains(toRemove)) return false;
+
+        Set<ChunkPos> remaining = new HashSet<>(chunks);
+        remaining.remove(toRemove);
+
+        if (remaining.isEmpty()) return false;
+
+        Set<ChunkPos> visited = new HashSet<>();
+        Queue<ChunkPos> queue = new LinkedList<>();
+        ChunkPos start = remaining.iterator().next();
+        queue.add(start);
+        visited.add(start);
+
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+        while (!queue.isEmpty()) {
+            ChunkPos current = queue.poll();
+            for (int[] d : dirs) {
+                ChunkPos neighbor = new ChunkPos(current.x() + d[0], current.z() + d[1]);
+                if (remaining.contains(neighbor) && visited.add(neighbor)) {
+                    queue.add(neighbor);
+                }
             }
         }
-        return false;
+
+        return visited.size() != remaining.size();
     }
     public boolean isChunkAdjacentToClan(int x, int z, String clanName) {
         for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {

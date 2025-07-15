@@ -194,29 +194,34 @@ public class ChunkListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        // blocks any and all damage on entities inside of claimed chunks from any source unless the source is a player from said clan
+        // blocks non-clan members from damaging any entity protected by the claimed chunk.
 
+        Entity targetEntity = event.getEntity();
+        // return if target is not a player
+//        if (!(targetEntity instanceof Player targetPlayer)) return;
         Chunk chunk = event.getEntity().getChunk();
         String chunkClan = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
+        // return if target is not in a claimed chunk
         if (chunkClan == null) return;
-
         DamageSource damageSource = event.getDamageSource();
-        DamageType damageType = damageSource.getDamageType();
-        Entity damager = damageSource.getCausingEntity();
 
-//        Log("Chunk Clan: " + chunkClan + ". Victim: " + event.getEntity().getName() + ". Damager: " + (damager != null ? damager.getName() : "NULL"));
-        // PROBLEM: if a fish decides to suffocate on land or a mob decides to swim in lava this will be spammed.
-        // but if ignored then have to make special check for explosion damage (and perhaps more)
+        Entity damagerEntity = damageSource.getCausingEntity();
 
-        if (damager instanceof Player player) {
-            if (!clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan)) {
-                player.sendMessage(Component.text("You cannot harm entities in this territory").color(RED));
-                event.setCancelled(true);
-            }
+        // return if the damager isn't a player
+        if (damagerEntity instanceof Player damagerPlayer) {
+            // return if damager is part of the clan that owns the chunk
+            if (clanHandler.isPlayerInClan(damagerPlayer.getUniqueId(), chunkClan)) return;
+            damagerPlayer.sendMessage(Component.text("You cannot harm this entity in a clan territory").color(RED));
+            event.setCancelled(true);
         } else {
-            // Block non-player damage too
+            DamageType damageType = damageSource.getDamageType();
+            Chunk chunkSource = damageSource.getSourceLocation().getChunk();
+            chunkClan = chunkHandler.getClanNameByChunk(chunkSource.getX(), chunkSource.getZ());
+
+            if (damageType != DamageType.EXPLOSION && chunkClan != null) return;
             event.setCancelled(true);
         }
+
     }
 
     @EventHandler
