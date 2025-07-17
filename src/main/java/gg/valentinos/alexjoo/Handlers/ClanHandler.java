@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 import static gg.valentinos.alexjoo.VClans.Log;
+import static gg.valentinos.alexjoo.VClans.WORLD_NAME;
 
 public class ClanHandler {
 
@@ -185,7 +186,7 @@ public class ClanHandler {
                 continue;
             }
             for (ClanChunk chunk : clan.getChunks()) {
-                if (chunk.getX() == x && chunk.getZ() == z && chunk.getWorld().equals(VClans.getInstance().getChunkHandler().getWorldName())) {
+                if (chunk.getX() == x && chunk.getZ() == z && chunk.getWorld().equals(WORLD_NAME)) {
                     return clan;
                 }
             }

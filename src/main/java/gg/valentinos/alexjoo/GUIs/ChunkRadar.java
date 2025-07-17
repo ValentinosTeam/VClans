@@ -12,8 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
-import static gg.valentinos.alexjoo.VClans.Log;
-
 public class ChunkRadar {
     private final ChunkHandler chunkHandler;
     private final ClanHandler clanHandler;
@@ -38,11 +36,9 @@ public class ChunkRadar {
     }
 
     public void initializeRadar() {
-        if (manager == null)
-            return;
-        this.scoreboard = manager.getNewScoreboard();
+        if (manager == null) return;
 
-        Log("Initializing radar for player: " + player.getName());
+        this.scoreboard = manager.getNewScoreboard();
 
         objective = scoreboard.registerNewObjective("Chunk Radar", Criteria.DUMMY, Component.text("Chunk Radar").decorate(TextDecoration.UNDERLINED).color(TextColor.color(255, 85, 85)));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -52,7 +48,6 @@ public class ChunkRadar {
     public void updateRadar(int posX, int posZ) {
         final int radarSize = 5; // HAS TO BE ODD!!!
         final int mid = (radarSize - 1) / 2;
-        Log("Updating radar for player: " + player.getName());
         for (int i = 0; i < radarSize; i++) {
             Component row = Component.text(" ".repeat(i));
             int dz = mid - i;

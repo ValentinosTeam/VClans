@@ -11,22 +11,28 @@ import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+
+import static gg.valentinos.alexjoo.VClans.Log;
 
 public class ChunkListener implements Listener {
     private final ChunkHandler chunkHandler;
@@ -52,8 +58,8 @@ public class ChunkListener implements Listener {
     }
 
     private void enterExitNotification(Player player, Chunk fromChunk, Chunk toChunk) {
-        String fromClanName = chunkHandler.getClanNameByChunk(fromChunk.getX(), fromChunk.getZ());
-        String toClanName = chunkHandler.getClanNameByChunk(toChunk.getX(), toChunk.getZ());
+        String fromClanName = chunkHandler.getClanNameByChunk(fromChunk);
+        String toClanName = chunkHandler.getClanNameByChunk(toChunk);
         TextColor color = TextColor.color(125, 125, 125);
         if (toClanName != null) {
             Clan toClan = clanHandler.getClanByName(toClanName);
@@ -97,11 +103,11 @@ public class ChunkListener implements Listener {
     // Player related events
     private boolean shouldBlockPlayerInteraction(Chunk chunk, Player player) {
         // helper method for all the player related events
-        String chunkClanName = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
+        String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
         if (chunkClanName != null) {
             Clan chunkClan = clanHandler.getClanByName(chunkClanName);
             if (chunkClan != null && !chunkClan.isPlayerMember(player.getUniqueId())) {
-                player.sendMessage(Component.text("You cannot interact with this territory").color(RED));
+//                player.sendMessage(Component.text("You cannot interact with this territory").color(RED));
                 return true;
             }
         }
@@ -157,7 +163,7 @@ public class ChunkListener implements Listener {
             event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
         } else {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
+            String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
             if (chunkClanName != null) {
                 event.setCancelled(true);
             }
@@ -191,37 +197,36 @@ public class ChunkListener implements Listener {
     }
 
     // entity events
-
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        // blocks non-clan members from damaging any entity protected by the claimed chunk.
-
-        Entity targetEntity = event.getEntity();
-        // return if target is not a player
-//        if (!(targetEntity instanceof Player targetPlayer)) return;
-        Chunk chunk = event.getEntity().getChunk();
-        String chunkClan = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
-        // return if target is not in a claimed chunk
+        Entity target = event.getEntity();
+        Chunk chunk = target.getLocation().getChunk();
+        String chunkClan = chunkHandler.getClanNameByChunk(chunk);
         if (chunkClan == null) return;
-        DamageSource damageSource = event.getDamageSource();
 
-        Entity damagerEntity = damageSource.getCausingEntity();
-
-        // return if the damager isn't a player
-        if (damagerEntity instanceof Player damagerPlayer) {
-            // return if damager is part of the clan that owns the chunk
-            if (clanHandler.isPlayerInClan(damagerPlayer.getUniqueId(), chunkClan)) return;
-            damagerPlayer.sendMessage(Component.text("You cannot harm this entity in a clan territory").color(RED));
-            event.setCancelled(true);
-        } else {
-            DamageType damageType = damageSource.getDamageType();
-            Chunk chunkSource = damageSource.getSourceLocation().getChunk();
-            chunkClan = chunkHandler.getClanNameByChunk(chunkSource.getX(), chunkSource.getZ());
-
-            if (damageType != DamageType.EXPLOSION && chunkClan != null) return;
-            event.setCancelled(true);
+        // dont protect ppl who dont belong
+        if (target instanceof Player targetPlayer) {
+            Clan clan = clanHandler.getClanByMember(targetPlayer.getUniqueId());
+            if (clan == null || !Objects.equals(clan.getName(), chunkClan)) {
+                return;
+            }
         }
 
+        DamageCause cause = event.getCause();
+
+        // Explosion protection
+        if (cause == DamageCause.ENTITY_EXPLOSION || cause == DamageCause.BLOCK_EXPLOSION) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // Direct attacker
+        DamageSource source = event.getDamageSource();
+        Entity damager = source.getCausingEntity();
+        if (damager instanceof Player player) {
+            if (clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan)) return;
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -230,7 +235,7 @@ public class ChunkListener implements Listener {
         List<Block> blocks = event.blockList();
         blocks.removeIf(block -> {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
+            String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
             return chunkClanName != null; // Remove blocks in claimed chunks
         });
     }
@@ -246,33 +251,67 @@ public class ChunkListener implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
-//        Entity remover = event.getRemover();
-//        Location loc = event.getEntity().getLocation();
-//        Chunk chunk = loc.getChunk();
-//        String chunkClan = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
-//
-//        if (chunkClan != null) {
-//            if (remover instanceof Player player) {
-//                Log("remover is player", LogType.INFO);
-//                if (!clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan)) {
-//                    player.sendMessage(Component.text("You cannot break this in this territory").color(RED));
-//                    event.setCancelled(true);
-//                }
-//            } else {
-//                event.setCancelled(true);
-//            }
-//        }
-//    }
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player player)) return;
+
+        Log("TEST");
+
+        Entity entity = event.getEntity();
+
+        if (shouldBlockPlayerInteraction(entity.getChunk(), player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onVehicleDamage(VehicleDamageEvent event) {
+        // Triggered when a vehicle (boat, minecart) is *damaged* by anything (player, arrow, explosion)
+        if (!(event.getAttacker() instanceof Player player)) return;
+
+        Entity vehicle = event.getVehicle();
+        if (shouldBlockPlayerInteraction(vehicle.getChunk(), player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onVehicleDestroy(VehicleDestroyEvent event) {
+        // Triggered when a vehicle is *broken* (final blow)
+        if (!(event.getAttacker() instanceof Player player)) return;
+
+        Entity vehicle = event.getVehicle();
+        if (shouldBlockPlayerInteraction(vehicle.getChunk(), player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+        Entity remover = event.getRemover();
+        Chunk chunk = event.getEntity().getChunk();
+        String chunkClan = chunkHandler.getClanNameByChunk(chunk);
+
+        if (chunkClan == null) return;
+
+        if (remover instanceof Player player) {
+            if (!clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan)) {
+                event.setCancelled(true);
+            }
+        } else {
+            event.setCancelled(true);
+        }
+    }
 
     // block events
 
     @EventHandler
     public void onBlockFromTo(BlockFromToEvent event) {
         // forbid liquid flow from outside into a claimed territory
-        String fromClanName = chunkHandler.getClanNameByChunk(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ());
-        String toClanName = chunkHandler.getClanNameByChunk(event.getToBlock().getChunk().getX(), event.getToBlock().getChunk().getZ());
+        Chunk fromChunk = event.getBlock().getChunk();
+        Chunk toChunk = event.getToBlock().getChunk();
+        String fromClanName = chunkHandler.getClanNameByChunk(fromChunk);
+        String toClanName = chunkHandler.getClanNameByChunk(toChunk);
         if (fromClanName == null && toClanName != null) {
             event.setCancelled(true);
         }
@@ -282,7 +321,7 @@ public class ChunkListener implements Listener {
     public void onBlockBurn(BlockBurnEvent event) {
         // block fire or lava from destroying blocks (does not apply to ice smelting)
         Chunk chunk = event.getBlock().getChunk();
-        String chunkClanName = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
+        String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
         if (chunkClanName != null) {
             event.setCancelled(true);
         }
@@ -294,7 +333,7 @@ public class ChunkListener implements Listener {
         List<Block> blocks = event.blockList();
         blocks.removeIf(block -> {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
+            String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
             return chunkClanName != null; // Remove blocks in claimed chunks
         });
     }
@@ -303,11 +342,11 @@ public class ChunkListener implements Listener {
     public void onTreeGrow(StructureGrowEvent event) {
         // removes blocks that would grow from outside claimed chunk inside (sapling -> tree, mushroom -> big mushroom)
         Chunk saplingChunk = event.getLocation().getChunk();
-        String clanName = chunkHandler.getClanNameByChunk(saplingChunk.getX(), saplingChunk.getZ());
+        String clanName = chunkHandler.getClanNameByChunk(saplingChunk);
         if (clanName != null) return;
         event.getBlocks().removeIf(blockState -> {
             Chunk chunk = blockState.getLocation().getChunk();
-            String targetClan = chunkHandler.getClanNameByChunk(chunk.getX(), chunk.getZ());
+            String targetClan = chunkHandler.getClanNameByChunk(chunk);
             return targetClan != null;
         });
     }
@@ -326,17 +365,17 @@ public class ChunkListener implements Listener {
     }
 
     private boolean blockPistonEvent(Block piston, List<Block> affectedBlocks, BlockFace direction) {
-        if (chunkHandler.getClanNameByChunk(piston.getChunk().getX(), piston.getChunk().getZ()) == null) {
+        if (chunkHandler.getClanNameByChunk(piston.getChunk()) == null) {
             Block pistonHead = piston.getRelative(direction);
-            if (chunkHandler.getClanNameByChunk(pistonHead.getChunk().getX(), pistonHead.getChunk().getZ()) != null) {
+            if (chunkHandler.getClanNameByChunk(pistonHead.getChunk()) != null) {
                 return true;
             }
             for (Block block : affectedBlocks) {
-                if (chunkHandler.getClanNameByChunk(block.getChunk().getX(), block.getChunk().getZ()) != null) {
+                if (chunkHandler.getClanNameByChunk(block.getChunk()) != null) {
                     return true;
                 } else {
                     Block relativeBlock = block.getRelative(direction);
-                    if (chunkHandler.getClanNameByChunk(relativeBlock.getChunk().getX(), relativeBlock.getChunk().getZ()) != null) {
+                    if (chunkHandler.getClanNameByChunk(relativeBlock.getChunk()) != null) {
                         return true;
                     }
                 }

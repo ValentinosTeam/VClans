@@ -27,6 +27,7 @@ import java.util.Objects;
 
 public final class VClans extends JavaPlugin {
 
+    public static String WORLD_NAME;
     private static VClans instance;
     private ClanHandler clanHandler;
     private CooldownHandler cooldownHandler;
@@ -82,6 +83,8 @@ public final class VClans extends JavaPlugin {
         getCommand("test").setExecutor(new TestCommand());
 
         saveDefaultConfig();
+
+        WORLD_NAME = getConfig().getString("settings.world-name");
 
         getLogger().info("vClans has been enabled!");
 

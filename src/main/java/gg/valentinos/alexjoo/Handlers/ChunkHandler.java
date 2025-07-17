@@ -7,6 +7,7 @@ import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,10 +18,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static gg.valentinos.alexjoo.VClans.Log;
+import static gg.valentinos.alexjoo.VClans.WORLD_NAME;
 
 public class ChunkHandler {
 
-    private final String worldName;
     private final ClanHandler clanHandler;
     private HashMap<ChunkPos, ClanChunk> chunks = new HashMap<>();
     private final int enemyProximityRadius;
@@ -42,7 +43,6 @@ public class ChunkHandler {
 
     public ChunkHandler() {
         this.clanHandler = VClans.getInstance().getClanHandler();
-        this.worldName = VClans.getInstance().getConfig().getString("settings.world-name");
         for (Clan clan : clanHandler.getClans()) {
             if (clan.getChunks() == null) {
                 clan.setChunks(new HashSet<>());
@@ -76,7 +76,7 @@ public class ChunkHandler {
             EconomyResponse response = economy.withdrawPlayer(player, price);
         }
 
-        ClanChunk newChunk = new ClanChunk(x, z, worldName, clanName);
+        ClanChunk newChunk = new ClanChunk(x, z, WORLD_NAME, clanName);
         addChunk(newChunk, clan);
         updateChunkRadar(player, x, z);
         BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
@@ -103,14 +103,13 @@ public class ChunkHandler {
     }
     public void toggleChunkRadar(Player player) {
         if (radars.containsKey(player)) {
-            Log("Closing radar for player: " + player.getName(), LogType.FINE);
             ChunkRadar radar = radars.get(player);
             if (radar != null) {
                 radar.closeRadar();
                 radars.remove(player);
             }
         } else {
-            Log("Opening radar for player: " + player.getName(), LogType.FINE);
+            if (!(player.getWorld().getName().equals(WORLD_NAME))) return;
             ChunkRadar chunkRadar = new ChunkRadar(player);
             chunkRadar.initializeRadar();
             radars.put(player, chunkRadar);
@@ -119,7 +118,12 @@ public class ChunkHandler {
     public void updateChunkRadar(Player player, int x, int z) {
         ChunkRadar radar = radars.get(player);
         if (radar != null) {
-            radar.updateRadar(x, z);
+            if (!(player.getWorld().getName().equals(WORLD_NAME))) {
+                radar.closeRadar();
+                radars.remove(player);
+            } else {
+                radar.updateRadar(x, z);
+            }
         }
     }
 
@@ -161,15 +165,20 @@ public class ChunkHandler {
                 "World: " + chunk.getWorld() + "\n" +
                 "Clan Name: " + chunk.getClanName() + "\n";
     }
-    public String getWorldName() {
-        return worldName;
-    }
     public String getClanNameByChunk(int x, int z) {
         ClanChunk chunk = getChunk(x, z);
         if (chunk == null) {
             return null;
         }
         return chunk.getClanName();
+    }
+    public String getClanNameByChunk(Chunk chunk) {
+        if (!chunk.getWorld().getName().equals(WORLD_NAME)) return null;
+        ClanChunk clanChunk = getChunk(chunk.getX(), chunk.getZ());
+        if (clanChunk == null) {
+            return null;
+        }
+        return clanChunk.getClanName();
     }
     public boolean isChunkClaimedByClan(int x, int z, String clanName) {
         ClanChunk chunk = getChunk(x, z);
@@ -221,8 +230,7 @@ public class ChunkHandler {
         return false;
     }
     public boolean isChunkInValidWorld(String name) {
-        Log("config world: " + this.worldName + ". given world: " + name + ". Equal? " + name.equals(this.worldName), LogType.INFO);
-        return name.equals(this.worldName);
+        return name.equals(WORLD_NAME);
     }
     public boolean isChunkCloseToEnemyClan(int x, int z, String clanName) {
         for (int dx = -enemyProximityRadius; dx <= enemyProximityRadius; dx++) {
