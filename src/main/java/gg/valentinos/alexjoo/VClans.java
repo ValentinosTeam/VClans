@@ -7,17 +7,16 @@ import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.*;
+import gg.valentinos.alexjoo.Listeners.ChatListener;
 import gg.valentinos.alexjoo.Listeners.ChunkListener;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -35,9 +34,8 @@ public final class VClans extends JavaPlugin {
     private ChunkHandler chunkHandler;
     private BlueMapHandler blueMapHandler = null;
     private WorldGuardHandler worldGuardHandler = null;
+    private VaultHandler vaultHandler = null;
     private HashMap<String, String> defaultMessages;
-    private Economy economy = null;
-
 
     @Override
     public void onEnable() {
@@ -47,22 +45,12 @@ public final class VClans extends JavaPlugin {
 
         loadDefaultMessages();
 
-        if (!setupEconomy()) {
-            Log("Vault plugin not found, chunks are going to be free!", LogType.WARNING);
-        }
-
+        vaultHandler = new VaultHandler();
         clanTierHandler = new ClanTierHandler();
-        if (!clanTierHandler.isValidConfig()) {
-            Log("Invalid clan tier configs, canceling plugin!", LogType.SEVERE);
-            return;
-        }
         clanHandler = new ClanHandler();
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();
-        if (worldGuardHandler == null) {
-            worldGuardHandler = new WorldGuardHandler();
-        }
         if (!worldGuardHandler.enable()) {
             Log("Something went really wrong when enabling the WorldGuard plugin", LogType.SEVERE);
         }
@@ -75,6 +63,7 @@ public final class VClans extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new ChunkListener(), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(vaultHandler.getChat()), this);
 
         ClanCommand clanCommand = new ClanCommand();
         Objects.requireNonNull(getCommand("clan")).setExecutor(clanCommand);
@@ -205,11 +194,11 @@ public final class VClans extends JavaPlugin {
     public BlueMapHandler getBlueMapHandler() {
         return blueMapHandler;
     }
-    public Economy getEconomy() {
-        return economy;
-    }
     public WorldGuardHandler getWorldGuardHandler() {
         return worldGuardHandler;
+    }
+    public VaultHandler getVaultHandler() {
+        return vaultHandler;
     }
 
     public String getDefaultMessage(String key) {
@@ -248,17 +237,6 @@ public final class VClans extends JavaPlugin {
             }
             defaultMessages.put(key, message);
         }
-    }
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return false;
-        }
-        economy = rsp.getProvider();
-        return true;
     }
     private boolean setupBlueMap() {
         if (getServer().getPluginManager().getPlugin("BlueMap") == null) {

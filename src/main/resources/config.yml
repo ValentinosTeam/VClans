@@ -12,6 +12,9 @@ settings:
   default-clan-member-title: "Member"
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: 50 #     ... and respectively the lowest ...
+  # [KEL] <Alex_Joo>: message...
+  # [Rank] <Alex_Joo>: message...
+  chat-format: "[{prefix}] <{name}>: "
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
@@ -211,6 +214,14 @@ commands:
         confirmation-message: "Are you sure you want to upgrade the clan to tier {tier-label} for the price of ${tier-price}? You have {confirm-time} seconds to /confirm !"
         max-tier: "You already have the highest tier clan!"
         cant-afford: "You can't afford the tier upgrade ({tier-price})"
+    chat:
+      enabled: true
+      description: "Toggles current chat to be only visible for clan members or global."
+      usage: "/clan chat"
+      messages:
+        # {chat} - either clan chat or global chat
+        success: "You have entered {chat} chat."
+        no-vault: "Vault has not been properly enabled, contact an administrator for help."
   chunk:
     claim:
       enabled: true

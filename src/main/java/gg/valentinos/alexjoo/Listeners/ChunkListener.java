@@ -32,8 +32,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
-import static gg.valentinos.alexjoo.VClans.Log;
-
 public class ChunkListener implements Listener {
     private final ChunkHandler chunkHandler;
     private final ClanHandler clanHandler;
@@ -254,8 +252,6 @@ public class ChunkListener implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player player)) return;
-
-        Log("TEST");
 
         Entity entity = event.getEntity();
 

@@ -16,11 +16,11 @@ import static gg.valentinos.alexjoo.VClans.WORLD_NAME;
 public class ClanHandler {
 
     private Clans clans;
-    private final ClanTierHandler tierHandler;
+    private final HashMap<Player, Boolean> playerUsingClanChat;
 
     public ClanHandler() {
         loadClans();
-        tierHandler = VClans.getInstance().getClanTierHandler();
+        playerUsingClanChat = new HashMap<>();
     }
 
     public Clans getClans() {
@@ -33,6 +33,7 @@ public class ClanHandler {
         clans.addClan(clan);
         saveClans();
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully created a clan with name " + name);
+        VClans.getInstance().getVaultHandler().createGroupPrefix(clan);
     }
     public void disbandClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
@@ -107,6 +108,10 @@ public class ClanHandler {
     public void upgradeClan(Clan clan) {
         clan.setTier(clan.getTier() + 1);
     }
+    public void toggleChat(Player player) {
+
+    }
+
 
     // saves and loads the clans
     public void loadClans() {
@@ -178,7 +183,7 @@ public class ClanHandler {
         return clan != null && clan.getName().equals(clanName);
     }
     public boolean clanIsFull(Clan clan) {
-        return clan.getMembers().size() >= tierHandler.getPlayerLimit(clan.getTier());
+        return clan.getMembers().size() >= VClans.getInstance().getClanTierHandler().getPlayerLimit(clan.getTier());
     }
 
     public Clan getClanByName(String name) {
@@ -227,5 +232,9 @@ public class ClanHandler {
         return clan;
     }
 
+    // helpers
+    private void setPrefix(Player player) {
+
+    }
 
 }

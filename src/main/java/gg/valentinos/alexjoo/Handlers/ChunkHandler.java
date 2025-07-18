@@ -5,7 +5,6 @@ import gg.valentinos.alexjoo.Data.ClanChunk;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
@@ -67,12 +66,9 @@ public class ChunkHandler {
     public void claimChunk(Chunk chunk, Player player) {
         String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
         Clan clan = clanHandler.getClanByName(clanName);
-        Economy economy = VClans.getInstance().getEconomy();
+        if (clan == null) return;
 
-        if (economy != null) {
-            double price = getNewChunkPrice(clan);
-            economy.withdrawPlayer(player, price);
-        }
+        VClans.getInstance().getVaultHandler().withdrawPlayer(player, getNewChunkPrice(clan));
 
         ClanChunk newChunk = new ClanChunk(chunk.getX(), chunk.getZ(), WORLD_NAME, clanName);
         addChunk(newChunk, clan);
@@ -130,25 +126,7 @@ public class ChunkHandler {
         return VClans.getInstance().getClanTierHandler().getChunkLimit(clan.getTier());
     }
     public double getNewChunkPrice(@NotNull Clan clan) {
-        Economy economy = VClans.getInstance().getEconomy();
-        if (economy == null) return 0;
-
-        int chunkAmount = clan.getChunks().size();
-        double price;
-        try {
-            Log("chunk-cost-formula is: " + chunkCostFormula);
-            String expr = chunkCostFormula.replace("x", String.valueOf(chunkAmount)).replace("^", "**");
-            Object result = engine.eval(expr);
-            price = Double.parseDouble(result.toString());
-        } catch (Exception e) {
-            Log("Error evaluating chunk-cost-formula: " + chunkCostFormula, LogType.SEVERE);
-            throw new RuntimeException(e);
-        }
-        if (Double.isNaN(price) || Double.isInfinite(price) || price < 0) {
-            Log("Invalid chunk cost formula result: " + price + " for x=" + chunkAmount, LogType.WARNING);
-            return 0;
-        }
-        return price;
+        return VClans.getInstance().getVaultHandler().calculateFormula(chunkCostFormula, clan.getChunks().size());
     }
     public String getChunkInfo(Chunk chunk) {
         ClanChunk clanChunk = getChunk(chunk.getX(), chunk.getZ());
@@ -257,14 +235,10 @@ public class ChunkHandler {
         return true;
     }
     public boolean canAffordNewChunk(Player player) {
-        Economy economy = VClans.getInstance().getEconomy();
-        if (economy == null) return true;
         Clan clan = clanHandler.getClanByMember(player.getUniqueId());
         if (clan == null) return false;
 
-        double price = getNewChunkPrice(clan);
-
-        return economy.getBalance(player) >= price;
+        return VClans.getInstance().getVaultHandler().getPlayerBalance(player) >= getNewChunkPrice(clan);
     }
 
     public List<ClanChunk> getAdjacentChunks(int x, int z, boolean includeCorners) {

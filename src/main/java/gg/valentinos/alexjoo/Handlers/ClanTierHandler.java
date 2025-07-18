@@ -2,7 +2,6 @@ package gg.valentinos.alexjoo.Handlers;
 
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -198,10 +197,8 @@ public class ClanTierHandler {
         return tiers.get(tier).debuffs;
     }
     public boolean canAffordUpgrade(Player player, int tier) {
-        Economy economy = VClans.getInstance().getEconomy();
-        if (economy == null) return true;
         double price = tiers.get(tier).price;
-        return economy.getBalance(player) >= price;
+        return VClans.getInstance().getVaultHandler().getPlayerBalance(player) >= price;
     }
     public boolean isValidConfig() {
         return validConfig;

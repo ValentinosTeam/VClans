@@ -28,6 +28,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ClanRankSubcommand());
         registerSubCommand(new ClanColorSubcommand());
         registerSubCommand(new ClanUpgradeSubcommand());
+        registerSubCommand(new ClanChatSubcommand());
 
         clanHelpSubcommand.setSubCommands(subCommands);
     }
