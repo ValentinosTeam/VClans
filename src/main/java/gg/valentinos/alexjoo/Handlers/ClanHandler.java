@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.Data.*;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -192,7 +193,20 @@ public class ClanHandler {
                 continue;
             }
             for (ClanChunk chunk : clan.getChunks()) {
-                if (chunk.getX() == x && chunk.getZ() == z && chunk.getWorld().equals(WORLD_NAME)) {
+                if (chunk.getX() == x && chunk.getZ() == z) {
+                    return clan;
+                }
+            }
+        }
+        return null;
+    }
+    public Clan getClanByChunkLocation(Chunk chunk) {
+        for (Clan clan : clans.getClans()) {
+            if (clan.getChunks() == null || clan.getChunks().isEmpty()) {
+                continue;
+            }
+            for (ClanChunk clanChunk : clan.getChunks()) {
+                if (clanChunk.getX() == chunk.getX() && clanChunk.getZ() == chunk.getZ() && chunk.getWorld().getName().equals(WORLD_NAME)) {
                     return clan;
                 }
             }

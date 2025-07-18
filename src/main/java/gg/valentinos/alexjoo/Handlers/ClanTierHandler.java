@@ -49,7 +49,7 @@ public class ClanTierHandler {
 
     private List<ClanTier> tiers;
     private boolean validConfig = false;
-    private static final int EFFECT_DURATION = 5 * 20; // 5 seconds = 100 ticks
+    private static final int EFFECT_DURATION = 6 * 20; // 5 seconds = 100 ticks
 
     public ClanTierHandler() {
         ConfigurationSection config = VClans.getInstance().getConfig().getConfigurationSection("clan-tiers");
@@ -129,7 +129,7 @@ public class ClanTierHandler {
                     return;
                 }
 
-                PotionEffect effect = new PotionEffect(type, 120, level);
+                PotionEffect effect = new PotionEffect(type, 120, level - 1);
                 clanTier.buffs.add(effect);
             }
 
@@ -160,7 +160,7 @@ public class ClanTierHandler {
                     return;
                 }
 
-                PotionEffect effect = new PotionEffect(type, EFFECT_DURATION, level);
+                PotionEffect effect = new PotionEffect(type, EFFECT_DURATION, level - 1);
                 clanTier.debuffs.add(effect);
             }
             tiers.add(clanTier);
@@ -185,8 +185,6 @@ public class ClanTierHandler {
     public int getPrice(int tier) {
         return tiers.get(tier).price;
     }
-    // 0, 1, 2 = 3
-    // 1
     public int getHighestTierNumber() {
         return tiers.size() - 1;
     }

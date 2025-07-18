@@ -13,6 +13,7 @@ settings:
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: 50 #     ... and respectively the lowest ...
 clan-tiers:
+  # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
     label: "[I]"
     player-limit: 1
@@ -26,8 +27,8 @@ clan-tiers:
     player-limit: 2
     chunk-limit: 5
     buffs:
-      - [ "REGENERATION", 1 ]
-      - [ "SPEED", 3 ]
+      - [ "REGENERATION", 2 ]
+      - [ "SPEED", 1 ]
     debuffs:
       - [ "GLOWING", 1 ] # applied to enemies
     price: 20000
@@ -202,10 +203,12 @@ commands:
       enabled: true
       description: "Upgrades the clans tier to gain perks."
       usage: "/clan upgrade"
+      confirmation: 30
       messages:
         # {tier-label} is the new tier label that is configured above in the clan-tiers
         # {tier-price} is the price of the tier upgrade defined above in the clan-tiers
         success: "You have successfully upgraded the clan to tier: {tier-label}"
+        confirmation-message: "Are you sure you want to upgrade the clan to tier {tier-label} for the price of ${tier-price}? You have {confirm-time} seconds to /confirm !"
         max-tier: "You already have the highest tier clan!"
         cant-afford: "You can't afford the tier upgrade ({tier-price})"
   chunk:

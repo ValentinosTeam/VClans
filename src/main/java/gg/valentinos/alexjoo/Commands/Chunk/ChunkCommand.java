@@ -15,7 +15,7 @@ import java.util.*;
 
 import static gg.valentinos.alexjoo.VClans.Log;
 
-public class ChunkCommand  implements CommandExecutor, TabCompleter {
+public class ChunkCommand implements CommandExecutor, TabCompleter {
 
     private final Map<String, SubCommand> subCommands = new HashMap<>();
 
@@ -27,13 +27,13 @@ public class ChunkCommand  implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player player)){
+        if (!(sender instanceof Player player)) {
             Log("This command can only be used by players.", LogType.FINE);
             return true;
         }
         if (args.length == 0) {
             // send info about current chunk
-            VClans.sendFormattedMessage(sender, VClans.getInstance().getChunkHandler().getChunkInfo(player.getChunk().getX(), player.getChunk().getZ()), LogType.FINE);
+            VClans.sendFormattedMessage(sender, VClans.getInstance().getChunkHandler().getChunkInfo(player.getChunk()), LogType.FINE);
             return true;
         }
 
@@ -51,10 +51,10 @@ public class ChunkCommand  implements CommandExecutor, TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
             List<String> suggestions = new ArrayList<>();
-            for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()){
+            for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()) {
                 String commandName = entry.getKey();
                 SubCommand subCommand = entry.getValue();
-                if (subCommand.suggestCommand(sender)){
+                if (subCommand.suggestCommand(sender)) {
                     suggestions.add(commandName);
                 }
             }

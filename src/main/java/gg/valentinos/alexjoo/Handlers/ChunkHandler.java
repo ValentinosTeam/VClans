@@ -6,8 +6,11 @@ import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.script.ScriptEngine;
@@ -58,9 +61,10 @@ public class ChunkHandler {
             Log("Unsafe characters detected in chunk-cost-formula!" + chunkCostFormula + " Defaulting to " + DEFAULT_CHUNK_FORMULA, LogType.SEVERE);
             chunkCostFormula = DEFAULT_CHUNK_FORMULA;
         }
+        startEffectInterval();
     }
 
-    public void claimChunk(int x, int z, Player player) {
+    public void claimChunk(Chunk chunk, Player player) {
         String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
         Clan clan = clanHandler.getClanByName(clanName);
         Economy economy = VClans.getInstance().getEconomy();
@@ -70,20 +74,20 @@ public class ChunkHandler {
             economy.withdrawPlayer(player, price);
         }
 
-        ClanChunk newChunk = new ClanChunk(x, z, WORLD_NAME, clanName);
+        ClanChunk newChunk = new ClanChunk(chunk.getX(), chunk.getZ(), WORLD_NAME, clanName);
         addChunk(newChunk, clan);
-        updateChunkRadar(player, x, z);
+        updateChunkRadar(player, chunk);
         BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
         if (blueMapHandler != null) {
             blueMapHandler.drawClanTerritory(clan);
         }
     }
-    public void unclaimChunk(int x, int z, Player player) {
+    public void unclaimChunk(Chunk chunk, Player player) {
         String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
         Clan clan = clanHandler.getClanByName(clanName);
-        ClanChunk chunkToRemove = chunks.get(new ChunkPos(x, z));
+        ClanChunk chunkToRemove = chunks.get(new ChunkPos(chunk.getX(), chunk.getZ()));
         removeChunk(chunkToRemove, clan);
-        updateChunkRadar(player, x, z);
+        updateChunkRadar(player, chunk);
         BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
         if (blueMapHandler != null) {
             blueMapHandler.drawClanTerritory(clan);
@@ -109,14 +113,15 @@ public class ChunkHandler {
             radars.put(player, chunkRadar);
         }
     }
-    public void updateChunkRadar(Player player, int x, int z) {
+    public void updateChunkRadar(Player player, Chunk chunk) {
+        if (!chunk.getWorld().getName().equals(WORLD_NAME)) return;
         ChunkRadar radar = radars.get(player);
         if (radar != null) {
             if (!(player.getWorld().getName().equals(WORLD_NAME))) {
                 radar.closeRadar();
                 radars.remove(player);
             } else {
-                radar.updateRadar(x, z);
+                radar.updateRadar(chunk);
             }
         }
     }
@@ -145,24 +150,17 @@ public class ChunkHandler {
         }
         return price;
     }
-    public String getChunkInfo(int x, int z) {
-        ClanChunk chunk = getChunk(x, z);
+    public String getChunkInfo(Chunk chunk) {
+        ClanChunk clanChunk = getChunk(chunk.getX(), chunk.getZ());
         // TODO: make this configurable.
-        if (chunk == null) {
+        if (clanChunk == null) {
             return "Chunk Unclaimed";
         }
         return "Chunk Info:" + "\n" +
-                "X: " + chunk.getX() + "\n" +
-                "Z: " + chunk.getZ() + "\n" +
-                "World: " + chunk.getWorld() + "\n" +
-                "Clan Name: " + chunk.getClanName() + "\n";
-    }
-    public String getClanNameByChunk(int x, int z) {
-        ClanChunk chunk = getChunk(x, z);
-        if (chunk == null) {
-            return null;
-        }
-        return chunk.getClanName();
+                "X: " + clanChunk.getX() + "\n" +
+                "Z: " + clanChunk.getZ() + "\n" +
+                "World: " + clanChunk.getWorld() + "\n" +
+                "Clan Name: " + clanChunk.getClanName() + "\n";
     }
     public String getClanNameByChunk(Chunk chunk) {
         if (!chunk.getWorld().getName().equals(WORLD_NAME)) return null;
@@ -172,11 +170,19 @@ public class ChunkHandler {
         }
         return clanChunk.getClanName();
     }
-    public boolean isChunkClaimedByClan(int x, int z, String clanName) {
-        ClanChunk chunk = getChunk(x, z);
-        return chunk != null && chunk.getClanName().equals(clanName);
+    public String getClanNameByChunk(int x, int z) {
+        ClanChunk clanChunk = getChunk(x, z);
+        if (clanChunk == null) {
+            return null;
+        }
+        return clanChunk.getClanName();
     }
-    public boolean unclaimWillSplit(int x, int z, String clanName) {
+    public boolean isChunkClaimedByClan(Chunk chunk, String clanName) {
+        ClanChunk clanChunk = getChunk(chunk.getX(), chunk.getZ());
+        return clanChunk != null && clanChunk.getClanName().equals(clanName);
+    }
+    public boolean unclaimWillSplit(Chunk chunk, String clanName) {
+        if (!chunk.getWorld().getName().equals(WORLD_NAME)) return false;
         Clan clan = clanHandler.getClanByName(clanName);
         if (clan == null) {
             Log("Clan not found", LogType.SEVERE);
@@ -185,7 +191,7 @@ public class ChunkHandler {
         Set<ChunkPos> chunks = clan.getChunks().stream()
                 .map(c -> new ChunkPos(c.getX(), c.getZ()))
                 .collect(Collectors.toSet());
-        ChunkPos toRemove = new ChunkPos(x, z);
+        ChunkPos toRemove = new ChunkPos(chunk.getX(), chunk.getZ());
         if (!chunks.contains(toRemove)) return false;
 
         Set<ChunkPos> remaining = new HashSet<>(chunks);
@@ -213,9 +219,10 @@ public class ChunkHandler {
 
         return visited.size() != remaining.size();
     }
-    public boolean isChunkAdjacentToClan(int x, int z, String clanName) {
-        for (ClanChunk chunk : getAdjacentChunks(x, z, false)) {
-            if (chunk != null && chunk.getClanName().equals(clanName)) {
+    public boolean isChunkAdjacentToClan(Chunk chunk, String clanName) {
+        if (!chunk.getWorld().getName().equals(WORLD_NAME)) return false;
+        for (ClanChunk clanChunk : getAdjacentChunks(chunk.getX(), chunk.getZ(), false)) {
+            if (clanChunk != null && clanChunk.getClanName().equals(clanName)) {
                 return true;
             }
         }
@@ -224,17 +231,21 @@ public class ChunkHandler {
     public boolean isChunkInValidWorld(String name) {
         return name.equals(WORLD_NAME);
     }
-    public boolean isChunkCloseToEnemyClan(int x, int z, String clanName) {
+    public boolean isChunkCloseToEnemyClan(Chunk chunk, String clanName) {
+        if (!chunk.getWorld().getName().equals(WORLD_NAME)) return false;
         for (int dx = -enemyProximityRadius; dx <= enemyProximityRadius; dx++) {
             for (int dz = -enemyProximityRadius; dz <= enemyProximityRadius; dz++) {
                 if (dx == 0 && dz == 0) continue;
-                ClanChunk chunk = getChunk(dx + x, dz + z);
-                if (chunk != null && !chunk.getClanName().equals(clanName)) return true;
+                ClanChunk clanChunk = getChunk(dx + chunk.getX(), dz + chunk.getZ());
+                if (clanChunk != null && !clanChunk.getClanName().equals(clanName)) return true;
             }
         }
         return false;
     }
-    public boolean isChunkCloseToRegion(int x, int z) {
+    public boolean isChunkCloseToRegion(Chunk chunk) {
+        if (!chunk.getWorld().getName().equals(WORLD_NAME)) return false;
+        int x = chunk.getX();
+        int z = chunk.getZ();
         if (VClans.getInstance().getWorldGuardHandler().isEnabled()) {
             int minX = (x - regionProximityRadius) << 4;
             int minZ = (z - regionProximityRadius) << 4;
@@ -296,6 +307,32 @@ public class ChunkHandler {
         chunks.remove(new ChunkPos(chunk.getX(), chunk.getZ()));
         clan.removeChunk(chunk);
         clanHandler.saveClans();
+    }
+    private void startEffectInterval() {
+        // With BukkitRunnable
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
+                    String clanChunkName = getClanNameByChunk(player.getChunk());
+                    Clan chunkClan = clanHandler.getClanByChunkLocation(player.getChunk());
+                    List<PotionEffect> effects = new ArrayList<>();
+                    if (chunkClan != null) {
+                        if (playerClan != null && playerClan.getName().equals(chunkClan.getName())) {
+                            // give buff
+                            effects = VClans.getInstance().getClanTierHandler().getBuffs(chunkClan.getTier());
+                        } else {
+                            // give debuff
+                            effects = VClans.getInstance().getClanTierHandler().getDebuffs(chunkClan.getTier());
+                        }
+                    }
+                    if (!effects.isEmpty()) {
+                        player.addPotionEffects(effects);
+                    }
+                }
+            }
+        }.runTaskTimer(VClans.getInstance(), 1, 5 * 20);
     }
     private ClanChunk getChunk(int x, int z) {
         return chunks.get(new ChunkPos(x, z));

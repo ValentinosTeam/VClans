@@ -51,7 +51,7 @@ public class ChunkListener implements Listener {
         Chunk toChunk = event.getTo().getChunk();
         if (!fromChunk.equals(toChunk)) { // update the chunk radar and notify if player entered or left a chunk
             Player player = event.getPlayer();
-            chunkHandler.updateChunkRadar(player, toChunk.getX(), toChunk.getZ());
+            chunkHandler.updateChunkRadar(player, toChunk);
             enterExitNotification(player, fromChunk, toChunk);
         }
 

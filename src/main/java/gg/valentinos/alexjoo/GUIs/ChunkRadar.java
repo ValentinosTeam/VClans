@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
@@ -43,9 +44,11 @@ public class ChunkRadar {
         objective = scoreboard.registerNewObjective("Chunk Radar", Criteria.DUMMY, Component.text("Chunk Radar").decorate(TextDecoration.UNDERLINED).color(TextColor.color(255, 85, 85)));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        updateRadar(player.getChunk().getX(), player.getChunk().getZ());
+        updateRadar(player.getChunk());
     }
-    public void updateRadar(int posX, int posZ) {
+    public void updateRadar(Chunk chunk) {
+        int posX = chunk.getX();
+        int posZ = chunk.getZ();
         final int radarSize = 5; // HAS TO BE ODD!!!
         final int mid = (radarSize - 1) / 2;
         for (int i = 0; i < radarSize; i++) {

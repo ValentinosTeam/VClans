@@ -25,12 +25,10 @@ public class ChunkClaimSubcommand extends SubCommand {
     @Override
     public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        int x = player.getChunk().getX();
-        int z = player.getChunk().getZ();
 
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
-            chunkHandler.claimChunk(x, z, player);
+            chunkHandler.claimChunk(player.getChunk(), player);
         };
     }
 
@@ -50,8 +48,6 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "wrong-world", LogType.WARNING);
             return true;
         }
-        int x = player.getChunk().getX();
-        int z = player.getChunk().getZ();
         Clan clan = clanHandler.getClanByMember(player.getUniqueId());
         if (clan == null) {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
@@ -63,20 +59,20 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
-        Clan chunkClan = clanHandler.getClanByChunkLocation(x, z);
+        Clan chunkClan = clanHandler.getClanByChunkLocation(player.getChunk());
         if (chunkClan != null) {
             sendFormattedPredefinedMessage(sender, "already-claimed", LogType.WARNING);
             return true;
         }
-        if (chunkHandler.isChunkCloseToEnemyClan(x, z, clanName)) {
+        if (chunkHandler.isChunkCloseToEnemyClan(player.getChunk(), clanName)) {
             sendFormattedPredefinedMessage(sender, "too-close", LogType.WARNING);
             return true;
         }
-        if (chunkHandler.isChunkCloseToRegion(x, z)) {
+        if (chunkHandler.isChunkCloseToRegion(player.getChunk())) {
             sendFormattedPredefinedMessage(sender, "too-close-region", LogType.WARNING);
             return true;
         }
-        if (!clan.getChunks().isEmpty() && !chunkHandler.isChunkAdjacentToClan(x, z, clanName)) {
+        if (!clan.getChunks().isEmpty() && !chunkHandler.isChunkAdjacentToClan(player.getChunk(), clanName)) {
             sendFormattedPredefinedMessage(sender, "not-adjacent", LogType.WARNING);
             return true;
         }

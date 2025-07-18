@@ -25,12 +25,10 @@ public class ChunkUnclaimSubcommand extends SubCommand {
     @Override
     public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        int x = player.getChunk().getX();
-        int z = player.getChunk().getZ();
 
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
-            chunkHandler.unclaimChunk(x, z, player);
+            chunkHandler.unclaimChunk(player.getChunk(), player);
         };
     }
 
@@ -38,8 +36,7 @@ public class ChunkUnclaimSubcommand extends SubCommand {
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         if (args.length == 1) {
             return List.of("unclaim");
-        }
-        else{
+        } else {
             return List.of();
         }
     }
@@ -47,8 +44,6 @@ public class ChunkUnclaimSubcommand extends SubCommand {
     @Override
     protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        int x = player.getChunk().getX();
-        int z = player.getChunk().getZ();
         Clan clan = clanHandler.getClanByMember(player.getUniqueId());
         if (clan == null) {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
@@ -60,11 +55,11 @@ public class ChunkUnclaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
-        if (!chunkHandler.isChunkClaimedByClan(x, z, clanName)) {
+        if (!chunkHandler.isChunkClaimedByClan(player.getChunk(), clanName)) {
             sendFormattedPredefinedMessage(sender, "not-claimed", LogType.WARNING);
             return true;
         }
-        if (chunkHandler.unclaimWillSplit(x, z, clanName)) {
+        if (chunkHandler.unclaimWillSplit(player.getChunk(), clanName)) {
             sendFormattedPredefinedMessage(sender, "territory-split", LogType.WARNING);
             return true;
         }
