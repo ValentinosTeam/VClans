@@ -66,7 +66,7 @@ public class ClanJoinSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "invite-expired", LogType.WARNING);
             return true;
         }
-        if (clan.isFull()) {
+        if (clanHandler.clanIsFull(clan)) {
             sendFormattedPredefinedMessage(sender, "clan-full", LogType.WARNING);
             return true;
         }
@@ -105,8 +105,7 @@ public class ClanJoinSubcommand extends SubCommand {
             return List.of("join");
         } else if (args.length == 2) {
             return clanHandler.getInvitingClanNames(player.getUniqueId());
-        }
-        else {
+        } else {
             return List.of();
         }
     }

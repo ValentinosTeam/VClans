@@ -15,11 +15,11 @@ import static gg.valentinos.alexjoo.VClans.WORLD_NAME;
 public class ClanHandler {
 
     private Clans clans;
-    private final int defaultMaxSize;
+    private final ClanTierHandler tierHandler;
 
     public ClanHandler() {
         loadClans();
-        defaultMaxSize = VClans.getInstance().getConfig().getInt("settings.max-clan-size");
+        tierHandler = VClans.getInstance().getClanTierHandler();
     }
 
     public Clans getClans() {
@@ -103,6 +103,9 @@ public class ClanHandler {
             blueMapHandler.drawClanTerritory(clan);
         }
     }
+    public void upgradeClan(Clan clan) {
+        clan.setTier(clan.getTier() + 1);
+    }
 
     // saves and loads the clans
     public void loadClans() {
@@ -173,6 +176,9 @@ public class ClanHandler {
         Clan clan = getClanByMember(playerUUID);
         return clan != null && clan.getName().equals(clanName);
     }
+    public boolean clanIsFull(Clan clan) {
+        return clan.getMembers().size() >= tierHandler.getPlayerLimit(clan.getTier());
+    }
 
     public Clan getClanByName(String name) {
         return clans.getClans().stream().filter(c -> c.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
@@ -194,7 +200,7 @@ public class ClanHandler {
         return null;
     }
     private Clan createDefaultClan(String name, UUID ownerUUID) {
-        Clan clan = new Clan(name, ownerUUID, defaultMaxSize);
+        Clan clan = new Clan(name, ownerUUID);
         clan.addOwnerMember(ownerUUID);
         //TODO: make sure to read the config here for default titles
         clan.createRank("owner", "leader");

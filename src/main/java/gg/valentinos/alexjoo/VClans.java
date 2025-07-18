@@ -5,7 +5,6 @@ import gg.valentinos.alexjoo.Commands.CancelCommand;
 import gg.valentinos.alexjoo.Commands.Chunk.ChunkCommand;
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
-import gg.valentinos.alexjoo.Commands.TestCommand;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.*;
 import gg.valentinos.alexjoo.Listeners.ChunkListener;
@@ -30,6 +29,7 @@ public final class VClans extends JavaPlugin {
     public static String WORLD_NAME;
     private static VClans instance;
     private ClanHandler clanHandler;
+    private ClanTierHandler clanTierHandler;
     private CooldownHandler cooldownHandler;
     private ConfirmationHandler confirmationHandler;
     private ChunkHandler chunkHandler;
@@ -43,6 +43,7 @@ public final class VClans extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        saveDefaultConfig();
 
         loadDefaultMessages();
 
@@ -50,6 +51,11 @@ public final class VClans extends JavaPlugin {
             Log("Vault plugin not found, chunks are going to be free!", LogType.WARNING);
         }
 
+        clanTierHandler = new ClanTierHandler();
+        if (!clanTierHandler.isValidConfig()) {
+            Log("Invalid clan tier configs, canceling plugin!", LogType.SEVERE);
+            return;
+        }
         clanHandler = new ClanHandler();
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
@@ -80,9 +86,8 @@ public final class VClans extends JavaPlugin {
         Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
         Objects.requireNonNull(getCommand("cancel")).setExecutor(new CancelCommand());
 
-        getCommand("test").setExecutor(new TestCommand());
+//        getCommand("test").setExecutor(new TestCommand());
 
-        saveDefaultConfig();
 
         WORLD_NAME = getConfig().getString("settings.world-name");
 
@@ -102,6 +107,8 @@ public final class VClans extends JavaPlugin {
 //        if (clanHandler != null)
 //            clanHandler.saveClans();
         clanHandler = null;
+
+        clanTierHandler = null;
 
         if (cooldownHandler != null)
             cooldownHandler.saveCooldowns();
@@ -182,6 +189,9 @@ public final class VClans extends JavaPlugin {
 
     public ClanHandler getClanHandler() {
         return clanHandler;
+    }
+    public ClanTierHandler getClanTierHandler() {
+        return clanTierHandler;
     }
     public CooldownHandler getCooldownHandler() {
         return cooldownHandler;

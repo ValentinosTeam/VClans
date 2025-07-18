@@ -3,17 +3,34 @@ settings:
   world-name: "world" # The world name where chunk claiming will be enabled
   max-clan-name-length: 16
   min-clan-name-length: 3
-  max-clan-size: 30 # max amount of players in per clan
-  starting-chunk-amount: 5
-  chunks-per-player: 2
-  chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
+  #  chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
+  chunk-cost-formula: "0 * x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
   enemy-proximity-radius: 3 # the minimum amount of chunks between two different clan chunk claims
   region-proximity-radius: 3 # the minimum amount of chunks between a claimed chunk and a VClans protected WorldGuard region
   invite-expiration: 60*60*24*7 # 7 days
   default-clan-owner-title: "Leader"
   default-clan-member-title: "Member"
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
-  extrude-min-y: 50 # ... and respectively the lowest ...
+  extrude-min-y: 50 #     ... and respectively the lowest ...
+clan-tiers:
+  0:
+    label: "[I]"
+    player-limit: 1
+    chunk-limit: 3
+    buffs:
+      - [ "REGENERATION", 1 ] # applied to clan mates
+    debuffs: [ ]
+    price: 0 # Doesn't matter if the first tier
+  1:
+    label: "[II]"
+    player-limit: 2
+    chunk-limit: 5
+    buffs:
+      - [ "REGENERATION", 1 ]
+      - [ "SPEED", 3 ]
+    debuffs:
+      - [ "GLOWING", 1 ] # applied to enemies
+    price: 20000
 commands:
   # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
@@ -176,17 +193,27 @@ commands:
         rank-priority-low: "Your rank priority is too low"
     color:
       enabled: true
-      description: "Changes the color of the clan. Write down "
+      description: "Changes the color of the clan."
       usage: "/clan color <0-255> <0-255> <0-255>"
       messages:
         success: "You have successfully changed the clan color!"
         invalid-input: "Invalid RGB Input, only accepts: /clan color <0-255> <0-255> <0-255>"
+    upgrade:
+      enabled: true
+      description: "Upgrades the clans tier to gain perks."
+      usage: "/clan upgrade"
+      messages:
+        # {tier-label} is the new tier label that is configured above in the clan-tiers
+        # {tier-price} is the price of the tier upgrade defined above in the clan-tiers
+        success: "You have successfully upgraded the clan to tier: {tier-label}"
+        max-tier: "You already have the highest tier clan!"
+        cant-afford: "You can't afford the tier upgrade ({tier-price})"
   chunk:
     claim:
       enabled: true
       description: "Claims a chunk for your clan."
       usage: "/chunk claim"
-      confirmation: 30
+      #      confirmation: 30
       messages:
         # {clan-name} - the clan that owns the chunk the player is standing in
         # {max-chunks} - the maximum number of chunks the clan can claim

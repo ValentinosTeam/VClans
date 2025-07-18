@@ -6,7 +6,6 @@ import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -23,10 +22,10 @@ import static gg.valentinos.alexjoo.VClans.WORLD_NAME;
 public class ChunkHandler {
 
     private final ClanHandler clanHandler;
-    private HashMap<ChunkPos, ClanChunk> chunks = new HashMap<>();
+    private final HashMap<ChunkPos, ClanChunk> chunks = new HashMap<>();
     private final int enemyProximityRadius;
     private final int regionProximityRadius;
-    private HashMap<Player, ChunkRadar> radars = new HashMap<>();
+    private final HashMap<Player, ChunkRadar> radars = new HashMap<>();
 
     // formula evaluation relevant fields for chunk cost
     private String chunkCostFormula;
@@ -34,9 +33,6 @@ public class ChunkHandler {
     private static final Pattern SAFE_MATH_PATTERN = Pattern.compile("^[0-9xX+\\-*/^().\\sMath]*$");
     private static final String DEFAULT_CHUNK_FORMULA = "100*x^2";
 
-    // relevant fields for max chunk amount
-    private final int startingChunkAmount;
-    private final int chunksPerPlayer;
 
     private record ChunkPos(int x, int z) {
     }
@@ -51,8 +47,6 @@ public class ChunkHandler {
                 chunks.put(new ChunkPos(chunk.getX(), chunk.getZ()), chunk);
             }
         }
-        this.startingChunkAmount = VClans.getInstance().getConfig().getInt("settings.starting-chunk-amount");
-        this.chunksPerPlayer = VClans.getInstance().getConfig().getInt("settings.chunks-per-player");
         this.enemyProximityRadius = VClans.getInstance().getConfig().getInt("settings.enemy-proximity-radius");
         this.regionProximityRadius = VClans.getInstance().getConfig().getInt("settings.region-proximity-radius");
 
@@ -73,7 +67,7 @@ public class ChunkHandler {
 
         if (economy != null) {
             double price = getNewChunkPrice(clan);
-            EconomyResponse response = economy.withdrawPlayer(player, price);
+            economy.withdrawPlayer(player, price);
         }
 
         ClanChunk newChunk = new ClanChunk(x, z, WORLD_NAME, clanName);
@@ -128,9 +122,7 @@ public class ChunkHandler {
     }
 
     public int getClanMaxChunkAmount(Clan clan) {
-        int amount = startingChunkAmount;
-        amount += clan.getMembers().size() * chunksPerPlayer;
-        return amount;
+        return VClans.getInstance().getClanTierHandler().getChunkLimit(clan.getTier());
     }
     public double getNewChunkPrice(@NotNull Clan clan) {
         Economy economy = VClans.getInstance().getEconomy();

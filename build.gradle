@@ -5,7 +5,7 @@ plugins {
 
 description = 'VClans is a plugin that allows players to create and manage clans in Minecraft. Developing for the Valentinos Minecraft server.'
 group = 'gg.valentinos'
-version = '0.5'
+version = '0.6'
 
 repositories {
     mavenCentral()

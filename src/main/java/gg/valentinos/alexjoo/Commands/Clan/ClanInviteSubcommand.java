@@ -72,7 +72,7 @@ public class ClanInviteSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "already-in-a-clan", LogType.WARNING);
             return true;
         }
-        if (clan.isFull()) {
+        if (clanHandler.clanIsFull(clan)) {
             sendFormattedPredefinedMessage(sender, "clan-full", LogType.WARNING);
             return true;
         }
@@ -94,7 +94,7 @@ public class ClanInviteSubcommand extends SubCommand {
         String clanName = "ERROR";
         String targetName = "ERROR";
 
-        if (sender instanceof Player player){
+        if (sender instanceof Player player) {
             playerName = player.getName();
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             if (clan != null)

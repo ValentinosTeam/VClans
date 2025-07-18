@@ -11,23 +11,23 @@ import java.util.stream.Collectors;
 
 public class Clan {
     private String name;
-    private int maxSize;
     private final UUID owner;
     private HashMap<String, ClanRank> ranks;
     private HashMap<UUID, ClanMember> members;
     private HashMap<UUID, ClanInvite> invites;
     private HashSet<ClanChunk> chunks;
     private List<Integer> color;
+    private int tier;
 
-    public Clan(String name, UUID owner, int maxSize) {
+    public Clan(String name, UUID owner) {
         this.name = name;
         this.members = new HashMap<>();
         this.invites = new HashMap<>();
         this.ranks = new HashMap<>();
         this.chunks = new HashSet<>();
-        this.maxSize = maxSize;
         this.owner = owner;
         this.color = List.of(211, 211, 211);
+        this.tier = 0;
     }
 
     public HashMap<UUID, ClanMember> getMembers() {
@@ -60,17 +60,17 @@ public class Clan {
     public void setChunks(HashSet<ClanChunk> chunks) {
         this.chunks = chunks;
     }
-    public int getMaxSize() {
-        return maxSize;
-    }
-    public void setMaxSize(int maxSize) {
-        this.maxSize = maxSize;
-    }
     public List<Integer> getColor() {
         return color;
     }
     public void setColor(List<Integer> color) {
         this.color = color;
+    }
+    public int getTier() {
+        return tier;
+    }
+    public void setTier(int tier) {
+        this.tier = tier;
     }
 
     // Member logic
@@ -107,9 +107,6 @@ public class Clan {
     }
     public boolean isPlayerOwner(UUID uuid) {
         return owner.equals(uuid);
-    }
-    public boolean isFull() {
-        return members.size() >= maxSize;
     }
     public List<UUID> getMembersSortedByPriority() {
         return members.entrySet().stream()
