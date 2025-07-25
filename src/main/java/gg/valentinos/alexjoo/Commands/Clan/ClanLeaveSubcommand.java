@@ -28,7 +28,7 @@ public class ClanLeaveSubcommand extends SubCommand {
             List<UUID> members = clanHandler.getClanMembersUUIDs(player.getUniqueId());
             for (UUID member : members) {
                 Player p = VClans.getInstance().getServer().getPlayer(member);
-                if (p != null && p.isOnline()){
+                if (p != null && p.isOnline()) {
                     if (p.equals(player))
                         continue;
                     sendFormattedPredefinedMessage(p, "leave-notification", LogType.INFO);
@@ -36,6 +36,7 @@ public class ClanLeaveSubcommand extends SubCommand {
             }
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
             clanHandler.leaveClan(player.getUniqueId());
+            VClans.getInstance().getVaultHandler().removePlayerPrefix(player);
         };
     }
 

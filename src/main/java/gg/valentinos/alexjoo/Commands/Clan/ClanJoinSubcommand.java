@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,7 +37,8 @@ public class ClanJoinSubcommand extends SubCommand {
                 }
             }
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
-            clanHandler.joinClan(player.getUniqueId(), clanName);
+            Clan clan = clanHandler.joinClan(player.getUniqueId(), clanName);
+            VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
         };
     }
 

@@ -1,5 +1,6 @@
 package gg.valentinos.alexjoo.Listeners;
 
+import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +24,14 @@ public class PlayerListener implements Listener {
             String clanName = VClans.getInstance().getClanHandler().getClanNameOfMember(player.getUniqueId());
             player.sendMessage("Current clan: " + (clanName == null ? "None" : clanName));
         }
+
+        Clan clan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
+        if (clan != null) {
+            VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
+        } else {
+            VClans.getInstance().getVaultHandler().removePlayerPrefix(player);
+        }
+
         List<String> invitedClanNames = VClans.getInstance().getClanHandler().getInvitingClanNames(player.getUniqueId());
         StringBuilder sb = new StringBuilder();
         for (String invitedClanName : invitedClanNames) {

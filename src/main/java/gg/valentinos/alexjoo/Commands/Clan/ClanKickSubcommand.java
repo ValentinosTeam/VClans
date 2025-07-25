@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,7 @@ public class ClanKickSubcommand extends SubCommand {
             List<UUID> members = clanHandler.getClanMembersUUIDs(player.getUniqueId());
             for (UUID member : members) {
                 Player p = Bukkit.getPlayer(member);
-                if (p != null && p.isOnline()){
+                if (p != null && p.isOnline()) {
                     if (p.equals(player) || p.equals(target))
                         continue;
                     sendFormattedPredefinedMessage(p, "kicked-notification");
@@ -44,6 +45,7 @@ public class ClanKickSubcommand extends SubCommand {
                 sendFormattedPredefinedMessage(target.getPlayer(), "kicked");
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
             clanHandler.kickPlayer(player.getUniqueId(), targetName);
+            VClans.getInstance().getVaultHandler().removePlayerPrefix(target);
         };
     }
 
@@ -59,7 +61,7 @@ public class ClanKickSubcommand extends SubCommand {
             return true;
         }
         HashMap<String, Boolean> permissions = clan.getRank(playerUUID).getPermissions();
-        if (!permissions.get("canKick")){
+        if (!permissions.get("canKick")) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }

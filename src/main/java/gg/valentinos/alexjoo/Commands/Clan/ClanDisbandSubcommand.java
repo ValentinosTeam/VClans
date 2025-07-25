@@ -30,6 +30,7 @@ public class ClanDisbandSubcommand extends SubCommand {
                 Player member = VClans.getInstance().getServer().getPlayer(memberUUID);
                 if (member != null && member.isOnline()) {
                     sendFormattedMessage(member, messages.get("disband-notification"), LogType.FINE);
+                    VClans.getInstance().getVaultHandler().removePlayerPrefix(member);
                 }
             }
             sendFormattedMessage(player, messages.get("success"), LogType.FINE);
@@ -57,7 +58,7 @@ public class ClanDisbandSubcommand extends SubCommand {
 
     @Override
     public boolean suggestCommand(CommandSender sender) {
-        if (sender instanceof Player player){
+        if (sender instanceof Player player) {
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             return clan != null && clan.getRank(player.getUniqueId()).getPermissions().get("canDisband");
         }

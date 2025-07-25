@@ -24,6 +24,7 @@ dependencies {
         exclude group: "com.flowpowered", module: "flow-math"
     }
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.12'
+    implementation 'net.kyori:adventure-text-minimessage:4.23.0'
 }
 
 tasks.build {

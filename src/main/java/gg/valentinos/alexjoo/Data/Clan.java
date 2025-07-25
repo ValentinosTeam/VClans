@@ -18,6 +18,7 @@ public class Clan {
     private HashSet<ClanChunk> chunks;
     private List<Integer> color;
     private int tier;
+    private String prefix;
 
     public Clan(String name, UUID owner) {
         this.name = name;
@@ -28,6 +29,7 @@ public class Clan {
         this.owner = owner;
         this.color = List.of(211, 211, 211);
         this.tier = 0;
+        this.prefix = name.substring(0, 3);
     }
 
     public HashMap<UUID, ClanMember> getMembers() {
@@ -71,6 +73,12 @@ public class Clan {
     }
     public void setTier(int tier) {
         this.tier = tier;
+    }
+    public String getPrefix() {
+        return prefix;
+    }
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     // Member logic

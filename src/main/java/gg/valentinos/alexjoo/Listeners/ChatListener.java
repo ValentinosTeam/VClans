@@ -8,6 +8,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import static gg.valentinos.alexjoo.VClans.Log;
 
 public class ChatListener implements Listener, ChatRenderer {
     private Chat chat;
@@ -35,6 +38,8 @@ public class ChatListener implements Listener, ChatRenderer {
     public void onChat(AsyncChatEvent event) {
         if (chat == null) return;
         Player sender = event.getPlayer();
+
+        Log("Player: " + chat.getPlayerPrefix(sender) + " " + sender.getName());
 
         // if using clan chat, only clan members are recipients
         Clan clan = VClans.getInstance().getVaultHandler().getClanChat(sender);
@@ -57,17 +62,39 @@ public class ChatListener implements Listener, ChatRenderer {
 
     @Override
     public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component message, @NotNull Audience viewer) {
-        String prefix = chat.getPlayerPrefix(source);
+        Chat chat = VClans.getInstance().getVaultHandler().getChat();
+        if (chat == null) return Component.empty();
 
-        Component displayName = Component.text("")
-                .append(Component.text(prefix, NamedTextColor.GRAY))
-                .append(sourceDisplayName);
+        // Get prefix
+        String prefixText = chat.getPlayerPrefix(null, source);
+        if (prefixText == null) prefixText = "";
+
+        // Define custom RGB color
+        TextColor prefixColor = TextColor.color(125, 125, 125);
+        if (!prefixText.isEmpty()) {
+            Clan clan = VClans.getInstance().getClanHandler().getClanByMember(source.getUniqueId());
+            prefixColor = TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2));
+        }
 
 
-        // Final message format: DisplayName: Message
-        return Component.text("")
-                .append(displayName)
-                .append(Component.text(": ", NamedTextColor.GRAY))
+        // Build [prefix] with color
+        Component coloredPrefix = Component.text(prefixText).color(prefixColor);
+        Component prefixWrapped = Component.text("[")
+                .color(NamedTextColor.GRAY)
+                .append(coloredPrefix)
+                .append(Component.text("]", NamedTextColor.GRAY));
+
+        // Build <name> with color
+        Component nameComponent = Component.text("<" + source.getName() + ">", NamedTextColor.WHITE);
+
+        // Separator :
+        Component separator = Component.text(": ", NamedTextColor.GRAY);
+
+        // Final format: [prefix] <name>: message
+        return prefixWrapped
+                .append(Component.space())
+                .append(nameComponent)
+                .append(separator)
                 .append(message);
     }
 }

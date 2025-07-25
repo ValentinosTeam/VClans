@@ -28,12 +28,12 @@ public class ClanHandler {
     }
 
     // the following functions do not check for permissions. Do that in the commands themselves
-    public void createClan(UUID playerUUID, String name) {
+    public Clan createClan(UUID playerUUID, String name) {
         Clan clan = createDefaultClan(name, playerUUID);
         clans.addClan(clan);
         saveClans();
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully created a clan with name " + name);
-        VClans.getInstance().getVaultHandler().createGroupPrefix(clan);
+        return clan;
     }
     public void disbandClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
@@ -54,11 +54,12 @@ public class ClanHandler {
         saveClans();
         Log("Player " + Objects.requireNonNull(player).getName() + " has invited player " + targetName + " to the clan.");
     }
-    public void joinClan(UUID playerUUID, String clanName) {
+    public Clan joinClan(UUID playerUUID, String clanName) {
         Clan clan = getClanByName(clanName);
         clan.addDefaultMember(playerUUID);
         saveClans();
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully joined the clan " + clanName);
+        return clan;
     }
     public void leaveClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
@@ -107,9 +108,15 @@ public class ClanHandler {
     }
     public void upgradeClan(Clan clan) {
         clan.setTier(clan.getTier() + 1);
+        saveClans();
     }
-    public void toggleChat(Player player) {
-
+    public void setClanPrefix(Clan clan, String prefix) {
+        clan.setPrefix(prefix);
+        saveClans();
+        for (UUID memberUUID : clan.getMemberUUIDs()) {
+            Player player = Bukkit.getPlayer(memberUUID);
+            VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
+        }
     }
 
 

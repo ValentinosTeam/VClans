@@ -12,9 +12,7 @@ settings:
   default-clan-member-title: "Member"
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: 50 #     ... and respectively the lowest ...
-  # [KEL] <Alex_Joo>: message...
-  # [Rank] <Alex_Joo>: message...
-  chat-format: "[{prefix}] <{name}>: "
+  max-prefix-length: 4
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
@@ -222,6 +220,15 @@ commands:
         # {chat} - either clan chat or global chat
         success: "You have entered {chat} chat."
         no-vault: "Vault has not been properly enabled, contact an administrator for help."
+    prefix:
+      enabled: true
+      description: "Sets the clan's prefix that will be used in chat. Max size is 4, allows for legacy color formatting."
+      usage: "/clan prefix <prefix>"
+      messages:
+        success: "Successfully set the clans prefix to {prefix}"
+        too-big: "The max prefix length is {max-length}"
+        forbidden-formatting: "Doesn't allow text formatting and the black color"
+        invalid-characters: "Invalid characters found. If you want to change color, use &[1-9,a-u]"
   chunk:
     claim:
       enabled: true

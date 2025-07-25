@@ -7,7 +7,6 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.jetbrains.annotations.NotNull;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -42,20 +41,16 @@ public class VaultHandler {
         playerChatMap = new HashMap<>();
     }
 
-    public void createGroupPrefix(Clan clan) {
-        if (perm != null) return;
-        chat.setGroupPrefix((String) null, "vclans-" + clan.getName(), "TEST");
-    }
-    public void setPlayerChat(@NotNull Player player, Clan clan) {
+    public void setPlayerPrefix(Player player, String prefix) {
         if (perm == null) return;
+        chat.setPlayerPrefix(null, player, "&r[" + prefix + "&r] ");
+    }
+    public void removePlayerPrefix(Player player) {
+        if (perm == null) return;
+        chat.setPlayerPrefix(null, player, "");
+    }
+    public void setPlayerChat(Player player, Clan clan) {
         playerChatMap.put(player, clan);
-        for (String group : perm.getPlayerGroups(player)) {
-            if (group.startsWith("vclans-")) {
-                perm.playerRemoveGroup(null, player, group);
-            }
-        }
-        if (clan == null) return;
-        perm.playerAddGroup(null, player, clan.getName());
     }
     public Clan getClanChat(Player player) {
         return playerChatMap.getOrDefault(player, null);
