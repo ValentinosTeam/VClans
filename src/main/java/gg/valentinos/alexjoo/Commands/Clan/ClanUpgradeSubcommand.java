@@ -72,8 +72,8 @@ public class ClanUpgradeSubcommand extends SubCommand {
     }
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
-        String tierLabel = "NULL";
-        String tierPrice = "NULL";
+        String tierLabel = "ERROR";
+        String tierPrice = "ERROR";
 
         if (sender instanceof Player player) {
 

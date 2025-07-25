@@ -60,7 +60,7 @@ public class ChunkListener implements Listener {
         String toClanName = chunkHandler.getClanNameByChunk(toChunk);
         TextColor color = TextColor.color(125, 125, 125);
         if (toClanName != null) {
-            Clan toClan = clanHandler.getClanByName(toClanName);
+            Clan toClan = clanHandler.getClanById(toClanName);
             color = TextColor.color(toClan.getColor().get(0), toClan.getColor().get(1), toClan.getColor().get(2));
         }
         Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
@@ -69,7 +69,7 @@ public class ChunkListener implements Listener {
 
         if (fromClanName == null && toClanName != null) {
             title = Component.text(toClanName).color(color);
-            if (playerClan != null && playerClan.getName().equals(toClanName)) {
+            if (playerClan != null && playerClan.getId().equals(toClanName)) {
                 subtitle = Component.text("Entered your territory").color(GREEN);
             } else {
                 subtitle = Component.text("Entered territory").color(RED);
@@ -78,9 +78,9 @@ public class ChunkListener implements Listener {
             title = Component.text("");
             subtitle = Component.text("Left territory");
         } else if (!Objects.equals(fromClanName, toClanName)) {
-            Clan toClan = clanHandler.getClanByName(toClanName);
+            Clan toClan = clanHandler.getClanById(toClanName);
             title = Component.text(toClanName).color(TextColor.color(toClan.getColor().get(0), toClan.getColor().get(1), toClan.getColor().get(2)));
-            if (playerClan != null && playerClan.getName().equals(toClanName)) {
+            if (playerClan != null && playerClan.getId().equals(toClanName)) {
                 subtitle = Component.text("Entered your territory").color(GREEN);
             } else {
                 subtitle = Component.text("Entered territory").color(RED);
@@ -100,10 +100,11 @@ public class ChunkListener implements Listener {
 
     // Player related events
     private boolean shouldBlockPlayerInteraction(Chunk chunk, Player player) {
+        if (player.isOp()) return false;
         // helper method for all the player related events
         String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
         if (chunkClanName != null) {
-            Clan chunkClan = clanHandler.getClanByName(chunkClanName);
+            Clan chunkClan = clanHandler.getClanById(chunkClanName);
             if (chunkClan != null && !chunkClan.isPlayerMember(player.getUniqueId())) {
 //                player.sendMessage(Component.text("You cannot interact with this territory").color(RED));
                 return true;
@@ -205,7 +206,7 @@ public class ChunkListener implements Listener {
         // dont protect ppl who dont belong
         if (target instanceof Player targetPlayer) {
             Clan clan = clanHandler.getClanByMember(targetPlayer.getUniqueId());
-            if (clan == null || !Objects.equals(clan.getName(), chunkClan)) {
+            if (clan == null || !Objects.equals(clan.getId(), chunkClan)) {
                 return;
             }
         }

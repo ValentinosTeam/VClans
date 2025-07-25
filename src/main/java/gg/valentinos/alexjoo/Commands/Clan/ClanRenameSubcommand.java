@@ -7,18 +7,21 @@ import gg.valentinos.alexjoo.Data.LogType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class ClanPrefixSubcommand extends SubCommand {
+public class ClanRenameSubcommand extends SubCommand {
 
-    private final int maxPrefixLength;
+    private final int maxNameLength;
+    private final int minNameLength;
 
-    public ClanPrefixSubcommand() {
-        super("clan", "prefix", List.of("success", "too-big", "forbidden-formatting", "invalid-characters"));
+    public ClanRenameSubcommand() {
+        super("clan", "rename", List.of("success", "too-big", "too-small", "forbidden-formatting", "invalid-characters"));
         hasToBePlayer = true;
-        maxArgs = 2;
-        maxPrefixLength = config.getInt("settings.max-prefix-length");
+        minArgs = 2;
+        maxNameLength = config.getInt("settings.max-clan-name-length");
+        minNameLength = config.getInt("min-clan-name-length");
     }
 
     @Override
@@ -28,12 +31,12 @@ public class ClanPrefixSubcommand extends SubCommand {
         Clan clan = clanHandler.getClanByMember(uuid);
 
         return () -> {
-            if (args.length == 2) { // gave prefix input = set new prefix
-                String input = args[1];
-                clanHandler.setClanPrefix(clan, input);
+            if (args.length >= 2) {
+                String input = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                clanHandler.setClanName(clan, input);
                 sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
             } else { // show current prefix
-                sender.sendMessage(clan.getPrefix());
+                sender.sendMessage(clan.getName());
             }
         };
     }
@@ -49,21 +52,26 @@ public class ClanPrefixSubcommand extends SubCommand {
             return true;
         }
 
-        if (args.length != 2) return false;
-        String input = args[1];
+        if (args.length < 2) return false;
+        String input = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         String stripped = input.replaceAll("&[0-9a-fk-orK-OR]", "");
 
-        if (!clan.getRank(playerUUID).getPermissions().getOrDefault("canSetPrefix", false)) {
+        if (!clan.getRank(playerUUID).getPermissions().getOrDefault("canRename", false)) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
 
-        if (stripped.length() > maxPrefixLength) {
+        if (stripped.length() > maxNameLength) {
             sendFormattedPredefinedMessage(sender, "too-big", LogType.WARNING);
             return true;
         }
 
-        if (!stripped.matches("[a-zA-Z]+")) {
+        if (stripped.length() < minNameLength) {
+            sendFormattedPredefinedMessage(sender, "too-small", LogType.WARNING);
+            return true;
+        }
+
+        if (!stripped.matches("[a-zA-Z0-9_ -]+")) {
             sendFormattedPredefinedMessage(sender, "invalid-characters", LogType.WARNING);
             return true;
         }
@@ -80,21 +88,24 @@ public class ClanPrefixSubcommand extends SubCommand {
     public boolean suggestCommand(CommandSender sender) {
         if (sender instanceof Player player) {
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            return clan != null && clan.getRank(player.getUniqueId()).getPermissions().getOrDefault("canSetPrefix", false);
+            return clan != null && clan.getRank(player.getUniqueId()).getPermissions().getOrDefault("canRename", false);
         }
         return false;
     }
 
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
-        String prefix = "ERROR";
-        String maxLength = String.valueOf(maxPrefixLength);
+        String name = "ERROR";
+        String maxLength = String.valueOf(maxNameLength);
+        String minLength = String.valueOf(minNameLength);
+
         if (args.length > 1) {
-            prefix = args[1];
+            name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         }
 
-        replacements.put("{prefix}", prefix);
+        replacements.put("{name}", name);
         replacements.put("{max-length}", maxLength);
+        replacements.put("{min-length}", maxLength);
     }
 
     @Override
@@ -103,12 +114,11 @@ public class ClanPrefixSubcommand extends SubCommand {
             return List.of();
         }
         if (args.length == 1) {
-            return List.of("prefix");
+            return List.of("rename");
         } else if (args.length == 2) {
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             if (clan == null) return List.of();
-            int length = (Math.min(clan.getId().length(), maxPrefixLength));
-            return List.of(clan.getId().substring(0, length));
+            return List.of(clan.getId());
         } else {
             return List.of();
         }

@@ -4,12 +4,12 @@ public class ClanChunk {
     private int x;
     private int z;
     private String world;
-    private String clanName;
+    private String clanId;
 
-    public ClanChunk(int x, int z, String world, String clanName) {
+    public ClanChunk(int x, int z, String world, String clanId) {
         this.x = x;
         this.z = z;
-        this.clanName = clanName;
+        this.clanId = clanId;
         this.world = world;
     }
 
@@ -31,10 +31,10 @@ public class ClanChunk {
     public void setWorld(String world) {
         this.world = world;
     }
-    public String getClanName() {
-        return clanName;
+    public String getClanId() {
+        return clanId;
     }
-    public void setClanName(String clanName) {
-        this.clanName = clanName;
+    public void setClanId(String clanId) {
+        this.clanId = clanId;
     }
 }

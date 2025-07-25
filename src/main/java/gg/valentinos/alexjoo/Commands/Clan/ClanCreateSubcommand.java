@@ -12,15 +12,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClanCreateSubcommand extends SubCommand {
-    private final int clanNameMaxLength;
-    private final int clanNameMinLength;
+    private final static int ID_MIN_LENGTH = 4;
+    private final static int ID_MAX_LENGTH = 10;
 
     public ClanCreateSubcommand() {
         super("clan", "create", List.of("success", "already-exists", "too-long", "too-short", "invalid-characters", "already-in-clan"));
         hasToBePlayer = true;
         requiredArgs = 2;
-        clanNameMaxLength = config.getInt("settings.max-clan-name-length");
-        clanNameMinLength = config.getInt("settings.min-clan-name-length");
     }
 
     @Override
@@ -40,25 +38,25 @@ public class ClanCreateSubcommand extends SubCommand {
     @Override
     protected boolean hasSpecificErrors(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        String clanName = args[1];
+        String clanId = args[1];
         UUID playerUUID = player.getUniqueId();
-        if (clanHandler.clanExists(clanName)) {
+        if (clanHandler.clanExists(clanId)) {
             sendFormattedPredefinedMessage(sender, "already-exists", LogType.WARNING);
             return true;
         }
-        if (clanName.length() > clanNameMaxLength) {
-            sendFormattedPredefinedMessage(sender, "too-long", LogType.WARNING);
+        if (clanId.length() < ID_MIN_LENGTH) {
+            sendFormattedPredefinedMessage(sender, "too-short", LogType.WARNING);
             return true;
         }
-        if (clanName.length() < clanNameMinLength) {
-            sendFormattedPredefinedMessage(sender, "too-short", LogType.WARNING);
+        if (clanId.length() > ID_MAX_LENGTH) {
+            sendFormattedPredefinedMessage(sender, "too-long", LogType.WARNING);
             return true;
         }
         if (clanHandler.isPlayerInAClan(playerUUID)) {
             sendFormattedPredefinedMessage(sender, "already-in-clan", LogType.WARNING);
             return true;
         }
-        if (!clanName.matches("[a-zA-Z0-9_-]+")) {
+        if (!clanId.matches("[a-z_-]+")) {
             sendFormattedPredefinedMessage(sender, "invalid-characters", LogType.WARNING);
             return true;
         }
@@ -75,15 +73,15 @@ public class ClanCreateSubcommand extends SubCommand {
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String playerName = "ERROR";
-        String clanName = "ERROR";
+        String clanId = "ERROR";
 
         if (sender instanceof Player player) {
             playerName = player.getName();
         }
         if (args.length > 1) {
-            clanName = args[1];
+            clanId = args[1];
         }
-        replacements.put("{clan-name}", clanName);
+        replacements.put("{clan-id}", clanId);
         replacements.put("{player-name}", playerName);
     }
 

@@ -49,7 +49,7 @@ public class ChunkUnclaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
-        String clanName = clan.getName();
+        String clanName = clan.getId();
         HashMap<String, Boolean> permissions = clan.getRank(player.getUniqueId()).getPermissions();
         if (!permissions.get("canUnclaimChunks")) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
@@ -84,7 +84,7 @@ public class ChunkUnclaimSubcommand extends SubCommand {
             int z = player.getChunk().getZ();
             Clan clan = clanHandler.getClanByChunkLocation(x, z);
             if (clan != null) {
-                clanName = clan.getName();
+                clanName = clan.getId();
             }
         }
 

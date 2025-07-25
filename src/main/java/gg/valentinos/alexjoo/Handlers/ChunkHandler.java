@@ -64,8 +64,8 @@ public class ChunkHandler {
     }
 
     public void claimChunk(Chunk chunk, Player player) {
-        String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
-        Clan clan = clanHandler.getClanByName(clanName);
+        String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getId();
+        Clan clan = clanHandler.getClanById(clanName);
         if (clan == null) return;
 
         VClans.getInstance().getVaultHandler().withdrawPlayer(player, getNewChunkPrice(clan));
@@ -79,8 +79,8 @@ public class ChunkHandler {
         }
     }
     public void unclaimChunk(Chunk chunk, Player player) {
-        String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getName();
-        Clan clan = clanHandler.getClanByName(clanName);
+        String clanName = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId()).getId();
+        Clan clan = clanHandler.getClanById(clanName);
         ClanChunk chunkToRemove = chunks.get(new ChunkPos(chunk.getX(), chunk.getZ()));
         removeChunk(chunkToRemove, clan);
         updateChunkRadar(player, chunk);
@@ -90,7 +90,7 @@ public class ChunkHandler {
         }
     }
     public void unclaimChunks(String clanName) {
-        Clan clan = clanHandler.getClanByName(clanName);
+        Clan clan = clanHandler.getClanById(clanName);
         for (ClanChunk chunk : new HashSet<>(clan.getChunks())) {
             removeChunk(chunk, clan);
         }
@@ -138,7 +138,7 @@ public class ChunkHandler {
                 "X: " + clanChunk.getX() + "\n" +
                 "Z: " + clanChunk.getZ() + "\n" +
                 "World: " + clanChunk.getWorld() + "\n" +
-                "Clan Name: " + clanChunk.getClanName() + "\n";
+                "Clan Name: " + clanChunk.getClanId() + "\n";
     }
     public String getClanNameByChunk(Chunk chunk) {
         if (!chunk.getWorld().getName().equals(WORLD_NAME)) return null;
@@ -146,22 +146,22 @@ public class ChunkHandler {
         if (clanChunk == null) {
             return null;
         }
-        return clanChunk.getClanName();
+        return clanChunk.getClanId();
     }
     public String getClanNameByChunk(int x, int z) {
         ClanChunk clanChunk = getChunk(x, z);
         if (clanChunk == null) {
             return null;
         }
-        return clanChunk.getClanName();
+        return clanChunk.getClanId();
     }
     public boolean isChunkClaimedByClan(Chunk chunk, String clanName) {
         ClanChunk clanChunk = getChunk(chunk.getX(), chunk.getZ());
-        return clanChunk != null && clanChunk.getClanName().equals(clanName);
+        return clanChunk != null && clanChunk.getClanId().equals(clanName);
     }
     public boolean unclaimWillSplit(Chunk chunk, String clanName) {
         if (!chunk.getWorld().getName().equals(WORLD_NAME)) return false;
-        Clan clan = clanHandler.getClanByName(clanName);
+        Clan clan = clanHandler.getClanById(clanName);
         if (clan == null) {
             Log("Clan not found", LogType.SEVERE);
             return false;
@@ -200,7 +200,7 @@ public class ChunkHandler {
     public boolean isChunkAdjacentToClan(Chunk chunk, String clanName) {
         if (!chunk.getWorld().getName().equals(WORLD_NAME)) return false;
         for (ClanChunk clanChunk : getAdjacentChunks(chunk.getX(), chunk.getZ(), false)) {
-            if (clanChunk != null && clanChunk.getClanName().equals(clanName)) {
+            if (clanChunk != null && clanChunk.getClanId().equals(clanName)) {
                 return true;
             }
         }
@@ -215,7 +215,7 @@ public class ChunkHandler {
             for (int dz = -enemyProximityRadius; dz <= enemyProximityRadius; dz++) {
                 if (dx == 0 && dz == 0) continue;
                 ClanChunk clanChunk = getChunk(dx + chunk.getX(), dz + chunk.getZ());
-                if (clanChunk != null && !clanChunk.getClanName().equals(clanName)) return true;
+                if (clanChunk != null && !clanChunk.getClanId().equals(clanName)) return true;
             }
         }
         return false;
@@ -293,7 +293,7 @@ public class ChunkHandler {
                     Clan chunkClan = clanHandler.getClanByChunkLocation(player.getChunk());
                     List<PotionEffect> effects = new ArrayList<>();
                     if (chunkClan != null) {
-                        if (playerClan != null && playerClan.getName().equals(chunkClan.getName())) {
+                        if (playerClan != null && playerClan.getId().equals(chunkClan.getId())) {
                             // give buff
                             effects = VClans.getInstance().getClanTierHandler().getBuffs(chunkClan.getTier());
                         } else {

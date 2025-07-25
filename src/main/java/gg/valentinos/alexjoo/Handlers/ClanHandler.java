@@ -37,14 +37,14 @@ public class ClanHandler {
     }
     public void disbandClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
-        VClans.getInstance().getChunkHandler().unclaimChunks(clan.getName());
+        VClans.getInstance().getChunkHandler().unclaimChunks(clan.getId());
         clans.getClans().remove(clan);
         saveClans();
         BlueMapHandler blueMapHandler = VClans.getInstance().getBlueMapHandler();
         if (blueMapHandler != null) {
             blueMapHandler.removeClanTerritory(clan);
         }
-        Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getName());
+        Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getId());
     }
     public void invitePlayer(UUID playerUUID, String targetName) {
         Player player = Bukkit.getPlayer(playerUUID);
@@ -55,7 +55,7 @@ public class ClanHandler {
         Log("Player " + Objects.requireNonNull(player).getName() + " has invited player " + targetName + " to the clan.");
     }
     public Clan joinClan(UUID playerUUID, String clanName) {
-        Clan clan = getClanByName(clanName);
+        Clan clan = getClanById(clanName);
         clan.addDefaultMember(playerUUID);
         saveClans();
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully joined the clan " + clanName);
@@ -65,7 +65,7 @@ public class ClanHandler {
         Clan clan = getClanByMember(playerUUID);
         clan.removeMember(playerUUID);
         saveClans();
-        Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully left the clan " + clan.getName());
+        Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully left the clan " + clan.getId());
     }
     public void kickPlayer(UUID playerUUID, String targetName) {
         Player player = Bukkit.getPlayer(playerUUID);
@@ -118,6 +118,10 @@ public class ClanHandler {
             VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
         }
     }
+    public void setClanName(Clan clan, String name) {
+        clan.setName(name);
+        saveClans();
+    }
 
 
     // saves and loads the clans
@@ -149,7 +153,7 @@ public class ClanHandler {
         List<String> names = new ArrayList<>();
         for (Clan clan : clans) {
             if (clan.isMemberInvited(playerUUID))
-                names.add(clan.getName());
+                names.add(clan.getId());
         }
         return names;
     }
@@ -160,7 +164,7 @@ public class ClanHandler {
         return clan.getMemberUUIDs();
     }
     public List<UUID> getClanMemberUUIDs(String name) {
-        Clan clan = getClanByName(name);
+        Clan clan = getClanById(name);
         if (clan == null)
             return List.of();
         return clan.getMemberUUIDs();
@@ -170,7 +174,7 @@ public class ClanHandler {
         Clan clan = getClanByMember(playerUUID);
         if (clan == null)
             return null;
-        return clan.getName();
+        return clan.getId();
     }
     public String getMemberRankTitle(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
@@ -183,18 +187,18 @@ public class ClanHandler {
         return clans.getClans().stream().anyMatch(c -> c.getMembers().containsKey(playerUUID));
     }
     public boolean clanExists(String name) {
-        return clans.getClans().stream().anyMatch(c -> c.getName().equalsIgnoreCase(name));
+        return clans.getClans().stream().anyMatch(c -> c.getId().equalsIgnoreCase(name));
     }
     public boolean isPlayerInClan(UUID playerUUID, String clanName) {
         Clan clan = getClanByMember(playerUUID);
-        return clan != null && clan.getName().equals(clanName);
+        return clan != null && clan.getId().equals(clanName);
     }
     public boolean clanIsFull(Clan clan) {
         return clan.getMembers().size() >= VClans.getInstance().getClanTierHandler().getPlayerLimit(clan.getTier());
     }
 
-    public Clan getClanByName(String name) {
-        return clans.getClans().stream().filter(c -> c.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    public Clan getClanById(String id) {
+        return clans.getClans().stream().filter(c -> c.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
     }
     public Clan getClanByMember(UUID memberUUID) {
         return clans.getClans().stream().filter(c -> c.getMembers().containsKey(memberUUID)).findFirst().orElse(null);

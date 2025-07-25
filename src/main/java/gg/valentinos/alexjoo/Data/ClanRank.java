@@ -59,6 +59,7 @@ public class ClanRank {
         newPermissions.put("canColor", false);
         newPermissions.put("canUpgrade", false);
         newPermissions.put("canSetPrefix", false);
+        newPermissions.put("canRename", false);
         return newPermissions;
     }
 }

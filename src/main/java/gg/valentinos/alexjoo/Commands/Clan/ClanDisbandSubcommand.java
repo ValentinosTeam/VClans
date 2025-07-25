@@ -73,7 +73,7 @@ public class ClanDisbandSubcommand extends SubCommand {
             playerName = player.getName();
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             if (clan != null)
-                clanName = clan.getName();
+                clanName = clan.getId();
         }
         replacements.put("{clan-name}", clanName);
         replacements.put("{player-name}", playerName);

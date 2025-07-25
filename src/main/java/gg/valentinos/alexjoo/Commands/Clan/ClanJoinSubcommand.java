@@ -23,11 +23,11 @@ public class ClanJoinSubcommand extends SubCommand {
     @Override
     public CommandAction getAction(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        String clanName = args[1];
+        String clanId = args[1];
 
         return () -> {
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
-            List<UUID> clanMembers = clanHandler.getClanMemberUUIDs(clanName);
+            List<UUID> clanMembers = clanHandler.getClanMemberUUIDs(clanId);
             for (UUID uuid : clanMembers) {
                 Player memberPlayer = Bukkit.getPlayer(uuid);
                 if (memberPlayer != null && memberPlayer.isOnline()) {
@@ -37,7 +37,7 @@ public class ClanJoinSubcommand extends SubCommand {
                 }
             }
             cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
-            Clan clan = clanHandler.joinClan(player.getUniqueId(), clanName);
+            Clan clan = clanHandler.joinClan(player.getUniqueId(), clanId);
             VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
         };
     }
@@ -47,7 +47,7 @@ public class ClanJoinSubcommand extends SubCommand {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         String clanName = args[1];
-        Clan clan = clanHandler.getClanByName(clanName);
+        Clan clan = clanHandler.getClanById(clanName);
         if (clan == null) {
             sendFormattedPredefinedMessage(sender, "clan-not-exist", LogType.WARNING);
             return true;
@@ -87,13 +87,19 @@ public class ClanJoinSubcommand extends SubCommand {
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String playerName = "ERROR";
+        String clanId = "ERROR";
         String clanName = "ERROR";
         if (sender instanceof Player player) {
             playerName = player.getName();
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+            if (clan != null) {
+                clanName = clan.getName();
+            }
         }
         if (args.length > 1) {
-            clanName = args[1];
+            clanId = args[1];
         }
+        replacements.put("{clan-id}", clanId);
         replacements.put("{clan-name}", clanName);
         replacements.put("{player-name}", playerName);
     }

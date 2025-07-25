@@ -2,7 +2,7 @@ show-current-clan-on-join: true
 settings:
   world-name: "world" # The world name where chunk claiming will be enabled
   max-clan-name-length: 16
-  min-clan-name-length: 3
+  min-clan-name-length: 4
   #  chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
   chunk-cost-formula: "0 * x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
   enemy-proximity-radius: 3 # the minimum amount of chunks between two different clan chunk claims
@@ -79,26 +79,28 @@ commands:
       usage: "/clan list"
       messages:
         clan-list-header: "=============Clans============="
-        clan-list-item: "&8 -&r {clan-name}"
+        clan-list-item: "&8 -&r &8{clan-id}&r [{clan-prefix}&r] {clan-name}&r"
         clan-list-footer: "==============================="
         member-list-header: "============Members of {clan-name}============"
-        member-list-item: "&8 - [{priority}]&r {rank}&r {player-name}"
+        member-list-item: "&8 - [{priority}&r] {rank}&r {player-name}&r"
         member-list-footer: "========================================="
-        clan-not-found: "The clan {clan-name} does not exist."
+        clan-not-found: "The clan {clan-id} does not exist."
     create:
       # {clan-name} - the clan name used in the command
       # {player-name} - the player name that sent the command
       enabled: true
       target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
-      cooldown: 5 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
+      cooldown: 60*60*24 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
+      confirmation: 30
       description: "Creates a new clan."
-      usage: "/clan create <name>"
+      usage: "/clan create <id>"
       messages:
-        success: "You have successfully created the clan - {clan-name}." # {name} will be replaced with the name of the clan. Works on most messages.
-        already-exists: "Clan with name {clan-name} already exists."
+        success: "You have successfully created the clan - {clan-id}." # {name} will be replaced with the name of the clan. Works on most messages.
+        confirmation-message: "Are you sure you want to create this clan with the id [{clan-id}]? This can't be changed! Type /confirm if you are sure"
+        already-exists: "Clan with name {clan-id} already exists."
         too-long: "The clan name is too long. Maximum length is 16 characters."
         too-short: "The clan name is too short. Minimum length is 3 characters."
-        invalid-characters: "The clan name contains invalid characters. Only letters, numbers, and underscores are allowed."
+        invalid-characters: "The clan name contains invalid characters. Only lowercase letters and underscores are allowed."
         already-in-clan: "You, {player-name}, are already in a clan. Leave your current clan to create a new one."
     disband:
       # {clan-name} - The name of the clan that is going to be disbanded
@@ -148,7 +150,8 @@ commands:
         insufficient-rank: "Your rank priority is too low to kick {target-name} from the clan."
         confirmation-message: "Are you sure you want to kick {target-name} from your clan? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
     join:
-      # {clan-name} - The clan name the player joins
+      # {clan-id} - The clan id the player joins
+      # {clan-name} - The full name of the clan
       # {player-name} - The name of the player who is joining the clan
       enabled: true
       description: "Joins a clan if you have been invited."
@@ -156,7 +159,7 @@ commands:
       messages:
         success: "You have joined the clan {clan-name} successfully!"
         joined-notification: "{player-name} has joined the clan!" # This will be sent to all online clan members when a player joins.
-        clan-not-exist: "The clan {clan-name} does not exist."
+        clan-not-exist: "The clan {clan-id} does not exist."
         not-invited: "You have not been invited to join the clan {clan-name}."
         invite-expired: "The invitation to join the clan {clan-name} has expired."
         already-in-a-clan: "You are already in a clan."
@@ -227,6 +230,16 @@ commands:
       messages:
         success: "Successfully set the clans prefix to {prefix}"
         too-big: "The max prefix length is {max-length}"
+        forbidden-formatting: "Doesn't allow text formatting and the black color"
+        invalid-characters: "Invalid characters found. If you want to change color, use &[1-9,a-u]"
+    rename:
+      enabled: true
+      description: "Renames the clan."
+      usage: "/clan prefix <name>"
+      messages:
+        success: "Successfully set the clans name to {name}"
+        too-big: "The max clan name length is {max-length}"
+        too-small: "The min clan name length is {min-length}"
         forbidden-formatting: "Doesn't allow text formatting and the black color"
         invalid-characters: "Invalid characters found. If you want to change color, use &[1-9,a-u]"
   chunk:

@@ -103,20 +103,18 @@ public class BlueMapHandler {
         Color lineColor = new Color(color.get(0), color.get(1), color.get(2), LINE_ALPHA_VALUE);
         for (Cheese cheese : platter) {
             ExtrudeMarker chunkMarker = new ExtrudeMarker.Builder()
-                    .label(clan.getName())
+                    .label(clan.getStrippedName())
                     .fillColor(fillColor)
                     .lineColor(lineColor)
                     .shape(cheese.getShape(), EXTRUDE_MIN_Y, EXTRUDE_MAX_Y)
                     .holes(cheese.getHoles().toArray(Shape[]::new))
                     .build();
-            markerSet.put("clan-" + clan.getName() + "-segment-" + (i++), chunkMarker);
+            markerSet.put("clan-" + clan.getId() + "-segment-" + (i++), chunkMarker);
         }
-
-
     }
 
     public void removeClanTerritory(Clan clan) {
-        markerSet.getMarkers().keySet().removeIf(key -> key.startsWith("clan-") && key.contains("-segment-") && key.contains(clan.getName()));
+        markerSet.getMarkers().keySet().removeIf(key -> key.startsWith("clan-") && key.contains("-segment-") && key.contains(clan.getId()));
     }
 
 }

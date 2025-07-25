@@ -1,6 +1,7 @@
 package gg.valentinos.alexjoo.Listeners;
 
 import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,6 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.List;
+
+import static gg.valentinos.alexjoo.VClans.sendFormattedMessage;
 
 public class PlayerListener implements Listener {
 
@@ -21,8 +24,9 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (showCurrentClanOnJoin) {
-            String clanName = VClans.getInstance().getClanHandler().getClanNameOfMember(player.getUniqueId());
-            player.sendMessage("Current clan: " + (clanName == null ? "None" : clanName));
+            Clan clan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
+
+            sendFormattedMessage(player, "Current clan: " + (clan == null ? "None" : clan.getName()), LogType.INFO);
         }
 
         Clan clan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());

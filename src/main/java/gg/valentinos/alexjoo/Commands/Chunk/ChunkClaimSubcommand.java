@@ -53,7 +53,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
             return true;
         }
-        String clanName = clan.getName();
+        String clanId = clan.getId();
         HashMap<String, Boolean> permissions = clan.getRank(player.getUniqueId()).getPermissions();
         if (!permissions.get("canClaimChunks")) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
@@ -64,7 +64,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "already-claimed", LogType.WARNING);
             return true;
         }
-        if (chunkHandler.isChunkCloseToEnemyClan(player.getChunk(), clanName)) {
+        if (chunkHandler.isChunkCloseToEnemyClan(player.getChunk(), clanId)) {
             sendFormattedPredefinedMessage(sender, "too-close", LogType.WARNING);
             return true;
         }
@@ -72,7 +72,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "too-close-region", LogType.WARNING);
             return true;
         }
-        if (!clan.getChunks().isEmpty() && !chunkHandler.isChunkAdjacentToClan(player.getChunk(), clanName)) {
+        if (!clan.getChunks().isEmpty() && !chunkHandler.isChunkAdjacentToClan(player.getChunk(), clanId)) {
             sendFormattedPredefinedMessage(sender, "not-adjacent", LogType.WARNING);
             return true;
         }
@@ -108,7 +108,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             Clan chunkClan = clanHandler.getClanByChunkLocation(x, z);
 
             if (chunkClan != null) {
-                clanName = chunkClan.getName();
+                clanName = chunkClan.getId();
             }
 
             Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());

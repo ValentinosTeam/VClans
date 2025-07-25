@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Clan {
+    private String id;
     private String name;
     private final UUID owner;
     private HashMap<String, ClanRank> ranks;
@@ -20,8 +21,9 @@ public class Clan {
     private int tier;
     private String prefix;
 
-    public Clan(String name, UUID owner) {
-        this.name = name;
+    public Clan(String id, UUID owner) {
+        this.id = id;
+        this.name = id;
         this.members = new HashMap<>();
         this.invites = new HashMap<>();
         this.ranks = new HashMap<>();
@@ -29,7 +31,7 @@ public class Clan {
         this.owner = owner;
         this.color = List.of(211, 211, 211);
         this.tier = 0;
-        this.prefix = name.substring(0, 3);
+        this.prefix = id.substring(0, 3);
     }
 
     public HashMap<UUID, ClanMember> getMembers() {
@@ -37,6 +39,12 @@ public class Clan {
     }
     public void setMembers(HashMap<UUID, ClanMember> members) {
         this.members = members;
+    }
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
     }
     public String getName() {
         return name;
@@ -228,6 +236,11 @@ public class Clan {
         this.color = List.of(r, g, b);
     }
     public Component getColoredName() {
-        return Component.text(name).color(TextColor.color(color.get(0), color.get(1), color.get(2)));
+        return Component.text(id).color(TextColor.color(color.get(0), color.get(1), color.get(2)));
+    }
+
+    //Name logic
+    public String getStrippedName() {
+        return name.replaceAll("&[0-9a-fk-or]", "");
     }
 }
