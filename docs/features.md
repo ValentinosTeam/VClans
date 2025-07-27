@@ -69,6 +69,8 @@ Also most commands have a permission node tied to them that the owner can use to
     - `/clan help`: displays a list of all available subcommands and their usage.
     - `/clan create <id>`: creates a new clan with the given id. The id has to be unique and has many restrictions
       such as no spaces, no special characters, and a maximum length of 16 characters.
+    - `/clan chat`: toggles the clan chat on or off. When the clan chat is enabled, all messages sent in the chat will
+      be sent to the clan chat instead of the global chat and be seen only by clan members.
     - `/clan disband`: disbands the clan, removing all members and chunks. Only the owner can disband the clan.
     - `/clan rename <name>`: renames the clan to the given name. The name has a configurable maximum length of
       characters
