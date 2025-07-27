@@ -91,13 +91,13 @@ public class ClanJoinSubcommand extends SubCommand {
         String clanName = "ERROR";
         if (sender instanceof Player player) {
             playerName = player.getName();
-            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            if (clan != null) {
-                clanName = clan.getName();
-            }
         }
         if (args.length > 1) {
             clanId = args[1];
+            Clan clan = clanHandler.getClanById(clanId);
+            if (clan != null) {
+                clanName = clan.getName();
+            }
         }
         replacements.put("{clan-id}", clanId);
         replacements.put("{clan-name}", clanName);
