@@ -29,8 +29,8 @@ Clans have many attributes:
   characters. The clan id is used to reference the clan, because the name of the clan can be challenging to use in
   commands. (i.e. `/clan join <id>` instead of /clan join <name>)
 - **Name**: The name of the clan, which can be set with `/clan rename <name>`. The name has a configurable maximum
-  length of 32 characters and can contain spaces and minecraft formatting codes for colors. (`/clan rename &4My Clan` to
-  name the clan "My Clan" with red color)
+  length characters and can contain spaces and minecraft formatting codes for colors. (`/clan rename &4My Clan` to
+  name the clan "My Clan" with red color). By default, the name is set to the clan id.
 - **Color**: Color of the clans territory, used in the chunk radar and BlueMap. The color can be set with
   `/clan color <r> <g> <b>`. The color is represented as RGB values, each ranging from 0 to 255.
 - **Tier**: The tier of the clan, which is used to determine the maximum number of members and chunks that can be
