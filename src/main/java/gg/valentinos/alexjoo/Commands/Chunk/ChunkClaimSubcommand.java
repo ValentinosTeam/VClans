@@ -99,8 +99,8 @@ public class ChunkClaimSubcommand extends SubCommand {
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String clanName = "None";
-        String maxAmount = "NULL";
-        String price = "NULL";
+        String maxAmount = "ERROR";
+        String price = "ERROR";
 
         if (sender instanceof Player player) {
             int x = player.getChunk().getX();
@@ -108,7 +108,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             Clan chunkClan = clanHandler.getClanByChunkLocation(x, z);
 
             if (chunkClan != null) {
-                clanName = chunkClan.getId();
+                clanName = chunkClan.getName();
             }
 
             Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());

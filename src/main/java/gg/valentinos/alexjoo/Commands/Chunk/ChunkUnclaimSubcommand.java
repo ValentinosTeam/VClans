@@ -84,7 +84,7 @@ public class ChunkUnclaimSubcommand extends SubCommand {
             int z = player.getChunk().getZ();
             Clan clan = clanHandler.getClanByChunkLocation(x, z);
             if (clan != null) {
-                clanName = clan.getId();
+                clanName = clan.getName();
             }
         }
 

@@ -92,13 +92,16 @@ public class ClanInviteSubcommand extends SubCommand {
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String playerName = "ERROR";
         String clanName = "ERROR";
+        String clanId = "ERROR";
         String targetName = "ERROR";
 
         if (sender instanceof Player player) {
             playerName = player.getName();
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            if (clan != null)
+            if (clan != null) {
                 clanName = clan.getName();
+                clanId = clan.getId();
+            }
         }
         if (args.length > 1) {
             targetName = args[1];
@@ -107,6 +110,7 @@ public class ClanInviteSubcommand extends SubCommand {
         replacements.put("{target-name}", targetName);
         replacements.put("{player-name}", playerName);
         replacements.put("{clan-name}", clanName);
+        replacements.put("{clan-id}", clanId);
     }
 
     @Override

@@ -194,6 +194,13 @@ public class ChunkListener implements Listener {
         Entity entity = event.getRightClicked();
         event.setCancelled(shouldBlockPlayerInteraction(entity.getChunk(), player));
     }
+    @EventHandler
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        // forbid players on interacting with armor stands (apparently they are slightly different from other entities)
+        Player player = event.getPlayer();
+        Entity entity = event.getRightClicked();
+        event.setCancelled(shouldBlockPlayerInteraction(entity.getChunk(), player));
+    }
 
     // entity events
     @EventHandler

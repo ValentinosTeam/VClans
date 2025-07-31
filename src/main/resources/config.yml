@@ -17,24 +17,32 @@ clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
     label: "[I]"
-    player-limit: 1
-    chunk-limit: 3
-    buffs:
-      - [ "REGENERATION", 1 ] # applied to clan mates
+    player-limit: 5
+    chunk-limit: 10
+    buffs: [ ]
     debuffs: [ ]
     price: 0 # Doesn't matter if the first tier
   1:
     label: "[II]"
-    player-limit: 2
-    chunk-limit: 5
+    player-limit: 10
+    chunk-limit: 20
+    buffs:
+      - [ "REGENERATION", 1 ] # applied to clan mates
+    debuffs:
+      - [ "GLOWING", 1 ]
+    price: 20000
+  2:
+    label: "[III]"
+    player-limit: 15
+    chunk-limit: 30
     buffs:
       - [ "REGENERATION", 2 ]
       - [ "SPEED", 1 ]
     debuffs:
-      - [ "GLOWING", 1 ] # applied to enemies
-    price: 20000
+      - [ "GLOWING", 1 ]
+      - [ "DARKNESS", 1 ]
+    price: 100000
 commands:
-  # {commandName}-notification means that the message is going to be sent to multiple players which the command affects
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
   # target-cooldown is the cooldown that is applied to the command that is specified in the target-cooldown field
   # confirmation is the time in seconds the player has to confirm the action
@@ -67,13 +75,9 @@ commands:
         Thank you for using Valentinos Clans plugin made by Alex_Joo!
         To view the list of available commands, use /clan help.
         "
-        list-item: " &7- {item}: &r&l{desc}" # example: " - create: Creates a new clan." with some extra formatting
+        list-item: " &7- {item}: &r&l{desc}"
         footer: "======================================="
     list:
-      # {clan-name} - the name of the clan
-      # {rank} - the rank title of the player
-      # {priority} - the rank priority of the player
-      # {player-name} - the name of the player
       enabled: true
       description: "Lists all clans."
       usage: "/clan list"
@@ -82,12 +86,10 @@ commands:
         clan-list-item: "&8 -&r &8{clan-id}&r [{clan-prefix}&r] {clan-name}&r"
         clan-list-footer: "==============================="
         member-list-header: "============Members of {clan-name}============"
-        member-list-item: "&8 - [{priority}&r] {rank}&r {player-name}&r"
+        member-list-item: "&8 - [{priority}]&r {rank}&r <{player-name}&r>"
         member-list-footer: "========================================="
         clan-not-found: "The clan {clan-id} does not exist."
     create:
-      # {clan-name} - the clan name used in the command
-      # {player-name} - the player name that sent the command
       enabled: true
       target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
       cooldown: 60*60*24 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
@@ -98,13 +100,11 @@ commands:
         success: "You have successfully created the clan - {clan-id}." # {name} will be replaced with the name of the clan. Works on most messages.
         confirmation-message: "Are you sure you want to create this clan with the id [{clan-id}]? This can't be changed! Type /confirm if you are sure"
         already-exists: "Clan with name {clan-id} already exists."
-        too-long: "The clan name is too long. Maximum length is 16 characters."
-        too-short: "The clan name is too short. Minimum length is 3 characters."
+        too-long: "The clan name is too long. Maximum length is 10 characters."
+        too-short: "The clan name is too short. Minimum length is 4 characters."
         invalid-characters: "The clan name contains invalid characters. Only lowercase letters and underscores are allowed."
         already-in-clan: "You, {player-name}, are already in a clan. Leave your current clan to create a new one."
     disband:
-      # {clan-name} - The name of the clan that is going to be disbanded
-      # {player-name} - The name of the player that disbanded the clan
       enabled: true
       target-cooldown: "clan-create"
       cooldown: 10
@@ -117,25 +117,19 @@ commands:
         disband-notification: "The clan you are in, {clan-name}, has been disbanded by {player-name}."
         confirmation-message: "Are you sure you want to disband your clan? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
     invite:
-      # {clan-name} - the clan name the player is inviting the target to
-      # {player-name} - the name of the player inviting the target
-      # {target-name} - the name of the player the command sender is inviting
       enabled: true
       description: "Invites a player to your clan."
       usage: "/clan invite <player>"
       messages:
         success: "You have invited {target-name} to your clan."
         no-permission: "You don't have the permission to invite players to the clan."
-        invitation: "You have been invited to join the clan {clan-name} by {player-name}. Use '/clan join {clan-name}' to accept the invitation."
+        invitation: "You have been invited to join the clan {clan-name} by {player-name}. Use '/clan join {clan-id}' to accept the invitation."
         invite-self: "You can't invite yourself to your clan."
         already-in-a-clan: "The player {target-name} is already in a clan."
         already-in-the-clan: "That player is already in the clan."
         already-invited: "That player has already been invited to your clan."
         clan-full: "The clan {clan-name} is full."
     kick:
-      # {clan-name} - the name of the clan the player is getting kicked from
-      # {player-name} - the name of the player that is kicking the target
-      # {target-name} - the name of the player that is being kicked
       enabled: true
       description: "Kicks a player from your clan."
       usage: "/clan kick <player>"
@@ -150,9 +144,6 @@ commands:
         insufficient-rank: "Your rank priority is too low to kick {target-name} from the clan."
         confirmation-message: "Are you sure you want to kick {target-name} from your clan? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
     join:
-      # {clan-id} - The clan id the player joins
-      # {clan-name} - The full name of the clan
-      # {player-name} - The name of the player who is joining the clan
       enabled: true
       description: "Joins a clan if you have been invited."
       usage: "/clan join <clan>"
@@ -166,8 +157,6 @@ commands:
         already-in-the-clan: "You are already in the clan."
         clan-full: "The clan {clan-name} is full."
     leave:
-      # {clan-name} - the name of the clan the player is leaving
-      # {player-name} - the name of the player leaving the clan
       enabled: true
       description: "Leaves your current clan."
       usage: "/clan leave"
@@ -175,17 +164,6 @@ commands:
         success: "You have left the clan {clan-name} successfully."
         leave-notification: "Your fellow clan member {player-name} has left the clan."
         owner-cant-leave: "You can't leave your clan. Disband it instead."
-    stepdown:
-      # {clan-name} - the clan name you are stepping down of
-      # {player-name} - the name of the player stepping down
-      enabled: true
-      description: "Steps down as the leader of your clan."
-      usage: "/clan stepdown"
-      confirmation: 10
-      messages:
-        success: "You have stepped down as the leader of your clan."
-        stepdown-notification: "Player {name} has stepped down as the leader of the clan." # This is sent to all clan members online
-        only-owner: "You are the only owner of the clan, you can't step down."
     rank:
       enabled: true
       description: "Changes the rank of a player in your clan."
@@ -209,8 +187,6 @@ commands:
       usage: "/clan upgrade"
       confirmation: 30
       messages:
-        # {tier-label} is the new tier label that is configured above in the clan-tiers
-        # {tier-price} is the price of the tier upgrade defined above in the clan-tiers
         success: "You have successfully upgraded the clan to tier: {tier-label}"
         confirmation-message: "Are you sure you want to upgrade the clan to tier {tier-label} for the price of ${tier-price}? You have {confirm-time} seconds to /confirm !"
         max-tier: "You already have the highest tier clan!"
@@ -220,7 +196,6 @@ commands:
       description: "Toggles current chat to be only visible for clan members or global."
       usage: "/clan chat"
       messages:
-        # {chat} - either clan chat or global chat
         success: "You have entered {chat} chat."
         no-vault: "Vault has not been properly enabled, contact an administrator for help."
     prefix:
@@ -247,11 +222,8 @@ commands:
       enabled: true
       description: "Claims a chunk for your clan."
       usage: "/chunk claim"
-      #      confirmation: 30
+      confirmation: 30
       messages:
-        # {clan-name} - the clan that owns the chunk the player is standing in
-        # {max-chunks} - the maximum number of chunks the clan can claim
-        # {price} - how much a chunk costs to claim
         success: "You have claimed the chunk for your clan."
         confirmation-message: "Are you sure you want to claim this chunk for the cost of ${price}? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
         already-claimed: "This chunk is already claimed by the clan - {clan-name}."

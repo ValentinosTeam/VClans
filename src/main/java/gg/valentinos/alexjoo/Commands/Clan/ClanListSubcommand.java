@@ -85,7 +85,7 @@ public class ClanListSubcommand extends SubCommand {
         if (args.length == 1) {
             return List.of("list");
         } else if (args.length == 2) {
-            return clanHandler.getClanNames();
+            return clanHandler.getClans().getClans().stream().map(Clan::getId).toList();
         }
         return List.of();
     }
