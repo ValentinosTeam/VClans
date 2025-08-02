@@ -4,7 +4,9 @@ The "clan wars" functionality is a system in place where any clan of Tier I or a
 
 ### Peace Treaties
 Throughout the duration of the war any of the participating clans members with the sufficient clan permissions have the opportunity to issue the `/war peace` that has a cooldown of a **configurable amount of time** which notifies the enemy clans members that an option to end the war earlier has been offered which can be accepted by running the `/war peace accept` command with the sufficient clan permissions, the offer can alternatively be declined by running the command `/war peace decline` or by simply ignoring the offer for a **configurable amount of time** for instance. If both clans members have run the command then the war will end immediately. Alternatively money can be offered or demanded for a peace treaty by using either the command `/war peace <amount>` where the `<amount>` can be a negative or as positive number depending on whether it is a offer or a demand. 
+
 Ex. `/war peace -5000` to offer $5000 to the enemy clan to end the war.
+
 Ex. `/war peace 7000` to demand $7000 from the enemy clan to end the war.
 
 ### Chunk Occupation 
