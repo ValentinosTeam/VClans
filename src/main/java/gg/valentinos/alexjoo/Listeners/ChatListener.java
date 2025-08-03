@@ -53,11 +53,15 @@ public class ChatListener implements Listener, ChatRenderer {
                 UUID uuid = clanMemberEntry.getKey();
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null || !player.isOnline()) continue;
-
                 recipients.add(player);
             }
+            Component original = event.message();
+            Component modified = Component.text("[Clan Chat] ", TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2)))
+                    .append(original.color(NamedTextColor.GRAY));
+            event.message(modified);
         }
-//        event.renderer(this); // Tell the event to use our renderer
+
+//        event.renderer(this); // this will override the default chat renderer
     }
 
     @Override
