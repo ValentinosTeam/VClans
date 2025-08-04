@@ -1,7 +1,7 @@
 package gg.valentinos.alexjoo.Listeners;
 
-import gg.valentinos.alexjoo.Data.Clan;
-import gg.valentinos.alexjoo.Data.ClanMember;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanMember;
 import gg.valentinos.alexjoo.VClans;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;

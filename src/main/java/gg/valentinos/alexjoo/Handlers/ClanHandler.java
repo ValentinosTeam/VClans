@@ -1,6 +1,7 @@
 package gg.valentinos.alexjoo.Handlers;
 
-import gg.valentinos.alexjoo.Data.*;
+import gg.valentinos.alexjoo.Data.ClanData.*;
+import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
@@ -16,11 +17,9 @@ import static gg.valentinos.alexjoo.VClans.WORLD_NAME;
 public class ClanHandler {
 
     private Clans clans;
-    private final HashMap<Player, Boolean> playerUsingClanChat;
 
     public ClanHandler() {
         loadClans();
-        playerUsingClanChat = new HashMap<>();
     }
 
     public Clans getClans() {
@@ -122,7 +121,6 @@ public class ClanHandler {
         clan.setName(name);
         saveClans();
     }
-
 
     // saves and loads the clans
     public void loadClans() {
@@ -242,10 +240,4 @@ public class ClanHandler {
         clan.createRank("default", "member");
         return clan;
     }
-
-    // helpers
-    private void setPrefix(Player player) {
-
-    }
-
 }

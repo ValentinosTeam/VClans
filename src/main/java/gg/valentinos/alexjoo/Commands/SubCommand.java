@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
+import gg.valentinos.alexjoo.Handlers.WarHandler;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +18,8 @@ import static gg.valentinos.alexjoo.VClans.Log;
 
 public abstract class SubCommand {
     protected final ClanHandler clanHandler;
+    protected final WarHandler warHandler;
+
     protected final CooldownHandler cooldownHandler;
     protected final ConfirmationHandler confirmationHandler;
     protected final FileConfiguration config;
@@ -39,8 +42,9 @@ public abstract class SubCommand {
 
     protected String configPath;
 
-    public SubCommand(String commandName, String subcommandName, List<String> configKeys){
+    public SubCommand(String commandName, String subcommandName, List<String> configKeys) {
         this.clanHandler = VClans.getInstance().getClanHandler();
+        this.warHandler = VClans.getInstance().getWarHandler();
         this.cooldownHandler = VClans.getInstance().getCooldownHandler();
         this.confirmationHandler = VClans.getInstance().getConfirmationHandler();
         this.config = VClans.getInstance().getConfig();
@@ -49,19 +53,19 @@ public abstract class SubCommand {
         loadMessages(configKeys);
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
 
-    public String getUsage(){
+    public String getUsage() {
         return usage;
     }
 
-    public final void execute(CommandSender sender, String[] args){
+    public final void execute(CommandSender sender, String[] args) {
         loadReplacementValues(sender, args);
         if (hasCommonIssues(sender, args)) return;
         if (hasSpecificErrors(sender, args)) return;
@@ -76,46 +80,47 @@ public abstract class SubCommand {
     public abstract List<String> onTabComplete(CommandSender sender, String[] args);
 
     protected abstract boolean hasSpecificErrors(CommandSender sender, String[] args);
+
     public abstract boolean suggestCommand(CommandSender sender);
 
     protected abstract void loadReplacementValues(CommandSender sender, String[] args);
 
     // dont question this. it works
-    protected void sendFormattedMessage(CommandSender sender, String message){
+    protected void sendFormattedMessage(CommandSender sender, String message) {
         sendFormattedMessage(sender, message, LogType.NULL);
     }
-    protected void sendFormattedPredefinedMessage(CommandSender sernder, String message){
+    protected void sendFormattedPredefinedMessage(CommandSender sernder, String message) {
         sendFormattedPredefinedMessage(sernder, message, LogType.NULL);
     }
-    protected void sendFormattedPredefinedMessage(CommandSender sender, String messageKey, LogType type){
+    protected void sendFormattedPredefinedMessage(CommandSender sender, String messageKey, LogType type) {
         String message = messages.get(messageKey);
-        if (message == null){
+        if (message == null) {
             Log("message key " + messageKey + " not found in config.yml. Using default message.", LogType.WARNING);
             message = VClans.getInstance().getDefaultMessage(messageKey);
-            if (message == null){
+            if (message == null) {
                 Log("message key " + messageKey + " not found in config.yml. Not sending message.", LogType.WARNING);
                 return;
             }
         }
         sendFormattedMessage(sender, message, type);
     }
-    protected void sendFormattedMessage(CommandSender sender, String message, LogType type){
+    protected void sendFormattedMessage(CommandSender sender, String message, LogType type) {
         VClans.sendFormattedMessage(sender, message, type, replacements);
     }
 
-    protected void loadMessages(List<String> configKeys){
+    protected void loadMessages(List<String> configKeys) {
         messages = new HashMap<>();
         replacements = new HashMap<>();
         for (String key : configKeys) {
             String message = config.getString(configPath + "messages." + key);
-            if (message == null){
+            if (message == null) {
                 Log("Missing message in config.yml for " + configPath + "messages." + key, LogType.WARNING);
             }
             messages.put(key, message);
         }
-        if (confirmationDuration > 0){
+        if (confirmationDuration > 0) {
             String message = config.getString(configPath + "messages.confirmation-message");
-            if (message == null){
+            if (message == null) {
                 Log("Missing confirmation message in config.yml for " + configPath + "messages.confirmation-message", LogType.WARNING);
                 message = VClans.getInstance().getDefaultMessage("confirmation");
             }
@@ -123,19 +128,19 @@ public abstract class SubCommand {
         }
     }
 
-    private void loadConfigs(String commandName, String subcommandName){
+    private void loadConfigs(String commandName, String subcommandName) {
         // I now realise that this system is completely useless, but it works, so I will keep it.
         configPath = "commands." + commandName + "." + subcommandName + ".";
         name = subcommandName;
-        if ((description = config.getString(configPath + "description")) == null){
+        if ((description = config.getString(configPath + "description")) == null) {
             Log("No description provided for command " + commandName + " " + subcommandName + ". Disabling command.", LogType.SEVERE);
             return;
         }
-        if ((usage = config.getString(configPath + "usage")) == null){
+        if ((usage = config.getString(configPath + "usage")) == null) {
             Log("No usage provided for command " + commandName + " " + subcommandName + ". Disabling command.", LogType.SEVERE);
             return;
         }
-        if (!(enabled = config.getBoolean(configPath + "enabled"))){
+        if (!(enabled = config.getBoolean(configPath + "enabled"))) {
             Log("Command not enabled " + commandName + " " + subcommandName + ". Disabling command.", LogType.SEVERE);
             return;
         }
@@ -143,11 +148,11 @@ public abstract class SubCommand {
         confirmationDuration = config.getLong(configPath + "confirmation");
         selfCooldownQuery = commandName + "-" + subcommandName;
         targetCooldownQuery = config.getString(configPath + "target-cooldown");
-        if(targetCooldownQuery == null)
+        if (targetCooldownQuery == null)
             targetCooldownQuery = selfCooldownQuery;
     }
 
-    private boolean hasCommonIssues(CommandSender sender, String[] args){
+    private boolean hasCommonIssues(CommandSender sender, String[] args) {
         VClans instance = VClans.getInstance();
         if (!enabled) {
             sender.sendMessage(instance.getDefaultMessage("command-disabled"));
@@ -175,7 +180,7 @@ public abstract class SubCommand {
         return false;
     }
 
-    private boolean isOnCooldown(CommandSender sender, String query){
+    private boolean isOnCooldown(CommandSender sender, String query) {
         if (!(sender instanceof Player player))
             return false;
         if (cooldownHandler.isOnCooldown(player.getUniqueId(), query)) {
@@ -187,14 +192,13 @@ public abstract class SubCommand {
         return false;
     }
 
-    private void executeWithConfirmation(CommandSender sender, CommandAction action){
-        if (sender instanceof Player player && confirmationDuration > 0){
+    private void executeWithConfirmation(CommandSender sender, CommandAction action) {
+        if (sender instanceof Player player && confirmationDuration > 0) {
             String confirmationTime = Objects.requireNonNullElse(String.valueOf(confirmationDuration), "ERROR");
             replacements.put("{confirm-time}", confirmationTime);
             sendFormattedMessage(player, messages.get("confirmation-message"), LogType.INFO);
             confirmationHandler.addConfirmationEntry(player, confirmationDuration, action);
-        }
-        else{
+        } else {
             action.execute();
         }
     }

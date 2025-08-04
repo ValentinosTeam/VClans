@@ -1,6 +1,6 @@
 package gg.valentinos.alexjoo.GUIs;
 
-import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.WorldGuardHandler;

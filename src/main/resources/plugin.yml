@@ -14,6 +14,10 @@ commands:
     description: Handles all clan related commands.
     usage: /clan help
     aliases: [ c ]
+  war:
+    description: Handles all clan war related commands.
+    usage: /war help
+    aliases: [ w ]
   chunk:
     description: Handles all chunk related commands.
     usage: /chunk help
@@ -27,3 +31,4 @@ commands:
   test:
     description: This is VClans test command. you should not see this
     usage: /test
+

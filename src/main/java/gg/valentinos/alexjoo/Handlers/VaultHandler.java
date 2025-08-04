@@ -1,6 +1,6 @@
 package gg.valentinos.alexjoo.Handlers;
 
-import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;

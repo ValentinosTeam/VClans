@@ -1,4 +1,4 @@
-package gg.valentinos.alexjoo.Data;
+package gg.valentinos.alexjoo.Data.ClanData;
 
 import java.util.HashMap;
 

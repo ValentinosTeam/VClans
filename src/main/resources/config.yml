@@ -3,7 +3,7 @@ settings:
   world-name: "world" # The world name where chunk claiming will be enabled
   max-clan-name-length: 16
   min-clan-name-length: 4
-  #  chunk-cost-formula: "100 * 2^x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
+  max-prefix-length: 4
   chunk-cost-formula: "100x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
   enemy-proximity-radius: 3 # the minimum amount of chunks between two different clan chunk claims
   region-proximity-radius: 3 # the minimum amount of chunks between a claimed chunk and a VClans protected WorldGuard region
@@ -12,7 +12,10 @@ settings:
   default-clan-member-title: "Member"
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: 50 #     ... and respectively the lowest ...
-  max-prefix-length: 4
+  war:
+    grace-period: 60*60*24 # 24 hours, how long the clan has to prepare for war after a war declaration
+    war-duration: 60*60*4 # 7 hours, how long the war lasts after the grace period
+    war-cooldown: 60*60*24 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
@@ -247,4 +250,15 @@ commands:
       enabled: true
       description: "Displays the radar of your claimed chunks around you in a 5x5 grid."
       usage: "/chunk radar"
+  war:
+    declare:
+      enabled: true
+      description: "Declares a war with another clan."
+      usage: "/war declare <clanId>"
+      messages:
+        success: "You have declared war on the {target-clan}."
+        initiator-clan-notification: "{player-name} of this clan has declared war on the clan {target-clan}."
+        target-clan-notification: "The clan {initiator-clan} has declared war on your clan!"
+        clan-in-war: "The clan {clan-name} is already in war."
+        declare-self: "You can't declare war on your own clan."
 

@@ -5,6 +5,7 @@ import gg.valentinos.alexjoo.Commands.CancelCommand;
 import gg.valentinos.alexjoo.Commands.Chunk.ChunkCommand;
 import gg.valentinos.alexjoo.Commands.Clan.ClanCommand;
 import gg.valentinos.alexjoo.Commands.ConfirmCommand;
+import gg.valentinos.alexjoo.Commands.War.WarCommand;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.*;
 import gg.valentinos.alexjoo.Listeners.ChatListener;
@@ -28,6 +29,7 @@ public final class VClans extends JavaPlugin {
     public static String WORLD_NAME;
     private static VClans instance;
     private ClanHandler clanHandler;
+    private WarHandler warHandler;
     private ClanTierHandler clanTierHandler;
     private CooldownHandler cooldownHandler;
     private ConfirmationHandler confirmationHandler;
@@ -48,6 +50,7 @@ public final class VClans extends JavaPlugin {
         vaultHandler = new VaultHandler();
         clanTierHandler = new ClanTierHandler();
         clanHandler = new ClanHandler();
+        warHandler = new WarHandler();
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();
@@ -71,6 +74,9 @@ public final class VClans extends JavaPlugin {
         ChunkCommand chunkCommand = new ChunkCommand();
         Objects.requireNonNull(getCommand("chunk")).setExecutor(chunkCommand);
         Objects.requireNonNull(getCommand("chunk")).setTabCompleter(chunkCommand);
+        WarCommand warCommand = new WarCommand();
+        Objects.requireNonNull(getCommand("war")).setExecutor(warCommand);
+        Objects.requireNonNull(getCommand("war")).setTabCompleter(warCommand);
 
         Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
         Objects.requireNonNull(getCommand("cancel")).setExecutor(new CancelCommand());
@@ -199,6 +205,9 @@ public final class VClans extends JavaPlugin {
     }
     public VaultHandler getVaultHandler() {
         return vaultHandler;
+    }
+    public WarHandler getWarHandler() {
+        return warHandler;
     }
 
     public String getDefaultMessage(String key) {

@@ -1,10 +1,11 @@
-package gg.valentinos.alexjoo.Data;
+package gg.valentinos.alexjoo.Data.ClanData;
 
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -129,6 +130,19 @@ public class Clan {
                 .sorted(Comparator.comparingInt(entry -> -ranks.get(entry.getValue().getRankId()).getPriority()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+    public List<Player> getOnlinePlayers() {
+        return members.keySet().stream()
+                .map(this::getOnlinePlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+    public Player getOnlinePlayer(UUID uuid) {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        if (player.isOnline()) {
+            return player.getPlayer();
+        }
+        return null;
     }
 
     // Invite logic

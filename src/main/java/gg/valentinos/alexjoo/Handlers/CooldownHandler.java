@@ -1,7 +1,7 @@
 package gg.valentinos.alexjoo.Handlers;
 
-import gg.valentinos.alexjoo.Data.Cooldown;
-import gg.valentinos.alexjoo.Data.PlayerCooldownsMap;
+import gg.valentinos.alexjoo.Data.CooldownData.Cooldown;
+import gg.valentinos.alexjoo.Data.CooldownData.PlayerCooldownsMap;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 
 import java.util.UUID;
@@ -18,6 +18,7 @@ public class CooldownHandler {
     }
 
     public void saveCooldowns() {
+        playerCooldownsMap.purgeCooldowns(); // Remove expired cooldowns before saving
         JsonUtils.toJsonFile(playerCooldownsMap.getPlayerCooldownsMap(), "cooldowns.json");
     }
 
@@ -29,7 +30,6 @@ public class CooldownHandler {
 
     public boolean isOnCooldown(UUID player, String query) {
         Cooldown cooldown = playerCooldownsMap.getCooldown(player, query);
-        saveCooldowns();
         return cooldown != null;
     }
 
@@ -38,7 +38,6 @@ public class CooldownHandler {
         if (cooldown == null) {
             return "00:00";
         }
-        saveCooldowns();
         return cooldown.getTimeLeft();
     }
 }

@@ -1,11 +1,11 @@
-package gg.valentinos.alexjoo.Data;
+package gg.valentinos.alexjoo.Data.ClanData;
 
 public class ClanMember {
     private String rankId;
     private long joinDate;
     private String name;
 
-    public ClanMember(String name, String rank){
+    public ClanMember(String name, String rank) {
         this.rankId = rank;
         this.joinDate = System.currentTimeMillis();
         this.name = name;
@@ -29,6 +29,5 @@ public class ClanMember {
     public String getName() {
         return name;
     }
-
 
 }

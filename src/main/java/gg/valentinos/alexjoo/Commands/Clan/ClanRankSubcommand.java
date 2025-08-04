@@ -2,8 +2,8 @@ package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
-import gg.valentinos.alexjoo.Data.Clan;
-import gg.valentinos.alexjoo.Data.ClanRank;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanRank;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.RankGui;
 import net.kyori.adventure.text.Component;
@@ -12,7 +12,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import static gg.valentinos.alexjoo.VClans.SendMessage;
 
@@ -32,16 +35,14 @@ public class ClanRankSubcommand extends SubCommand {
             if (args.length == 1) {
                 RankGui rankGui = new RankGui();
                 rankGui.openInventory(player);
-            }
-            else if (args.length == 2) {
+            } else if (args.length == 2) {
                 OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
                 ClanRank rank = clan.getRank(target.getUniqueId());
 
                 Component component = Component.text("Rank information for " + target.getName() + ":").append(Component.newline());
                 component = component.append(clan.getRankInfo(rank));
                 SendMessage(player, component, LogType.NULL);
-            }
-            else if (args.length == 3) {
+            } else if (args.length == 3) {
                 OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
                 clanHandler.assignRank(target.getUniqueId(), args[2]);
                 sendFormattedPredefinedMessage(sender, "success", LogType.INFO);
@@ -66,8 +67,7 @@ public class ClanRankSubcommand extends SubCommand {
 
         if (args.length == 1) {
             return List.of("rank");
-        }
-        else if (args.length == 2) {
+        } else if (args.length == 2) {
             List<UUID> memberUUIDs = clan.getMemberUUIDs();
             List<String> memberNames = new ArrayList<>();
             for (UUID uuid : memberUUIDs) {
@@ -77,8 +77,7 @@ public class ClanRankSubcommand extends SubCommand {
                 }
             }
             return memberNames;
-        }
-        else if (args.length == 3) {
+        } else if (args.length == 3) {
             return new ArrayList<>(clan.getRanks().keySet());
         }
         return List.of();
@@ -95,8 +94,7 @@ public class ClanRankSubcommand extends SubCommand {
                 return true;
             }
             return false;
-        }
-        else if (args.length > 1 && args.length <= maxArgs) {
+        } else if (args.length > 1 && args.length <= maxArgs) {
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
             if (!clan.isPlayerMember(target.getUniqueId())) {
                 // the target is not in this clan
@@ -150,10 +148,10 @@ public class ClanRankSubcommand extends SubCommand {
         if (sender instanceof Player player) {
             playerName = player.getName();
         }
-        if (args.length > 1){
+        if (args.length > 1) {
             targetName = args[1];
         }
-        if (args.length > 2){
+        if (args.length > 2) {
             rankName = args[2];
         }
         replacements.put("{player-name}", playerName);

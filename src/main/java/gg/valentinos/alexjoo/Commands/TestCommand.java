@@ -1,6 +1,6 @@
 package gg.valentinos.alexjoo.Commands;
 
-import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

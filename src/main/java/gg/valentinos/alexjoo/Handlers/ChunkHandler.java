@@ -1,7 +1,7 @@
 package gg.valentinos.alexjoo.Handlers;
 
-import gg.valentinos.alexjoo.Data.Clan;
-import gg.valentinos.alexjoo.Data.ClanChunk;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanChunk;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;

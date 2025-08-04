@@ -1,4 +1,4 @@
-package gg.valentinos.alexjoo.Data;
+package gg.valentinos.alexjoo.Data.ClanData;
 
 public class ClanChunk {
     private int x;

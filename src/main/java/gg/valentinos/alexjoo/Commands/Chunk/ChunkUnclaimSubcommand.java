@@ -2,7 +2,7 @@ package gg.valentinos.alexjoo.Commands.Chunk;
 
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
-import gg.valentinos.alexjoo.Data.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.VClans;

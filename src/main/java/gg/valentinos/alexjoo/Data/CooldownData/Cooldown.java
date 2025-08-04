@@ -1,4 +1,4 @@
-package gg.valentinos.alexjoo.Data;
+package gg.valentinos.alexjoo.Data.CooldownData;
 
 public class Cooldown {
     private String query;
@@ -47,6 +47,5 @@ public class Cooldown {
                 String.format("%02d:", minutes) +
                 String.format("%02d", seconds);
     }
-
 
 }

@@ -3,12 +3,16 @@ package gg.valentinos.alexjoo.Utility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import gg.valentinos.alexjoo.Data.Clan;
-import gg.valentinos.alexjoo.Data.Cooldown;
-import gg.valentinos.alexjoo.Data.PlayerCooldownsMap;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.CooldownData.Cooldown;
+import gg.valentinos.alexjoo.Data.CooldownData.PlayerCooldownsMap;
+import gg.valentinos.alexjoo.Data.WarData.War;
 import gg.valentinos.alexjoo.VClans;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -24,7 +28,7 @@ public class JsonUtils {
         }
     }
 
-    private static File readJsonFile(String fileName){
+    private static File readJsonFile(String fileName) {
         checkDataFolder();
 
         File jsonFile = new File(VClans.getInstance().getDataFolder(), fileName);
@@ -92,6 +96,22 @@ public class JsonUtils {
         }
 
         return clans;
+    }
+
+    public static HashSet<War> deserializeWars(String fileName) {
+        Type type = new TypeToken<HashSet<War>>() {
+        }.getType();
+        FileReader reader = null;
+        HashSet<War> wars;
+        try {
+            reader = new FileReader(readJsonFile(fileName));
+            wars = gson.fromJson(reader, type);
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return wars;
     }
 }
 
