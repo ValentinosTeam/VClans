@@ -21,6 +21,7 @@ public class Clan {
     private List<Integer> color;
     private int tier;
     private String prefix;
+    private long lastWarTime;
 
     public Clan(String id, UUID owner) {
         this.id = id;
@@ -243,6 +244,14 @@ public class Clan {
             }
         }
         return null;
+    }
+
+    //War logic
+    public long getLastWarTime() {
+        return lastWarTime;
+    }
+    public void setLastWarTime(long lastWarTime) {
+        this.lastWarTime = lastWarTime;
     }
 
     // Color logic

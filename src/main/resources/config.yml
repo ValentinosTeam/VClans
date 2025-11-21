@@ -13,9 +13,9 @@ settings:
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: 50 #     ... and respectively the lowest ...
   war:
-    grace-period: 60*60*24 # 24 hours, how long the clan has to prepare for war after a war declaration
-    war-duration: 60*60*4 # 7 hours, how long the war lasts after the grace period
-    war-cooldown: 60*60*24 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
+    grace-period: 100 # 24 hours, how long the clan has to prepare for war after a war declaration
+    war-duration: 300 # 7 hours, how long the war lasts after the grace period
+    war-cooldown: 10 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:

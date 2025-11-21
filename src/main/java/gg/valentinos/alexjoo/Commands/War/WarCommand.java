@@ -42,6 +42,10 @@ public class WarCommand implements CommandExecutor, TabCompleter {
             } else {
                 VClans.sendFormattedMessage(sender, "You are not currently in a war.", LogType.INFO);
             }
+            int timeSinceLastWar = VClans.getInstance().getWarHandler().getWarCooldown(playerClan);
+            if (timeSinceLastWar > 0) {
+                VClans.sendFormattedMessage(sender, "Your clan is on war cooldown for another " + timeSinceLastWar + " seconds.", LogType.INFO);
+            }
             return true;
         }
 

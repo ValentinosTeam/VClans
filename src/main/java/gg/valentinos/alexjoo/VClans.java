@@ -11,6 +11,7 @@ import gg.valentinos.alexjoo.Handlers.*;
 import gg.valentinos.alexjoo.Listeners.ChatListener;
 import gg.valentinos.alexjoo.Listeners.ChunkListener;
 import gg.valentinos.alexjoo.Listeners.PlayerListener;
+import gg.valentinos.alexjoo.Utility.TaskScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -37,6 +38,7 @@ public final class VClans extends JavaPlugin {
     private BlueMapHandler blueMapHandler = null;
     private WorldGuardHandler worldGuardHandler = null;
     private VaultHandler vaultHandler = null;
+    private TaskScheduler taskScheduler;
     private HashMap<String, String> defaultMessages;
 
     @Override
@@ -47,6 +49,8 @@ public final class VClans extends JavaPlugin {
 
         loadDefaultMessages();
 
+
+        taskScheduler = new TaskScheduler(this);
         vaultHandler = new VaultHandler();
         clanTierHandler = new ClanTierHandler();
         clanHandler = new ClanHandler();
@@ -119,6 +123,8 @@ public final class VClans extends JavaPlugin {
 
         defaultMessages = null;
 
+        taskScheduler = null;
+
         instance = null;
 
         getLogger().info("vClans has been disabled.");
@@ -135,8 +141,7 @@ public final class VClans extends JavaPlugin {
             switch (type) {
                 case FINE -> getInstance().getLogger().fine("Sending message to " + player.getName() + ": " + text);
                 case INFO -> getInstance().getLogger().info("Sending message to " + player.getName() + ": " + text);
-                case WARNING ->
-                        getInstance().getLogger().warning("Sending message to " + player.getName() + ": " + text);
+                case WARNING -> getInstance().getLogger().warning("Sending message to " + player.getName() + ": " + text);
                 case SEVERE -> getInstance().getLogger().severe("Sending message to " + player.getName() + ": " + text);
             }
         }
@@ -208,6 +213,9 @@ public final class VClans extends JavaPlugin {
     }
     public WarHandler getWarHandler() {
         return warHandler;
+    }
+    public TaskScheduler getTaskScheduler() {
+        return taskScheduler;
     }
 
     public String getDefaultMessage(String key) {

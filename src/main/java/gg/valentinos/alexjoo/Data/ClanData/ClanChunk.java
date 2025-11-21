@@ -1,16 +1,22 @@
 package gg.valentinos.alexjoo.Data.ClanData;
 
+import gg.valentinos.alexjoo.Data.WarData.ChunkOccupationState;
+
 public class ClanChunk {
     private int x;
     private int z;
     private String world;
     private String clanId;
+    private ChunkOccupationState occupationState;
+    private int occupationProgress;
 
     public ClanChunk(int x, int z, String world, String clanId) {
         this.x = x;
         this.z = z;
         this.clanId = clanId;
         this.world = world;
+        this.occupationState = ChunkOccupationState.SECURED;
+        this.occupationProgress = 0;
     }
 
     public int getX() {
@@ -36,5 +42,17 @@ public class ClanChunk {
     }
     public void setClanId(String clanId) {
         this.clanId = clanId;
+    }
+    public ChunkOccupationState getOccupationState() {
+        return occupationState;
+    }
+    public void setOccupationState(ChunkOccupationState occupationState) {
+        this.occupationState = occupationState;
+    }
+    public int getOccupationProgress() {
+        return occupationProgress;
+    }
+    public void setOccupationProgress(int occupationProgress) {
+        this.occupationProgress = occupationProgress;
     }
 }

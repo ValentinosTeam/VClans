@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class WarDeclareSubcommand extends SubCommand {
     public WarDeclareSubcommand() {
-        super("war", "declare", List.of("success", "clan-in-war", "declare-self"));
+        super("war", "declare", List.of("success", "initiator-clan-notification", "clan-in-war", "target-clan-notification", "declare-self"));
         hasToBePlayer = true;
         requiredArgs = 2;
     }
@@ -28,12 +28,13 @@ public class WarDeclareSubcommand extends SubCommand {
             Clan targetClan = clanHandler.joinClan(player.getUniqueId(), targetClanId);
             warHandler.declareWar(playerClan, targetClan);
             for (Player onlinePlayer : playerClan.getOnlinePlayers()) {
-                sendFormattedPredefinedMessage(onlinePlayer, "success", LogType.INFO);
+                if (onlinePlayer == player) continue;
+                sendFormattedPredefinedMessage(onlinePlayer, "initiator-clan-notification", LogType.INFO);
             }
             for (Player onlinePlayer : targetClan.getOnlinePlayers()) {
-                sendFormattedPredefinedMessage(onlinePlayer, "success", LogType.INFO);
+                sendFormattedPredefinedMessage(onlinePlayer, "target-clan-notification", LogType.INFO);
             }
-            sendFormattedMessage(player, "You have successfully declared war on " + targetClan.getId() + ".");
+            sendFormattedPredefinedMessage(player, "success", LogType.INFO);
         };
     }
     @Override
@@ -41,8 +42,12 @@ public class WarDeclareSubcommand extends SubCommand {
         if (args.length == 1) {
             return List.of("declare");
         } else if (args.length == 2) {
+            if (!(sender instanceof Player player)) return List.of();
+            Clan playerClan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
+            if (playerClan == null) return List.of();
             return VClans.getInstance().getClanHandler().getClans().getClans().stream()
                     .filter(clan -> VClans.getInstance().getWarHandler().inWar(clan) == null)
+                    .filter(clan -> clan != playerClan)
                     .map(Clan::getId).toList();
         } else {
             return List.of();
@@ -53,8 +58,13 @@ public class WarDeclareSubcommand extends SubCommand {
         Player player = (Player) sender;
         Clan clan = clanHandler.getClanByMember(player.getUniqueId());
         String targetClanId = args[1];
+        Clan targetClan = clanHandler.getClanById(targetClanId);
         if (clan == null) {
             sendFormattedPredefinedMessage(sender, "not-in-clan", LogType.WARNING);
+            return true;
+        }
+        if (targetClan == null) {
+            sendFormattedPredefinedMessage(sender, "clan-not-found", LogType.WARNING);
             return true;
         }
         String clanName = clan.getId();
@@ -71,7 +81,14 @@ public class WarDeclareSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "clan-in-war", LogType.WARNING);
             return true;
         }
-        //TODO: check if the clan or the target clan is on cooldown from war
+        if (warHandler.getWarCooldown(clan) > 0) {
+            sendFormattedMessage(sender, "Your clan is on a war cooldown. Please wait before declaring another war.", LogType.WARNING);
+            return true;
+        }
+        if (warHandler.getWarCooldown(targetClan) > 0) {
+            sendFormattedMessage(sender, "The target clan is on a war cooldown. You cannot declare war on them at this time.", LogType.WARNING);
+            return true;
+        }
         return false;
     }
     @Override

@@ -240,6 +240,18 @@ public class ChunkHandler {
 
         return VClans.getInstance().getVaultHandler().getPlayerBalance(player) >= getNewChunkPrice(clan);
     }
+    public List<Player> getPlayersInChunk(ClanChunk clanChunk) {
+        List<Player> playersInChunk = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getWorld().getName().equals(WORLD_NAME)) {
+                Chunk playerChunk = player.getChunk();
+                if (playerChunk.getX() == clanChunk.getX() && playerChunk.getZ() == clanChunk.getZ()) {
+                    playersInChunk.add(player);
+                }
+            }
+        }
+        return playersInChunk;
+    }
 
     public List<ClanChunk> getAdjacentChunks(int x, int z, boolean includeCorners) {
         List<ClanChunk> adjacentChunks = new ArrayList<>();
@@ -270,6 +282,9 @@ public class ChunkHandler {
             if (chunk != null) adjacentChunks.add(chunk);
         }
         return adjacentChunks;
+    }
+    public List<ClanChunk> getAdjacentChunks(ClanChunk clanChunk, boolean includeCorners) {
+        return getAdjacentChunks(clanChunk.getX(), clanChunk.getZ(), includeCorners);
     }
 
     private void addChunk(ClanChunk chunk, Clan clan) {

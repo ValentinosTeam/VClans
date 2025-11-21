@@ -3,7 +3,8 @@ package gg.valentinos.alexjoo.Data.WarData;
 public enum WarState {
     DECLARED,
     IN_PROGRESS,
-    ENDED;
+    ENDED,
+    ;
 
     public String getDisplayName() {
         return switch (this) {
