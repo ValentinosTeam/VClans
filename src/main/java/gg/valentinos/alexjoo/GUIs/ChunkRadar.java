@@ -59,12 +59,12 @@ public class ChunkRadar {
                 int x = posX + dx;
                 int z = posZ + dz;
                 TextColor color = null;
-                String clanName = chunkHandler.getClanNameByChunk(x, z);
+                String clanName = chunkHandler.getClanIdByChunk(x, z);
                 if (clanName != null) {
                     Clan clan = clanHandler.getClanById(clanName);
                     color = TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2));
                 }
-                if (worldGuardHandler.isChunkOverlappingWithRegion(x, z)) {
+                if (worldGuardHandler != null && worldGuardHandler.isChunkOverlappingWithRegion(x, z)) {
                     color = TextColor.color(worldGuardHandler.getColor().getRed(), worldGuardHandler.getColor().getGreen(), worldGuardHandler.getColor().getBlue());
                 }
 

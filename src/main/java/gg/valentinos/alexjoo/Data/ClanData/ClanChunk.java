@@ -2,6 +2,8 @@ package gg.valentinos.alexjoo.Data.ClanData;
 
 import gg.valentinos.alexjoo.Data.WarData.ChunkOccupationState;
 
+import static gg.valentinos.alexjoo.VClans.Log;
+
 public class ClanChunk {
     private int x;
     private int z;
@@ -47,12 +49,14 @@ public class ClanChunk {
         return occupationState;
     }
     public void setOccupationState(ChunkOccupationState occupationState) {
+        Log("(" + x + ", " + z + ") " + clanId + " occupation: " + occupationState + " progress: " + occupationProgress);
         this.occupationState = occupationState;
     }
     public int getOccupationProgress() {
         return occupationProgress;
     }
     public void setOccupationProgress(int occupationProgress) {
+        Log("(" + x + ", " + z + ") " + clanId + " occupation: " + occupationState + " progress: " + occupationProgress);
         this.occupationProgress = occupationProgress;
     }
 }

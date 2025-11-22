@@ -58,10 +58,10 @@ public final class VClans extends JavaPlugin {
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();
-        if (!worldGuardHandler.enable()) {
+
+        if (worldGuardHandler == null || !worldGuardHandler.enable()) {
             Log("Something went really wrong when enabling the WorldGuard plugin", LogType.SEVERE);
         }
-
 
         if (!setupBlueMap()) {
             Log("BlueMap plugin not found, download bluemap if you want to see the chunks in the browser!", LogType.WARNING);
@@ -97,7 +97,7 @@ public final class VClans extends JavaPlugin {
     @Override
     public void onLoad() {
         if (!setupWorldGuard()) {
-            Log("WorldGuard plugin not found. This plugin has support for it, just so u know :)", LogType.WARNING);
+//            Log("WorldGuard plugin not found. This plugin has support for it, just so u know :)", LogType.WARNING);
         }
     }
 

@@ -1,8 +1,13 @@
 package gg.valentinos.alexjoo.Listeners;
 
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanChunk;
+import gg.valentinos.alexjoo.Data.WarData.ChunkOccupationState;
+import gg.valentinos.alexjoo.Data.WarData.War;
+import gg.valentinos.alexjoo.Data.WarData.WarState;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
+import gg.valentinos.alexjoo.Handlers.WarHandler;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -35,12 +40,14 @@ import java.util.Objects;
 public class ChunkListener implements Listener {
     private final ChunkHandler chunkHandler;
     private final ClanHandler clanHandler;
+    private final WarHandler warHandler;
     private static final TextColor RED = TextColor.color(255, 70, 70);
     private static final TextColor GREEN = TextColor.color(70, 255, 70);
 
     public ChunkListener() {
         this.chunkHandler = VClans.getInstance().getChunkHandler();
         this.clanHandler = VClans.getInstance().getClanHandler();
+        this.warHandler = VClans.getInstance().getWarHandler();
     }
 
     @EventHandler
@@ -56,8 +63,8 @@ public class ChunkListener implements Listener {
     }
 
     private void enterExitNotification(Player player, Chunk fromChunk, Chunk toChunk) {
-        String fromClanName = chunkHandler.getClanNameByChunk(fromChunk);
-        String toClanName = chunkHandler.getClanNameByChunk(toChunk);
+        String fromClanName = chunkHandler.getClanIdByChunk(fromChunk);
+        String toClanName = chunkHandler.getClanIdByChunk(toChunk);
         TextColor color = TextColor.color(125, 125, 125);
         if (toClanName != null) {
             Clan toClan = clanHandler.getClanById(toClanName);
@@ -102,13 +109,12 @@ public class ChunkListener implements Listener {
     private boolean shouldBlockPlayerInteraction(Chunk chunk, Player player) {
         if (player.isOp()) return false;
         // helper method for all the player related events
-        String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
-        if (chunkClanName != null) {
-            Clan chunkClan = clanHandler.getClanById(chunkClanName);
-            if (chunkClan != null && !chunkClan.isPlayerMember(player.getUniqueId())) {
+        String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
+        if (chunkClanName == null) return false;
+        Clan chunkClan = clanHandler.getClanById(chunkClanName);
+        if (chunkClan != null && !chunkClan.isPlayerMember(player.getUniqueId())) {
 //                player.sendMessage(Component.text("You cannot interact with this territory").color(RED));
-                return true;
-            }
+            return !isChunkCompromised(chunk);
         }
         return false;
     }
@@ -162,7 +168,7 @@ public class ChunkListener implements Listener {
             event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
         } else {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
+            String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
             if (chunkClanName != null) {
                 event.setCancelled(true);
             }
@@ -207,13 +213,13 @@ public class ChunkListener implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         Entity target = event.getEntity();
         Chunk chunk = target.getLocation().getChunk();
-        String chunkClan = chunkHandler.getClanNameByChunk(chunk);
+        Clan chunkClan = chunkHandler.getClanByChunk(chunk);
         if (chunkClan == null) return;
 
-        // dont protect ppl who dont belong
         if (target instanceof Player targetPlayer) {
+            // dont protect ppl who dont belong to the clan
             Clan clan = clanHandler.getClanByMember(targetPlayer.getUniqueId());
-            if (clan == null || !Objects.equals(clan.getId(), chunkClan)) {
+            if (clan == null || !clan.getId().equals(chunkClan.getId())) {
                 return;
             }
         }
@@ -230,7 +236,8 @@ public class ChunkListener implements Listener {
         DamageSource source = event.getDamageSource();
         Entity damager = source.getCausingEntity();
         if (damager instanceof Player player) {
-            if (clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan)) return;
+            if (clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan.getId())) return;
+            if (isInWar(chunk)) return;
             event.setCancelled(true);
         }
     }
@@ -241,7 +248,7 @@ public class ChunkListener implements Listener {
         List<Block> blocks = event.blockList();
         blocks.removeIf(block -> {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
+            String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
             return chunkClanName != null; // Remove blocks in claimed chunks
         });
     }
@@ -294,7 +301,7 @@ public class ChunkListener implements Listener {
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
         Entity remover = event.getRemover();
         Chunk chunk = event.getEntity().getChunk();
-        String chunkClan = chunkHandler.getClanNameByChunk(chunk);
+        String chunkClan = chunkHandler.getClanIdByChunk(chunk);
 
         if (chunkClan == null) return;
 
@@ -314,8 +321,8 @@ public class ChunkListener implements Listener {
         // forbid liquid flow from outside into a claimed territory
         Chunk fromChunk = event.getBlock().getChunk();
         Chunk toChunk = event.getToBlock().getChunk();
-        String fromClanName = chunkHandler.getClanNameByChunk(fromChunk);
-        String toClanName = chunkHandler.getClanNameByChunk(toChunk);
+        String fromClanName = chunkHandler.getClanIdByChunk(fromChunk);
+        String toClanName = chunkHandler.getClanIdByChunk(toChunk);
         if (fromClanName == null && toClanName != null) {
             event.setCancelled(true);
         }
@@ -325,7 +332,7 @@ public class ChunkListener implements Listener {
     public void onBlockBurn(BlockBurnEvent event) {
         // block fire or lava from destroying blocks (does not apply to ice smelting)
         Chunk chunk = event.getBlock().getChunk();
-        String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
+        String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
         if (chunkClanName != null) {
             event.setCancelled(true);
         }
@@ -337,7 +344,7 @@ public class ChunkListener implements Listener {
         List<Block> blocks = event.blockList();
         blocks.removeIf(block -> {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanNameByChunk(chunk);
+            String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
             return chunkClanName != null; // Remove blocks in claimed chunks
         });
     }
@@ -346,11 +353,11 @@ public class ChunkListener implements Listener {
     public void onTreeGrow(StructureGrowEvent event) {
         // removes blocks that would grow from outside claimed chunk inside (sapling -> tree, mushroom -> big mushroom)
         Chunk saplingChunk = event.getLocation().getChunk();
-        String clanName = chunkHandler.getClanNameByChunk(saplingChunk);
+        String clanName = chunkHandler.getClanIdByChunk(saplingChunk);
         if (clanName != null) return;
         event.getBlocks().removeIf(blockState -> {
             Chunk chunk = blockState.getLocation().getChunk();
-            String targetClan = chunkHandler.getClanNameByChunk(chunk);
+            String targetClan = chunkHandler.getClanIdByChunk(chunk);
             return targetClan != null;
         });
     }
@@ -369,22 +376,40 @@ public class ChunkListener implements Listener {
     }
 
     private boolean blockPistonEvent(Block piston, List<Block> affectedBlocks, BlockFace direction) {
-        if (chunkHandler.getClanNameByChunk(piston.getChunk()) == null) {
+        if (chunkHandler.getClanIdByChunk(piston.getChunk()) == null) {
             Block pistonHead = piston.getRelative(direction);
-            if (chunkHandler.getClanNameByChunk(pistonHead.getChunk()) != null) {
+            if (chunkHandler.getClanIdByChunk(pistonHead.getChunk()) != null) {
                 return true;
             }
             for (Block block : affectedBlocks) {
-                if (chunkHandler.getClanNameByChunk(block.getChunk()) != null) {
+                if (chunkHandler.getClanIdByChunk(block.getChunk()) != null) {
                     return true;
                 } else {
                     Block relativeBlock = block.getRelative(direction);
-                    if (chunkHandler.getClanNameByChunk(relativeBlock.getChunk()) != null) {
+                    if (chunkHandler.getClanIdByChunk(relativeBlock.getChunk()) != null) {
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+    private static boolean isInWar(Chunk chunk) {
+        Clan clan = VClans.getInstance().getChunkHandler().getClanByChunk(chunk);
+        War war = VClans.getInstance().getWarHandler().getWar(clan);
+        if (war != null) {
+            if (war.getState() == WarState.IN_PROGRESS) return true;
+            if (war.getState() == WarState.DECLARED) return true;
+        }
+        return false;
+    }
+    private static boolean isChunkCompromised(Chunk chunk) {
+        Clan clan = VClans.getInstance().getChunkHandler().getClanByChunk(chunk);
+        War war = VClans.getInstance().getWarHandler().getWar(clan);
+        if (war == null) return false;
+        if (war.getState() != WarState.IN_PROGRESS) return false;
+        ClanChunk clanChunk = clan.getChunkByLocation(chunk.getX(), chunk.getZ());
+        if (clanChunk == null) return false;
+        return clanChunk.getOccupationState() == ChunkOccupationState.CAPTURED;
     }
 }

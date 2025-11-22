@@ -43,7 +43,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         switch (chunk.getOccupationState()) {
             case SECURED -> {
                 // if secured, then if there is a chunk that is not part of the clan or is captured by the attacker clan, change to controlled
-                if (!shouldBeSecured(chunk)) {
+                if (!VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
                     chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
                     chunk.setOccupationProgress(MAX_DEFENCE_HP);
                 }
@@ -110,7 +110,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
                 if (playersInChunk.containsKey(defenderClan.getId()) && !playersInChunk.containsKey(attackerClan.getId())) {
                     int newProgress = chunk.getOccupationProgress() + PROGRESS_INCREMENT; // Example progress increment
                     if (newProgress >= MAX_DEFENCE_HP) {
-                        if (shouldBeSecured(chunk)) {
+                        if (VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
                             chunk.setOccupationState(ChunkOccupationState.SECURED);
                         } else {
                             chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
@@ -148,17 +148,5 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         }
         return playersInChunk;
     }
-    private static boolean shouldBeSecured(ClanChunk chunk) {
-        List<ClanChunk> adjacentChunks = VClans.getInstance().getChunkHandler().getAdjacentChunks(chunk, false);
-        if (adjacentChunks.size() < 4) {
-            return false;
-        } else {
-            for (ClanChunk adjacentChunk : adjacentChunks) {
-                if (adjacentChunk.getOccupationState() == ChunkOccupationState.CAPTURED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+
 }

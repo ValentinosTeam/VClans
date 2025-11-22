@@ -25,7 +25,7 @@ public class WarDeclareSubcommand extends SubCommand {
 
         return () -> {
             Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
-            Clan targetClan = clanHandler.joinClan(player.getUniqueId(), targetClanId);
+            Clan targetClan = clanHandler.getClanById(targetClanId);
             warHandler.declareWar(playerClan, targetClan);
             for (Player onlinePlayer : playerClan.getOnlinePlayers()) {
                 if (onlinePlayer == player) continue;

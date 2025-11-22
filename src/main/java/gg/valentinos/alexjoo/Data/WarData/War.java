@@ -49,6 +49,7 @@ public class War {
 
     private void declareWar() {
         Log("Declaring war.");
+        resetChunkOccupationStates();
         state = WarState.DECLARED;
         scheduler.runTaskLater(this::startWar, warHandler.GRACE_PERIOD * 20);
     }
@@ -72,6 +73,28 @@ public class War {
         Clan targetClan = clanHandler.getClanById(targetClanId);
         initiatorClan.setLastWarTime(System.currentTimeMillis());
         targetClan.setLastWarTime(System.currentTimeMillis());
+        resetChunkOccupationStates();
+    }
+
+    private void resetChunkOccupationStates() {
+        Clan initiatorClan = clanHandler.getClanById(initiatorClanId);
+        Clan targetClan = clanHandler.getClanById(targetClanId);
+        for (ClanChunk chunk : initiatorClan.getChunks()) {
+            if (VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
+                chunk.setOccupationState(ChunkOccupationState.SECURED);
+            } else {
+                chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
+            }
+            chunk.setOccupationProgress(VClans.getInstance().getWarHandler().MAX_DEFENCE_HP);
+        }
+        for (ClanChunk chunk : targetClan.getChunks()) {
+            if (VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
+                chunk.setOccupationState(ChunkOccupationState.SECURED);
+            } else {
+                chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
+            }
+            chunk.setOccupationProgress(VClans.getInstance().getWarHandler().MAX_DEFENCE_HP);
+        }
     }
 
 

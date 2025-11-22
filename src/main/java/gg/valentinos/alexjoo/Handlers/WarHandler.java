@@ -9,6 +9,7 @@ import gg.valentinos.alexjoo.Utility.JsonUtils;
 import gg.valentinos.alexjoo.Utility.TaskScheduler;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 
@@ -66,6 +67,39 @@ public class WarHandler {
         } else {
             return (int) (WAR_COOLDOWN - timeSinceLastWar);
         }
+    }
+    public War getWar(Clan clan) {
+        if (clan == null) return null;
+        String clanId = clan.getId();
+        for (War war : wars.getWars()) {
+            if (war.getTargetClanId().equals(clanId) || war.getInitiatorClanId().equals(clanId)) return war;
+        }
+        return null;
+    }
+    public War getWarBetween(Player player, Clan clan) {
+        Clan playerClan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
+        if (playerClan == null) return null;
+        if (clan == null) return null;
+        if (playerClan.equals(clan)) return null;
+        String playerClanId = playerClan.getId();
+        String clanId = clan.getId();
+        for (War war : wars.getWars()) {
+            if ((war.getTargetClanId().equals(playerClanId) || war.getInitiatorClanId().equals(playerClanId)) &&
+                    (war.getTargetClanId().equals(clanId) || war.getInitiatorClanId().equals(clanId))) {
+                return war;
+            }
+        }
+        return null;
+    }
+    public boolean isInWarWith(Player player, Clan clan) {
+        return getWarBetween(player, clan) != null;
+    }
+    public boolean isInWar(Player player) {
+        Clan playerClan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
+        return isInWar(playerClan);
+    }
+    public boolean isInWar(Clan clan) {
+        return getWar(clan) != null;
     }
 
     private void changeWarState(War war, WarState newState, long delayTicks) {

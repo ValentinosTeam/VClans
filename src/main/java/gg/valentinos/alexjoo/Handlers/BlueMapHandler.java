@@ -57,7 +57,7 @@ public class BlueMapHandler {
     }
 
     public void drawAllWorldGuardRegions() {
-        if (!VClans.getInstance().getWorldGuardHandler().isEnabled()) return;
+        if (VClans.getInstance().getWorldGuardHandler() == null) return;
         if (markerSet == null) return;
         Map<String, ProtectedRegion> regionsMap = VClans.getInstance().getWorldGuardHandler().getRegions();
         for (Map.Entry<String, ProtectedRegion> regionEntry : regionsMap.entrySet()) {
