@@ -34,8 +34,7 @@ public class ClanHandler {
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully created a clan with name " + name);
         return clan;
     }
-    public void disbandClan(UUID playerUUID) {
-        Clan clan = getClanByMember(playerUUID);
+    public void disbandClan(Clan clan) {
         VClans.getInstance().getChunkHandler().unclaimChunks(clan.getId());
         clans.getClans().remove(clan);
         saveClans();
@@ -43,6 +42,10 @@ public class ClanHandler {
         if (blueMapHandler != null) {
             blueMapHandler.removeClanTerritory(clan);
         }
+    }
+    public void disbandClan(UUID playerUUID) {
+        Clan clan = getClanByMember(playerUUID);
+        disbandClan(clan);
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getId());
     }
     public void invitePlayer(UUID playerUUID, String targetName) {
@@ -104,6 +107,7 @@ public class ClanHandler {
         if (blueMapHandler != null) {
             blueMapHandler.drawClanTerritory(clan);
         }
+        VClans.getInstance().getChunkHandler().updateChunkRadarForAll();
     }
     public void upgradeClan(Clan clan) {
         clan.setTier(clan.getTier() + 1);

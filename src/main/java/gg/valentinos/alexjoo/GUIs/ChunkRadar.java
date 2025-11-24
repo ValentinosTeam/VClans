@@ -1,8 +1,11 @@
 package gg.valentinos.alexjoo.GUIs;
 
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanChunk;
+import gg.valentinos.alexjoo.Data.WarData.War;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
+import gg.valentinos.alexjoo.Handlers.WarHandler;
 import gg.valentinos.alexjoo.Handlers.WorldGuardHandler;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
@@ -17,6 +20,7 @@ public class ChunkRadar {
     private final ChunkHandler chunkHandler;
     private final ClanHandler clanHandler;
     private final WorldGuardHandler worldGuardHandler;
+    private final WarHandler warHandler;
     private final Player player;
     private final ScoreboardManager manager;
     private Scoreboard scoreboard;
@@ -32,6 +36,7 @@ public class ChunkRadar {
         this.chunkHandler = VClans.getInstance().getChunkHandler();
         this.clanHandler = VClans.getInstance().getClanHandler();
         this.worldGuardHandler = VClans.getInstance().getWorldGuardHandler();
+        this.warHandler = VClans.getInstance().getWarHandler();
         this.player = player;
         this.manager = Bukkit.getScoreboardManager();
     }
@@ -62,7 +67,21 @@ public class ChunkRadar {
                 String clanName = chunkHandler.getClanIdByChunk(x, z);
                 if (clanName != null) {
                     Clan clan = clanHandler.getClanById(clanName);
-                    color = TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2));
+                    if (warHandler.isInWar(clan)) {
+                        War war = warHandler.getWar(clan);
+                        ClanChunk clanChunk = clan.getChunkByLocation(x, z);
+                        if (clanChunk != null && clanChunk.getIsLost()) {
+                            Clan otherClan;
+                            String otherClanId = warHandler.getWar(clan).getInitiatorClanId();
+                            if (otherClanId.equals(clan.getId())) otherClan = clanHandler.getClanById(war.getTargetClanId());
+                            else otherClan = clanHandler.getClanById(war.getInitiatorClanId());
+                            color = TextColor.color(otherClan.getColor().get(0), otherClan.getColor().get(1), otherClan.getColor().get(2));
+                        } else {
+                            color = TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2));
+                        }
+                    } else {
+                        color = TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2));
+                    }
                 }
                 if (worldGuardHandler != null && worldGuardHandler.isChunkOverlappingWithRegion(x, z)) {
                     color = TextColor.color(worldGuardHandler.getColor().getRed(), worldGuardHandler.getColor().getGreen(), worldGuardHandler.getColor().getBlue());
@@ -70,15 +89,15 @@ public class ChunkRadar {
 
                 if (x == posX && z == posZ) {
                     if (color == null) {
-                        row = row.append(Component.text(emptyCenterSymbol).color(NO_CLAN_CHUNK_COLOR)); // gray
+                        row = row.append(Component.text(emptyCenterSymbol).color(NO_CLAN_CHUNK_COLOR));
                     } else {
-                        row = row.append(Component.text(occupiedCenterSymbol).color(color)); // dark green
+                        row = row.append(Component.text(occupiedCenterSymbol).color(color));
                     }
                 } else {
                     if (color == null) {
-                        row = row.append(Component.text(emptyRadarSymbol).color(NO_CLAN_CHUNK_COLOR)); // white
+                        row = row.append(Component.text(emptyRadarSymbol).color(NO_CLAN_CHUNK_COLOR));
                     } else {
-                        row = row.append(Component.text(occupiedRadarSymbol).color(color)); // dark green
+                        row = row.append(Component.text(occupiedRadarSymbol).color(color));
                     }
                 }
             }
@@ -92,6 +111,11 @@ public class ChunkRadar {
         }
         player.setScoreboard(scoreboard);
     }
+    public void updateRadar() {
+        Chunk chunk = player.getChunk();
+        updateRadar(chunk);
+    }
+
     public void closeRadar() {
         player.setScoreboard(manager.getNewScoreboard());
     }

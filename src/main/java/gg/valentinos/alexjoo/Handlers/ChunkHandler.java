@@ -3,7 +3,6 @@ package gg.valentinos.alexjoo.Handlers;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanChunk;
 import gg.valentinos.alexjoo.Data.LogType;
-import gg.valentinos.alexjoo.Data.WarData.ChunkOccupationState;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.Bukkit;
@@ -120,6 +119,11 @@ public class ChunkHandler {
             } else {
                 radar.updateRadar(chunk);
             }
+        }
+    }
+    public void updateChunkRadarForAll() {
+        for (ChunkRadar radar : radars.values()) {
+            radar.updateRadar();
         }
     }
 
@@ -255,7 +259,7 @@ public class ChunkHandler {
             return false;
         } else {
             for (ClanChunk adjacentChunk : adjacentChunks) {
-                if (adjacentChunk.getOccupationState() == ChunkOccupationState.CAPTURED) {
+                if (adjacentChunk.getIsLost()) {
                     return false;
                 }
             }

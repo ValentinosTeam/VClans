@@ -1,6 +1,7 @@
 package gg.valentinos.alexjoo.Data.ClanData;
 
 import gg.valentinos.alexjoo.Data.WarData.ChunkOccupationState;
+import gg.valentinos.alexjoo.VClans;
 
 import static gg.valentinos.alexjoo.VClans.Log;
 
@@ -11,6 +12,7 @@ public class ClanChunk {
     private String clanId;
     private ChunkOccupationState occupationState;
     private int occupationProgress;
+    private boolean isLost;
 
     public ClanChunk(int x, int z, String world, String clanId) {
         this.x = x;
@@ -50,6 +52,17 @@ public class ClanChunk {
     }
     public void setOccupationState(ChunkOccupationState occupationState) {
         Log("(" + x + ", " + z + ") " + clanId + " occupation: " + occupationState + " progress: " + occupationProgress);
+        switch (occupationState) {
+            case ChunkOccupationState.SECURED,
+                 ChunkOccupationState.CONTROLLED -> {
+                setIstLost(false);
+                VClans.getInstance().getChunkHandler().updateChunkRadarForAll();
+            }
+            case ChunkOccupationState.CAPTURED -> {
+                setIstLost(true);
+                VClans.getInstance().getChunkHandler().updateChunkRadarForAll();
+            }
+        }
         this.occupationState = occupationState;
     }
     public int getOccupationProgress() {
@@ -58,5 +71,11 @@ public class ClanChunk {
     public void setOccupationProgress(int occupationProgress) {
         Log("(" + x + ", " + z + ") " + clanId + " occupation: " + occupationState + " progress: " + occupationProgress);
         this.occupationProgress = occupationProgress;
+    }
+    public boolean getIsLost() {
+        return isLost;
+    }
+    public void setIstLost(boolean isLost) {
+        this.isLost = isLost;
     }
 }
