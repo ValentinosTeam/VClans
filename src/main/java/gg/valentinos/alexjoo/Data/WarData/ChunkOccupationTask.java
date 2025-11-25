@@ -14,17 +14,16 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static gg.valentinos.alexjoo.VClans.Log;
-
 public class ChunkOccupationTask implements Consumer<BukkitTask> {
 
     private record PlayerDiff(List<Player> left, List<Player> joined) {
     }
 
-    private enum Side {
+    private enum Team {
         ATTACKERS,
         DEFENDERS,
-        NONE
+        BOTH,
+        NEITHER
     }
 
     private final War war;
@@ -33,8 +32,8 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
     private final ClanChunk chunk;
     private final ChunkHandler chunkHandler;
 
-    private final int MAX_DEFENCE_HP;
-    private final int PROGRESS_INCREMENT;
+    private final int CHUNK_HEALTH_POINTS;
+    private final int CHUNK_OCCUPATION_DAMAGE;
 
     private Map<String, List<Player>> playersInChunk;
     private BossBar bossBar;
@@ -46,14 +45,13 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         this.chunk = chunk;
         this.chunkHandler = VClans.getInstance().getChunkHandler();
 
-        this.MAX_DEFENCE_HP = VClans.getInstance().getWarHandler().MAX_DEFENCE_HP;
-
-        PROGRESS_INCREMENT = 5; //TODO: make configurable
+        this.CHUNK_HEALTH_POINTS = VClans.getInstance().getWarHandler().CHUNK_HEALTH_POINTS;
+        this.CHUNK_OCCUPATION_DAMAGE = VClans.getInstance().getWarHandler().CHUNK_OCCUPATION_DAMAGE;
 
         this.playersInChunk = new HashMap<>();
 
         Component name = Component.text(chunk.getOccupationState().name());
-        float progress = (float) chunk.getOccupationProgress() / MAX_DEFENCE_HP;
+        float progress = (float) chunk.getOccupationProgress() / CHUNK_HEALTH_POINTS;
         this.bossBar = BossBar.bossBar(name, progress, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_20);
     }
 
@@ -63,13 +61,8 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         playersInChunk = getPlayersInChunk(chunk);
         PlayerDiff playerDiff = getChunkDiff(previousPlayersInChunk, playersInChunk);
 
-        if (war.getState() != WarState.IN_PROGRESS) {
-            Log("war ended hiding boss bar");
-            List<Player> players = new ArrayList<>();
-            for (List<Player> list : playersInChunk.values()) players.addAll(list);
-            Audience playerAudience = Audience.audience(players);
-            playerAudience.hideBossBar(bossBar);
-            bossBar = null;
+        if (war.getState() == WarState.ENDED) {
+            stopTask();
             bukkitTask.cancel();
             return;
         }
@@ -79,75 +72,72 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
     }
 
     private void handleChunkOccupation() {
-        switch (chunk.getOccupationState()) {
-            case SECURED -> {
-                if (!chunkHandler.chunkShouldBeSecured(chunk)) {
-                    chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
-                    chunk.setOccupationProgress(MAX_DEFENCE_HP);
-                }
-            }
-            case CONTROLLED -> {
-                if (chunkHandler.chunkShouldBeSecured(chunk)) {
-                    chunk.setOccupationState(ChunkOccupationState.SECURED);
-                    chunk.setOccupationProgress(MAX_DEFENCE_HP);
-                } else if (getMajoritySide() == Side.ATTACKERS) {
-                    chunk.setOccupationState(ChunkOccupationState.CAPTURING);
-                }
-            }
-            case CAPTURING -> {
-                if (chunkHandler.chunkShouldBeSecured(chunk)) {
-                    chunk.setOccupationState(ChunkOccupationState.SECURED);
-                    chunk.setOccupationProgress(MAX_DEFENCE_HP);
-                } else if (getMajoritySide() == Side.ATTACKERS) {
-                    int newProgress = chunk.getOccupationProgress() - PROGRESS_INCREMENT; // Example progress increment
-                    if (newProgress <= 0) {
-                        chunk.setOccupationState(ChunkOccupationState.CAPTURED);
-                        war.checkWarEndCondition();
-                        chunk.setOccupationProgress(0);
-                    } else {
-                        chunk.setOccupationProgress(newProgress);
+        if (chunk.getOccupationState() != ChunkOccupationState.SECURED && chunkHandler.chunkShouldBeSecured(chunk)) {
+            chunk.setOccupationState(ChunkOccupationState.SECURED);
+            chunk.setOccupationProgress(CHUNK_HEALTH_POINTS);
+        } else {
+            switch (chunk.getOccupationState()) {
+                case SECURED -> {
+                    if (!chunkHandler.chunkShouldBeSecured(chunk)) {
+                        chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
+                        chunk.setOccupationProgress(CHUNK_HEALTH_POINTS);
                     }
-                } else if (getMajoritySide() == Side.DEFENDERS) {
-                    chunk.setOccupationState(ChunkOccupationState.LIBERATING);
-                } else if (getMajoritySide() == Side.NONE) {
-                    chunk.setOccupationState(ChunkOccupationState.CONTESTED);
                 }
-            }
-            case CAPTURED -> {
-                if (getMajoritySide() == Side.DEFENDERS) {
-                    chunk.setOccupationState(ChunkOccupationState.LIBERATING);
+                case CONTROLLED -> {
+                    if (getOccupatingTeam() == Team.ATTACKERS) {
+                        chunk.setOccupationState(ChunkOccupationState.CAPTURING);
+                    }
                 }
-            }
-            case CONTESTED -> {
-                if (chunkHandler.chunkShouldBeSecured(chunk)) {
-                    chunk.setOccupationState(ChunkOccupationState.SECURED);
-                    chunk.setOccupationProgress(MAX_DEFENCE_HP);
-                } else if (getMajoritySide() == Side.ATTACKERS) {
-                    chunk.setOccupationState(ChunkOccupationState.CAPTURING);
-                } else if (getMajoritySide() == Side.DEFENDERS) {
-                    chunk.setOccupationState(ChunkOccupationState.LIBERATING);
-                }
-            }
-            case LIBERATING -> {
-                if (chunkHandler.chunkShouldBeSecured(chunk)) {
-                    chunk.setOccupationState(ChunkOccupationState.SECURED);
-                    chunk.setOccupationProgress(MAX_DEFENCE_HP);
-                } else if (getMajoritySide() == Side.DEFENDERS) {
-                    int newProgress = chunk.getOccupationProgress() + PROGRESS_INCREMENT; // Example progress increment
-                    if (newProgress >= MAX_DEFENCE_HP) {
-                        if (VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
-                            chunk.setOccupationState(ChunkOccupationState.SECURED);
+                case CAPTURING -> {
+                    if (getOccupatingTeam() == Team.ATTACKERS) {
+                        int attackerAmount = 0;
+                        if (playersInChunk.containsKey(attackerClan.getId())) attackerAmount = playersInChunk.get(attackerClan.getId()).size();
+                        int newProgress = chunk.getOccupationProgress() - CHUNK_OCCUPATION_DAMAGE * attackerAmount;
+                        if (newProgress <= 0) {
+                            chunk.setOccupationState(ChunkOccupationState.CAPTURED);
+                            war.checkWarEndCondition();
+                            chunk.setOccupationProgress(0);
                         } else {
-                            chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
+                            chunk.setOccupationProgress(newProgress);
                         }
-                        chunk.setOccupationProgress(MAX_DEFENCE_HP);
-                    } else {
-                        chunk.setOccupationProgress(newProgress);
+                    } else if (getOccupatingTeam() == Team.DEFENDERS) {
+                        chunk.setOccupationState(ChunkOccupationState.LIBERATING);
+                    } else if (getOccupatingTeam() == Team.BOTH) {
+                        chunk.setOccupationState(ChunkOccupationState.CONTESTED);
                     }
-                } else if (getMajoritySide() == Side.ATTACKERS) {
-                    chunk.setOccupationState(ChunkOccupationState.CAPTURING);
-                } else if (getMajoritySide() == Side.NONE) {
-                    chunk.setOccupationState(ChunkOccupationState.CONTESTED);
+                }
+                case CAPTURED -> {
+                    if (getOccupatingTeam() == Team.DEFENDERS) {
+                        chunk.setOccupationState(ChunkOccupationState.LIBERATING);
+                    }
+                }
+                case CONTESTED -> {
+                    if (getOccupatingTeam() == Team.ATTACKERS) {
+                        chunk.setOccupationState(ChunkOccupationState.CAPTURING);
+                    } else if (getOccupatingTeam() == Team.DEFENDERS) {
+                        chunk.setOccupationState(ChunkOccupationState.LIBERATING);
+                    }
+                }
+                case LIBERATING -> {
+                    if (getOccupatingTeam() == Team.DEFENDERS) {
+                        int defendersAmount = 0;
+                        if (playersInChunk.containsKey(defenderClan.getId())) defendersAmount = playersInChunk.get(defenderClan.getId()).size();
+                        int newProgress = chunk.getOccupationProgress() + CHUNK_OCCUPATION_DAMAGE * defendersAmount;
+                        if (newProgress >= CHUNK_HEALTH_POINTS) {
+                            if (chunkHandler.chunkShouldBeSecured(chunk)) {
+                                chunk.setOccupationState(ChunkOccupationState.SECURED);
+                            } else {
+                                chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
+                            }
+                            chunk.setOccupationProgress(CHUNK_HEALTH_POINTS);
+                        } else {
+                            chunk.setOccupationProgress(newProgress);
+                        }
+                    } else if (getOccupatingTeam() == Team.ATTACKERS) {
+                        chunk.setOccupationState(ChunkOccupationState.CAPTURING);
+                    } else if (getOccupatingTeam() == Team.BOTH) {
+                        chunk.setOccupationState(ChunkOccupationState.CONTESTED);
+                    }
                 }
             }
 
@@ -182,7 +172,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
                 bossBar.color(BossBar.Color.PURPLE);
             }
         }
-        bossBar.progress((float) chunk.getOccupationProgress() / MAX_DEFENCE_HP);
+        bossBar.progress((float) chunk.getOccupationProgress() / CHUNK_HEALTH_POINTS);
         // Hide boss bar for ppl who left
         Audience left = Audience.audience(playerDiff.left);
         left.hideBossBar(bossBar);
@@ -190,15 +180,25 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         Audience joined = Audience.audience(playerDiff.joined);
         joined.showBossBar(bossBar);
     }
+    private void stopTask() {
+        List<Player> players = new ArrayList<>();
+        players.addAll(defenderClan.getOnlinePlayers());
+        players.addAll(attackerClan.getOnlinePlayers());
+        Audience playerAudience = Audience.audience(players);
+        playerAudience.hideBossBar(bossBar);
+        bossBar = null;
+    }
 
-    private Side getMajoritySide() {
+    private Team getOccupatingTeam() {
         int defendersAmount = 0;
         if (playersInChunk.containsKey(defenderClan.getId())) defendersAmount = playersInChunk.get(defenderClan.getId()).size();
         int attackerAmount = 0;
         if (playersInChunk.containsKey(attackerClan.getId())) attackerAmount = playersInChunk.get(attackerClan.getId()).size();
-        if (defendersAmount > attackerAmount) return Side.DEFENDERS;
-        if (defendersAmount < attackerAmount) return Side.ATTACKERS;
-        return Side.NONE;
+
+        if (defendersAmount == 0 && attackerAmount > 0) return Team.ATTACKERS;
+        if (defendersAmount > 0 && attackerAmount == 0) return Team.DEFENDERS;
+        if (defendersAmount > 0 && attackerAmount > 0) return Team.BOTH;
+        return Team.NEITHER;
     }
 
     private static PlayerDiff getChunkDiff(Map<String, List<Player>> previous, Map<String, List<Player>> current) {

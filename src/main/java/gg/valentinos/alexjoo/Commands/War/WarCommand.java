@@ -36,7 +36,7 @@ public class WarCommand implements CommandExecutor, TabCompleter {
                 VClans.sendFormattedMessage(sender, "You are not in a clan.", LogType.WARNING);
                 return true;
             }
-            Clan enemyClan = VClans.getInstance().getWarHandler().inWar(playerClan);
+            Clan enemyClan = VClans.getInstance().getWarHandler().getWarEnemyClan(playerClan);
             if (enemyClan != null) {
                 VClans.sendFormattedMessage(sender, "You are currently in a war with " + enemyClan.getName(), LogType.INFO);
             } else {

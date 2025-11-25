@@ -46,7 +46,7 @@ public class WarDeclareSubcommand extends SubCommand {
             Clan playerClan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
             if (playerClan == null) return List.of();
             return VClans.getInstance().getClanHandler().getClans().getClans().stream()
-                    .filter(clan -> VClans.getInstance().getWarHandler().inWar(clan) == null)
+                    .filter(clan -> VClans.getInstance().getWarHandler().getWarEnemyClan(clan) == null)
                     .filter(clan -> clan != playerClan)
                     .map(Clan::getId).toList();
         } else {
@@ -67,7 +67,6 @@ public class WarDeclareSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "clan-not-found", LogType.WARNING);
             return true;
         }
-        String clanName = clan.getId();
         HashMap<String, Boolean> permissions = clan.getRank(player.getUniqueId()).getPermissions();
         if (!permissions.get("canDeclareWar")) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
@@ -77,7 +76,7 @@ public class WarDeclareSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "declare-self", LogType.WARNING);
             return true;
         }
-        if (warHandler.inWar(clan) != null) {
+        if (warHandler.getWarEnemyClan(clan) != null) {
             sendFormattedPredefinedMessage(sender, "clan-in-war", LogType.WARNING);
             return true;
         }
@@ -106,21 +105,23 @@ public class WarDeclareSubcommand extends SubCommand {
         String playerName = "ERROR";
         String initiatorClanName = "ERROR";
 
-        String targetClanId = args[1];
         if (sender instanceof Player player) {
             playerName = player.getName();
             Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
-            Clan targetClan = clanHandler.getClanById(targetClanId);
             if (playerClan != null) {
                 initiatorClanName = playerClan.getId();
-                if (warHandler.inWar(playerClan) != null) {
-                    clanName = warHandler.inWar(playerClan).getId();
+                if (warHandler.getWarEnemyClan(playerClan) != null) {
+                    clanName = warHandler.getWarEnemyClan(playerClan).getId();
                 }
             }
+        }
+        if (args.length == requiredArgs) {
+            String targetClanId = args[1];
+            Clan targetClan = clanHandler.getClanById(targetClanId);
             if (targetClan != null) {
                 targetClanName = targetClan.getId();
-                if (warHandler.inWar(targetClan) != null) {
-                    clanName = warHandler.inWar(targetClan).getId();
+                if (warHandler.getWarEnemyClan(targetClan) != null) {
+                    clanName = warHandler.getWarEnemyClan(targetClan).getId();
                 }
             }
         }

@@ -16,6 +16,8 @@ settings:
     grace-period: 100 # 24 hours, how long the clan has to prepare for war after a war declaration
     war-duration: 300 # 7 hours, how long the war lasts after the grace period
     war-cooldown: 10 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
+    chunk-health-points: 100 # how much hp does a chunk has when it is being captured (hurt) or liberated (healed) during war
+    chunk-occupation-damage: 5 # how much damage/healing does capture/liberating does to a chunk once a second PER PLAYER occupying
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
@@ -261,4 +263,11 @@ commands:
         target-clan-notification: "The clan {initiator-clan} has declared war on your clan!"
         clan-in-war: "The clan {clan-name} is already in war."
         declare-self: "You can't declare war on your own clan."
+    peace:
+      enabled: true
+      description: "Sets up an offer with the other clan to make peace or to accept/deny that offer. Write a positive amount to request money for peace, Write a negative amount to offer money for peace"
+      usage: "/war peace <accept|deny|amount|-amount|0>"
+      messages:
+        success: "You have successfully offered peace to the clan {target-clan}"
+        not-in-war: "You are not in a war to offer peace"
 

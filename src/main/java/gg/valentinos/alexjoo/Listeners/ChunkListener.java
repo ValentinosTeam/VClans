@@ -2,12 +2,10 @@ package gg.valentinos.alexjoo.Listeners;
 
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanChunk;
-import gg.valentinos.alexjoo.Data.WarData.ChunkOccupationState;
 import gg.valentinos.alexjoo.Data.WarData.War;
 import gg.valentinos.alexjoo.Data.WarData.WarState;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
-import gg.valentinos.alexjoo.Handlers.WarHandler;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -15,7 +13,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,14 +37,18 @@ import java.util.Objects;
 public class ChunkListener implements Listener {
     private final ChunkHandler chunkHandler;
     private final ClanHandler clanHandler;
-    private final WarHandler warHandler;
     private static final TextColor RED = TextColor.color(255, 70, 70);
     private static final TextColor GREEN = TextColor.color(70, 255, 70);
+
+    private enum WarBypassRule {
+        NONE, // war doesn't change any requirements
+        SOFT, // means that the requirements to block the event are soft, (being in a war means no need to block event)
+        HARD // means that requirements are harder, ie has to be in war AND in an occupied chunk
+    }
 
     public ChunkListener() {
         this.chunkHandler = VClans.getInstance().getChunkHandler();
         this.clanHandler = VClans.getInstance().getClanHandler();
-        this.warHandler = VClans.getInstance().getWarHandler();
     }
 
     @EventHandler
@@ -106,7 +107,7 @@ public class ChunkListener implements Listener {
     // ========= CANCELABLE EVENTS (events to cancel if unauthorized player interacts with a clans chunk) =========
 
     // Player related events
-    private boolean shouldBlockPlayerInteraction(Chunk chunk, Player player) {
+    private boolean shouldBlockPlayerInteraction(Chunk chunk, Player player, WarBypassRule warBypassRule) {
         if (player.isOp()) return false;
         // helper method for all the player related events
         String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
@@ -114,7 +115,16 @@ public class ChunkListener implements Listener {
         Clan chunkClan = clanHandler.getClanById(chunkClanName);
         if (chunkClan != null && !chunkClan.isPlayerMember(player.getUniqueId())) {
 //                player.sendMessage(Component.text("You cannot interact with this territory").color(RED));
-            return !isChunkCompromised(chunk);
+            if (warBypassRule == WarBypassRule.NONE) return true;
+            else {
+                if (isInActiveWarWith(player, chunk)) {
+                    if (warBypassRule == WarBypassRule.SOFT) return false;
+                    else if (warBypassRule == WarBypassRule.HARD) {
+                        if (isChunkCompromised(chunk)) return false;
+                    }
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -124,7 +134,7 @@ public class ChunkListener implements Listener {
         // forbid placing blocks in clan chunk if player not in that clan
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
     }
 
     @EventHandler
@@ -132,7 +142,7 @@ public class ChunkListener implements Listener {
         // forbid breaking blocks in clan chunk if player not in that clan
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
     }
 
     @EventHandler
@@ -140,7 +150,8 @@ public class ChunkListener implements Listener {
         // forbid players placing hanging entities like frames and pictures in a clan chunk they are not a part of
         Player player = event.getPlayer();
         Block block = event.getBlock().getRelative(event.getBlockFace()); // where the entity will be placed
-        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
+        if (player != null) event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
+        event.setCancelled(true);
     }
 
     @EventHandler
@@ -148,7 +159,7 @@ public class ChunkListener implements Listener {
         // forbid players emptying buckets with water/lava/snow powder source blocks in chunks they are not a part of
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
     }
 
     @EventHandler
@@ -156,7 +167,7 @@ public class ChunkListener implements Listener {
         // forbid players filling buckets with water/lava/snow powder source blocks in chunks they are not a part of
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
     }
 
     @EventHandler
@@ -165,7 +176,7 @@ public class ChunkListener implements Listener {
         Block block = event.getBlock();
         Player player = event.getPlayer();
         if (player != null) {
-            event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
+            event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
         } else {
             Chunk chunk = block.getChunk();
             String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
@@ -181,7 +192,7 @@ public class ChunkListener implements Listener {
         Entity hookedEntity = event.getHook().getHookedEntity();
         if (hookedEntity == null) return;
         Player player = event.getPlayer();
-        event.setCancelled(shouldBlockPlayerInteraction(hookedEntity.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(hookedEntity.getChunk(), player, WarBypassRule.SOFT));
     }
 
     @EventHandler
@@ -190,7 +201,7 @@ public class ChunkListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
         Player player = event.getPlayer();
-        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
     }
 
     @EventHandler
@@ -198,14 +209,14 @@ public class ChunkListener implements Listener {
         // forbid players on interacting (right-clicking) with entities (frames, end crystals, boats) inside the territory they are not a part of
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        event.setCancelled(shouldBlockPlayerInteraction(entity.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(entity.getChunk(), player, WarBypassRule.SOFT));
     }
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         // forbid players on interacting with armor stands (apparently they are slightly different from other entities)
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        event.setCancelled(shouldBlockPlayerInteraction(entity.getChunk(), player));
+        event.setCancelled(shouldBlockPlayerInteraction(entity.getChunk(), player, WarBypassRule.HARD));
     }
 
     // entity events
@@ -229,17 +240,16 @@ public class ChunkListener implements Listener {
         // Explosion protection
         if (cause == DamageCause.ENTITY_EXPLOSION || cause == DamageCause.BLOCK_EXPLOSION) {
             event.setCancelled(true);
-            return;
         }
 
-        // Direct attacker
-        DamageSource source = event.getDamageSource();
-        Entity damager = source.getCausingEntity();
-        if (damager instanceof Player player) {
-            if (clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan.getId())) return;
-            if (isInWar(chunk)) return;
-            event.setCancelled(true);
-        }
+        // the rest of this is not needed as it is handled in onEntityDamageByEntity();
+//        DamageSource source = event.getDamageSource();
+//        Entity damager = source.getCausingEntity();
+//        if (damager instanceof Player player) {
+//            if (clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan.getId())) return;
+//            if (isInWarWith(player, chunk)) return;
+//            event.setCancelled(true);
+//        }
     }
 
     @EventHandler
@@ -260,7 +270,7 @@ public class ChunkListener implements Listener {
         Chunk chunk = block.getChunk();
         Entity entity = event.getEntity();
         if (entity instanceof Player player) {
-            event.setCancelled(shouldBlockPlayerInteraction(chunk, player));
+            event.setCancelled(shouldBlockPlayerInteraction(chunk, player, WarBypassRule.HARD));
         }
     }
 
@@ -270,7 +280,7 @@ public class ChunkListener implements Listener {
 
         Entity entity = event.getEntity();
 
-        if (shouldBlockPlayerInteraction(entity.getChunk(), player)) {
+        if (shouldBlockPlayerInteraction(entity.getChunk(), player, WarBypassRule.SOFT)) {
             event.setCancelled(true);
         }
     }
@@ -281,7 +291,7 @@ public class ChunkListener implements Listener {
         if (!(event.getAttacker() instanceof Player player)) return;
 
         Entity vehicle = event.getVehicle();
-        if (shouldBlockPlayerInteraction(vehicle.getChunk(), player)) {
+        if (shouldBlockPlayerInteraction(vehicle.getChunk(), player, WarBypassRule.HARD)) {
             event.setCancelled(true);
         }
     }
@@ -292,7 +302,7 @@ public class ChunkListener implements Listener {
         if (!(event.getAttacker() instanceof Player player)) return;
 
         Entity vehicle = event.getVehicle();
-        if (shouldBlockPlayerInteraction(vehicle.getChunk(), player)) {
+        if (shouldBlockPlayerInteraction(vehicle.getChunk(), player, WarBypassRule.HARD)) {
             event.setCancelled(true);
         }
     }
@@ -394,14 +404,12 @@ public class ChunkListener implements Listener {
         }
         return false;
     }
-    private static boolean isInWar(Chunk chunk) {
-        Clan clan = VClans.getInstance().getChunkHandler().getClanByChunk(chunk);
-        War war = VClans.getInstance().getWarHandler().getWar(clan);
-        if (war != null) {
-            if (war.getState() == WarState.IN_PROGRESS) return true;
-            if (war.getState() == WarState.DECLARED) return true;
-        }
-        return false;
+    private static boolean isInActiveWarWith(Player player, Chunk chunk) {
+        Clan chunkClan = VClans.getInstance().getChunkHandler().getClanByChunk(chunk);
+        if (chunkClan == null) return false;
+        War war = VClans.getInstance().getWarHandler().getWar(chunkClan);
+        if (war == null) return false;
+        return VClans.getInstance().getWarHandler().isInActiveWarWith(player, chunkClan);
     }
     private static boolean isChunkCompromised(Chunk chunk) {
         Clan clan = VClans.getInstance().getChunkHandler().getClanByChunk(chunk);
@@ -410,6 +418,6 @@ public class ChunkListener implements Listener {
         if (war.getState() != WarState.IN_PROGRESS) return false;
         ClanChunk clanChunk = clan.getChunkByLocation(chunk.getX(), chunk.getZ());
         if (clanChunk == null) return false;
-        return clanChunk.getOccupationState() == ChunkOccupationState.CAPTURED;
+        return clanChunk.getIsLost();
     }
 }

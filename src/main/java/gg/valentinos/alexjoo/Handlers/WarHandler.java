@@ -19,7 +19,8 @@ public class WarHandler {
     public final long GRACE_PERIOD;
     public final long WAR_DURATION;
     public final long WAR_COOLDOWN;
-    public final int MAX_DEFENCE_HP = 100;
+    public final int CHUNK_HEALTH_POINTS;
+    public final int CHUNK_OCCUPATION_DAMAGE;
 
     private final TaskScheduler scheduler;
 
@@ -30,6 +31,8 @@ public class WarHandler {
         GRACE_PERIOD = config != null ? config.getLong("grace-period") : 60 * 60 * 24 * 20;
         WAR_DURATION = config != null ? config.getLong("war-duration") : 60 * 60 * 4 * 20;
         WAR_COOLDOWN = config != null ? config.getLong("war-cooldown") : 60 * 60 * 24 * 20;
+        CHUNK_HEALTH_POINTS = config != null ? config.getInt("chunk-health-points") : 100;
+        CHUNK_OCCUPATION_DAMAGE = config != null ? config.getInt("chunk-occupation-damage") : 1;
         Log("Grace " + GRACE_PERIOD);
         Log("Duration " + WAR_DURATION);
         Log("Cooldown " + WAR_COOLDOWN);
@@ -41,12 +44,12 @@ public class WarHandler {
     public void declareWar(Clan initiator, Clan target) {
         War war = new War(initiator, target);
         wars.getWars().add(war);
-//        saveWars();
         Log("Clan " + initiator.getId() + " has declared war on clan " + target.getId(), LogType.INFO);
         changeWarState(war, WarState.DECLARED, 0);
+//        saveWars();
     }
 
-    public Clan inWar(Clan clan) {
+    public Clan getWarEnemyClan(Clan clan) {
         for (War war : wars.getWars()) {
             if (war.getInitiatorClanId().equals(clan.getId())) {
                 VClans.getInstance().getClanHandler().getClanById(war.getTargetClanId());
@@ -93,6 +96,10 @@ public class WarHandler {
     }
     public boolean isInWarWith(Player player, Clan clan) {
         return getWarBetween(player, clan) != null;
+    }
+    public boolean isInActiveWarWith(Player player, Clan clan) {
+        War war = getWarBetween(player, clan);
+        return (war != null && war.getState() == WarState.IN_PROGRESS);
     }
     public boolean isInWar(Player player) {
         Clan playerClan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());

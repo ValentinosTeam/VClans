@@ -31,7 +31,7 @@ public class Clan {
         this.ranks = new HashMap<>();
         this.chunks = new HashSet<>();
         this.owner = owner;
-        this.color = List.of(211, 211, 211);
+        this.color = List.of((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
         this.tier = 0;
         this.prefix = id.substring(0, 3);
     }

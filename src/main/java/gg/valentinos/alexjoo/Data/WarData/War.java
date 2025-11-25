@@ -113,6 +113,7 @@ public class War {
         initiatorClan.setLastWarTime(System.currentTimeMillis());
         targetClan.setLastWarTime(System.currentTimeMillis());
         resetChunkOccupationStates();
+        //TODO: Announce end of war
 
         if (loserClanId != null) {
             Clan loserClan = clanHandler.getClanById(loserClanId);
@@ -138,7 +139,7 @@ public class War {
             } else {
                 chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
             }
-            chunk.setOccupationProgress(VClans.getInstance().getWarHandler().MAX_DEFENCE_HP);
+            chunk.setOccupationProgress(VClans.getInstance().getWarHandler().CHUNK_HEALTH_POINTS);
         }
         for (ClanChunk chunk : targetClan.getChunks()) {
             if (VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
@@ -146,7 +147,7 @@ public class War {
             } else {
                 chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
             }
-            chunk.setOccupationProgress(VClans.getInstance().getWarHandler().MAX_DEFENCE_HP);
+            chunk.setOccupationProgress(VClans.getInstance().getWarHandler().CHUNK_HEALTH_POINTS);
         }
     }
 

@@ -61,6 +61,7 @@ public class ClanRank {
         newPermissions.put("canSetPrefix", false);
         newPermissions.put("canRename", false);
         newPermissions.put("canDeclareWar", false);
+        newPermissions.put("canOfferPeace", false);
         return newPermissions;
     }
 }
