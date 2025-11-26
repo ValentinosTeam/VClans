@@ -18,6 +18,8 @@ settings:
     war-cooldown: 10 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
     chunk-health-points: 100 # how much hp does a chunk has when it is being captured (hurt) or liberated (healed) during war
     chunk-occupation-damage: 5 # how much damage/healing does capture/liberating does to a chunk once a second PER PLAYER occupying
+    grace-period-bossbar-name: "Grace Period ends in: {h}h {m}m {s}s."
+    war-bossbar-name: "{h}:{m}:{s} before war ends!"
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:

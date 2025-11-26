@@ -48,6 +48,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         this.CHUNK_HEALTH_POINTS = VClans.getInstance().getWarHandler().CHUNK_HEALTH_POINTS;
         this.CHUNK_OCCUPATION_DAMAGE = VClans.getInstance().getWarHandler().CHUNK_OCCUPATION_DAMAGE;
 
+
         this.playersInChunk = new HashMap<>();
 
         Component name = Component.text(chunk.getOccupationState().name());

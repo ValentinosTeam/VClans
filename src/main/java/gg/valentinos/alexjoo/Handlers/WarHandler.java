@@ -3,6 +3,7 @@ package gg.valentinos.alexjoo.Handlers;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Data.WarData.War;
+import gg.valentinos.alexjoo.Data.WarData.WarProgressBarTask;
 import gg.valentinos.alexjoo.Data.WarData.WarState;
 import gg.valentinos.alexjoo.Data.WarData.Wars;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
@@ -16,11 +17,13 @@ import java.util.HashSet;
 import static gg.valentinos.alexjoo.VClans.Log;
 
 public class WarHandler {
-    public final long GRACE_PERIOD;
-    public final long WAR_DURATION;
-    public final long WAR_COOLDOWN;
+    public final int GRACE_PERIOD;
+    public final int WAR_DURATION;
+    public final int WAR_COOLDOWN;
     public final int CHUNK_HEALTH_POINTS;
     public final int CHUNK_OCCUPATION_DAMAGE;
+    public final String GRACE_PERIOD_BOSSBAR_FORMAT;
+    public final String WAR_BOSSBAR_FORMAT;
 
     private final TaskScheduler scheduler;
 
@@ -28,11 +31,13 @@ public class WarHandler {
 
     public WarHandler() {
         ConfigurationSection config = VClans.getInstance().getConfig().getConfigurationSection("settings.war");
-        GRACE_PERIOD = config != null ? config.getLong("grace-period") : 60 * 60 * 24 * 20;
-        WAR_DURATION = config != null ? config.getLong("war-duration") : 60 * 60 * 4 * 20;
-        WAR_COOLDOWN = config != null ? config.getLong("war-cooldown") : 60 * 60 * 24 * 20;
+        GRACE_PERIOD = config != null ? config.getInt("grace-period") : 60 * 60 * 24 * 20;
+        WAR_DURATION = config != null ? config.getInt("war-duration") : 60 * 60 * 4 * 20;
+        WAR_COOLDOWN = config != null ? config.getInt("war-cooldown") : 60 * 60 * 24 * 20;
         CHUNK_HEALTH_POINTS = config != null ? config.getInt("chunk-health-points") : 100;
         CHUNK_OCCUPATION_DAMAGE = config != null ? config.getInt("chunk-occupation-damage") : 1;
+        GRACE_PERIOD_BOSSBAR_FORMAT = config != null ? config.getString("grace-period-bossbar-name") : "Grace Period ends in: {h}h {m}m {s}s.";
+        WAR_BOSSBAR_FORMAT = config != null ? config.getString("war-bossbar-name") : "{h}:{m}:{s} before war ends!";
         Log("Grace " + GRACE_PERIOD);
         Log("Duration " + WAR_DURATION);
         Log("Cooldown " + WAR_COOLDOWN);
@@ -45,7 +50,8 @@ public class WarHandler {
         War war = new War(initiator, target);
         wars.getWars().add(war);
         Log("Clan " + initiator.getId() + " has declared war on clan " + target.getId(), LogType.INFO);
-        changeWarState(war, WarState.DECLARED, 0);
+        war.declareWar();
+        scheduler.runTaskTimer(new WarProgressBarTask(war, target, initiator), 1, 20);
 //        saveWars();
     }
 
@@ -109,13 +115,6 @@ public class WarHandler {
         return getWar(clan) != null;
     }
 
-    private void changeWarState(War war, WarState newState, long delayTicks) {
-        scheduler.runTaskLater(() -> {
-            war.changeState(newState);
-            Log("War between " + war.getInitiatorClanId() + " and " + war.getTargetClanId() + " changed to " + newState, LogType.INFO);
-        }, delayTicks);
-    }
-
 
     // saves and loads the wars
     public void loadWars() {
@@ -128,21 +127,7 @@ public class WarHandler {
         }
         wars.setWars(warHashSet);
         // Start timers for each war
-        long currentTime = System.currentTimeMillis() / 1000;
-        for (War war : wars.getWars()) {
-            long declarationTime = war.getDeclarationTime() / 1000;
-            long timeSinceDeclaration = currentTime - declarationTime;
-
-            if (timeSinceDeclaration < GRACE_PERIOD) {
-                war.setState(WarState.DECLARED);
-                long delay = (GRACE_PERIOD - timeSinceDeclaration) * 20;
-                changeWarState(war, WarState.IN_PROGRESS, delay);
-            } else if (timeSinceDeclaration < GRACE_PERIOD + WAR_DURATION) {
-                war.setState(WarState.IN_PROGRESS);
-                long delay = (GRACE_PERIOD + WAR_DURATION - timeSinceDeclaration) * 20;
-                changeWarState(war, WarState.ENDED, delay);
-            }
-        }
+        //TODO: handle war loading states
     }
     public void saveWars() {
         JsonUtils.toJsonFile(wars.getWars(), "wars.json");

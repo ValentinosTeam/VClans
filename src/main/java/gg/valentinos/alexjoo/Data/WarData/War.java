@@ -38,21 +38,6 @@ public class War {
         Log("Created a new war between " + initiatorClan.getName() + " and " + targetClan.getName());
     }
 
-    public void changeState(WarState newState) {
-        switch (newState) {
-            case DECLARED:
-                declareWar();
-                break;
-            case IN_PROGRESS:
-                startWar();
-                break;
-            case ENDED:
-                endWar();
-                break;
-            default:
-                break;
-        }
-    }
     public void checkWarEndCondition() {
         Clan initiatorClan = clanHandler.getClanById(initiatorClanId);
         Clan targetClan = clanHandler.getClanById(targetClanId);
@@ -84,13 +69,13 @@ public class War {
 
     }
 
-    private void declareWar() {
+    public void declareWar() {
         Log("Declaring war.");
         resetChunkOccupationStates();
         state = WarState.DECLARED;
-        scheduler.runTaskLater(this::startWar, warHandler.GRACE_PERIOD * 20);
+//        scheduler.runTaskLater(this::startWar, warHandler.GRACE_PERIOD * 20L);
     }
-    private void startWar() {
+    public void startWar() {
         if (state != WarState.DECLARED) return;
         Log("Starting war");
         state = WarState.IN_PROGRESS;
@@ -102,9 +87,9 @@ public class War {
         for (ClanChunk chunk : targetClan.getChunks()) {
             scheduler.runTaskTimer(new ChunkOccupationTask(this, targetClan, initiatorClan, chunk), 0, 20);
         }
-        scheduler.runTaskLater(this::endWar, warHandler.WAR_DURATION * 20);
+        scheduler.runTaskLater(this::endWar, warHandler.WAR_DURATION * 20L);
     }
-    private void endWar() {
+    public void endWar() {
         if (state != WarState.IN_PROGRESS) return;
         Log("Ending war");
         state = WarState.ENDED;
