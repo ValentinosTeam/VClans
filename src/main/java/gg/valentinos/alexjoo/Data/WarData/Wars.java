@@ -22,4 +22,7 @@ public class Wars {
     public void setWars(HashSet<War> wars) {
         this.wars = wars;
     }
+    public void addWar(War war) {
+        wars.add(war);
+    }
 }

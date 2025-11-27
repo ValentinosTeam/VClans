@@ -55,6 +55,7 @@ public final class VClans extends JavaPlugin {
         clanTierHandler = new ClanTierHandler();
         clanHandler = new ClanHandler();
         warHandler = new WarHandler();
+        warHandler.loadWars();
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();

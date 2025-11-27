@@ -42,7 +42,6 @@ public class WarHandler {
         Log("Duration " + WAR_DURATION);
         Log("Cooldown " + WAR_COOLDOWN);
         scheduler = VClans.getInstance().getTaskScheduler();
-        loadWars();
 
     }
 
@@ -52,7 +51,7 @@ public class WarHandler {
         Log("Clan " + initiator.getId() + " has declared war on clan " + target.getId(), LogType.INFO);
         war.declareWar();
         scheduler.runTaskTimer(new WarProgressBarTask(war, target, initiator), 1, 20);
-//        saveWars();
+        saveWars();
     }
 
     public Clan getWarEnemyClan(Clan clan) {
@@ -125,9 +124,24 @@ public class WarHandler {
             saveWars();
             return;
         }
-        wars.setWars(warHashSet);
+//        wars.setWars(warHashSet);
         // Start timers for each war
         //TODO: handle war loading states
+        for (War war : warHashSet) {
+            if (war.getState() != WarState.ENDED) {
+
+                Clan initiatorClan = VClans.getInstance().getClanHandler().getClanById(war.getInitiatorClanId());
+                Clan targetClan = VClans.getInstance().getClanHandler().getClanById(war.getTargetClanId());
+                if (initiatorClan == null || targetClan == null) {
+                    Log("One of the clans in war " + war.getInitiatorClanId() + " vs " + war.getTargetClanId() + " does not exist. Ending war.", LogType.WARNING);
+                    war.setState(WarState.ENDED);
+                } else {
+                    wars.addWar(war);
+                    war.initHandlers();
+                    scheduler.runTaskTimer(new WarProgressBarTask(war, targetClan, initiatorClan), 1, 20);
+                }
+            }
+        }
     }
     public void saveWars() {
         JsonUtils.toJsonFile(wars.getWars(), "wars.json");

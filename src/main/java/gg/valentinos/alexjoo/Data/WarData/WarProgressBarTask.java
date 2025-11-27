@@ -64,9 +64,11 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
                     war.startWar();
                     timeLeftInSeconds = WAR_DURATION;
                     bossBar.color(BossBar.Color.RED);
+                    VClans.getInstance().getWarHandler().saveWars();
                 }
                 case IN_PROGRESS -> {
                     war.endWar();
+                    VClans.getInstance().getWarHandler().saveWars();
                 }
             }
         }
@@ -109,7 +111,11 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
             return;
         }
         if (bossBar == null) {
-            bossBar = BossBar.bossBar(name, progress, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+            BossBar.Color color = BossBar.Color.BLUE;
+            if (war.getState() == WarState.IN_PROGRESS) {
+                color = BossBar.Color.RED;
+            }
+            bossBar = BossBar.bossBar(name, progress, color, BossBar.Overlay.PROGRESS);
         } else {
             bossBar.name(name);
             bossBar.progress(progress);

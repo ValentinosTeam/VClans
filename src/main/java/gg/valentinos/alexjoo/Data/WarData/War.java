@@ -22,9 +22,9 @@ public class War {
     private WarState state;
     private String loserClanId = null;
 
-    private final ClanHandler clanHandler;
-    private final TaskScheduler scheduler;
-    private final WarHandler warHandler;
+    private transient ClanHandler clanHandler;
+    private transient TaskScheduler scheduler;
+    private transient WarHandler warHandler;
 
     public War(Clan initiatorClan, Clan targetClan) {
         this.initiatorClanId = initiatorClan.getId();
@@ -32,9 +32,7 @@ public class War {
         this.declarationTime = System.currentTimeMillis();
         this.state = WarState.DECLARED;
 
-        this.clanHandler = VClans.getInstance().getClanHandler();
-        this.scheduler = VClans.getInstance().getTaskScheduler();
-        this.warHandler = VClans.getInstance().getWarHandler();
+        initHandlers();
         Log("Created a new war between " + initiatorClan.getName() + " and " + targetClan.getName());
     }
 
@@ -161,5 +159,9 @@ public class War {
     public void setState(WarState state) {
         this.state = state;
     }
-
+    public void initHandlers() {
+        this.clanHandler = VClans.getInstance().getClanHandler();
+        this.scheduler = VClans.getInstance().getTaskScheduler();
+        this.warHandler = VClans.getInstance().getWarHandler();
+    }
 }
