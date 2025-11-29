@@ -25,6 +25,7 @@ public class VaultHandler {
     private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
 
     public VaultHandler() {
+        playerChatMap = new HashMap<>();
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             Log("Vault plugin not found, Lot's of features will be disabled!", LogType.WARNING);
             return;
@@ -38,7 +39,6 @@ public class VaultHandler {
         if (!setupPermissions()) {
             Log("Vault Permissions not found, prefixes are not enabled!", LogType.WARNING);
         }
-        playerChatMap = new HashMap<>();
     }
 
     public void setPlayerPrefix(Player player, String prefix) {
@@ -58,6 +58,10 @@ public class VaultHandler {
     public void withdrawPlayer(Player player, double amount) {
         if (econ == null) return;
         econ.withdrawPlayer(player, amount);
+    }
+    public void depositPlayer(Player player, double amount) {
+        if (econ == null) return;
+        econ.depositPlayer(player, amount);
     }
     public double getPlayerBalance(Player player) {
         if (econ == null) return 0;

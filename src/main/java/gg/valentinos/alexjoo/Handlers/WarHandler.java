@@ -2,16 +2,14 @@ package gg.valentinos.alexjoo.Handlers;
 
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
-import gg.valentinos.alexjoo.Data.WarData.War;
-import gg.valentinos.alexjoo.Data.WarData.WarProgressBarTask;
-import gg.valentinos.alexjoo.Data.WarData.WarState;
-import gg.valentinos.alexjoo.Data.WarData.Wars;
+import gg.valentinos.alexjoo.Data.WarData.*;
 import gg.valentinos.alexjoo.Utility.JsonUtils;
 import gg.valentinos.alexjoo.Utility.TaskScheduler;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import static gg.valentinos.alexjoo.VClans.Log;
@@ -20,6 +18,7 @@ public class WarHandler {
     public final int GRACE_PERIOD;
     public final int WAR_DURATION;
     public final int WAR_COOLDOWN;
+    public final int GRACE_SKIP_TILL;
     public final int CHUNK_HEALTH_POINTS;
     public final int CHUNK_OCCUPATION_DAMAGE;
     public final String GRACE_PERIOD_BOSSBAR_FORMAT;
@@ -28,30 +27,58 @@ public class WarHandler {
     private final TaskScheduler scheduler;
 
     private Wars wars;
+    private HashMap<War, WarProgressBarTask> warMap;
 
     public WarHandler() {
         ConfigurationSection config = VClans.getInstance().getConfig().getConfigurationSection("settings.war");
         GRACE_PERIOD = config != null ? config.getInt("grace-period") : 60 * 60 * 24 * 20;
         WAR_DURATION = config != null ? config.getInt("war-duration") : 60 * 60 * 4 * 20;
         WAR_COOLDOWN = config != null ? config.getInt("war-cooldown") : 60 * 60 * 24 * 20;
-        CHUNK_HEALTH_POINTS = config != null ? config.getInt("chunk-health-points") : 100;
+        GRACE_SKIP_TILL = config != null ? config.getInt("grace-skip-up-to") : 30 * 60;
+        CHUNK_HEALTH_POINTS = config != null ? config.getInt("chunk-health-points") : 1000;
         CHUNK_OCCUPATION_DAMAGE = config != null ? config.getInt("chunk-occupation-damage") : 1;
         GRACE_PERIOD_BOSSBAR_FORMAT = config != null ? config.getString("grace-period-bossbar-name") : "Grace Period ends in: {h}h {m}m {s}s.";
         WAR_BOSSBAR_FORMAT = config != null ? config.getString("war-bossbar-name") : "{h}:{m}:{s} before war ends!";
-        Log("Grace " + GRACE_PERIOD);
-        Log("Duration " + WAR_DURATION);
-        Log("Cooldown " + WAR_COOLDOWN);
         scheduler = VClans.getInstance().getTaskScheduler();
-
+        warMap = new HashMap<>();
     }
 
     public void declareWar(Clan initiator, Clan target) {
         War war = new War(initiator, target);
         wars.getWars().add(war);
-        Log("Clan " + initiator.getId() + " has declared war on clan " + target.getId(), LogType.INFO);
         war.declareWar();
-        scheduler.runTaskTimer(new WarProgressBarTask(war, target, initiator), 1, 20);
+        WarProgressBarTask warProgressBarTask = new WarProgressBarTask(war, target, initiator);
+        scheduler.runTaskTimer(warProgressBarTask, 1, 20);
+        warMap.put(war, warProgressBarTask);
         saveWars();
+    }
+    public void createPeaceTreaty(Player creator, War war, int amount) {
+        Clan initiatorClan = VClans.getInstance().getClanHandler().getClanById(war.getInitiatorClanId());
+        Clan targetClan = VClans.getInstance().getClanHandler().getClanById(war.getTargetClanId());
+        if (initiatorClan == null || targetClan == null) {
+            return;
+        }
+        PeaceTreaty peaceTreaty;
+        if (initiatorClan.isPlayerMember(creator.getUniqueId())) {
+            peaceTreaty = new PeaceTreaty(creator, targetClan, amount);
+        } else if (targetClan.isPlayerMember(creator.getUniqueId())) {
+            peaceTreaty = new PeaceTreaty(creator, initiatorClan, amount);
+        } else return;
+        war.setPeaceTreaty(peaceTreaty);
+    }
+    public void acceptPeaceTreaty(Player acceptor, War war) {
+        PeaceTreaty peaceTreaty = war.getPeaceTreaty();
+        if (peaceTreaty == null) return;
+        peaceTreaty.payOutTreaty(acceptor);
+        war.endWar();
+    }
+    public void declinePeaceTreaty(War war) {
+        war.setPeaceTreaty(null);
+    }
+    public void skipForwardGrace(War war) {
+        WarProgressBarTask warProgressBarTask = warMap.get(war);
+        if (warProgressBarTask == null) return;
+        warProgressBarTask.skipForwardGrace();
     }
 
     public Clan getWarEnemyClan(Clan clan) {
@@ -65,7 +92,6 @@ public class WarHandler {
         }
         return null;
     }
-
     public int getWarCooldown(Clan clan) {
         long currentTime = System.currentTimeMillis();
         long lastWarTime = clan.getLastWarTime();
@@ -75,6 +101,11 @@ public class WarHandler {
         } else {
             return (int) (WAR_COOLDOWN - timeSinceLastWar);
         }
+    }
+    public int getTimeLeftInSeconds(War war) {
+        WarProgressBarTask warProgressBarTask = warMap.get(war);
+        if (warProgressBarTask == null) return 0;
+        else return warProgressBarTask.getTimeLeftInSeconds();
     }
     public War getWar(Clan clan) {
         if (clan == null) return null;
@@ -113,7 +144,6 @@ public class WarHandler {
     public boolean isInWar(Clan clan) {
         return getWar(clan) != null;
     }
-
 
     // saves and loads the wars
     public void loadWars() {

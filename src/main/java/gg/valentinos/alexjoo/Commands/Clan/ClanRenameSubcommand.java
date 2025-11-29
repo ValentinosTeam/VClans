@@ -3,6 +3,7 @@ package gg.valentinos.alexjoo.Commands.Clan;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,7 +57,7 @@ public class ClanRenameSubcommand extends SubCommand {
         String input = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         String stripped = input.replaceAll("&[0-9a-fk-orK-OR]", "");
 
-        if (!clan.getRank(playerUUID).getPermissions().getOrDefault("canRename", false)) {
+        if (!clanHandler.hasPermission(player, ClanRankPermission.CAN_RENAME)) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
@@ -87,8 +88,7 @@ public class ClanRenameSubcommand extends SubCommand {
     @Override
     public boolean suggestCommand(CommandSender sender) {
         if (sender instanceof Player player) {
-            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            return clan != null && clan.getRank(player.getUniqueId()).getPermissions().getOrDefault("canRename", false);
+            return clanHandler.hasPermission(player, ClanRankPermission.CAN_RENAME);
         }
         return false;
     }

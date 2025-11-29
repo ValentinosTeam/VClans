@@ -20,6 +20,7 @@ settings:
     chunk-occupation-damage: 5 # how much damage/healing does capture/liberating does to a chunk once a second PER PLAYER occupying
     grace-period-bossbar-name: "Grace Period ends in: {h}h {m}m {s}s."
     war-bossbar-name: "{h}:{m}:{s} before war ends!"
+    grace-skip-up-to: 30 # when /war start is run by the defenders, the time to wait gets forwarded until there is this amount of seconds left until the end of grace period.
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
@@ -28,7 +29,7 @@ clan-tiers:
     chunk-limit: 10
     buffs: [ ]
     debuffs: [ ]
-    price: 0 # Doesn't matter if the first tier
+    price: 0 # this tear gets automatically applied so price doesn't matter
   1:
     label: "[II]"
     player-limit: 10
@@ -70,6 +71,7 @@ commands:
       confirmation-message: "'/confirm' in the next {confirm-time} seconds to confirm the action."
       confirmation-expired: "The confirmation has expired."
       nothing-to-confirm: "There is nothing to confirm."
+      is-in-war: "You can't do this while in war."
   clan:
     help:
       enabled: true
@@ -198,6 +200,17 @@ commands:
         confirmation-message: "Are you sure you want to upgrade the clan to tier {tier-label} for the price of ${tier-price}? You have {confirm-time} seconds to /confirm !"
         max-tier: "You already have the highest tier clan!"
         cant-afford: "You can't afford the tier upgrade ({tier-price})"
+    downgrade:
+      enabled: true
+      description: "Downgrades the clans tier. You don't get your money back."
+      usage: "/clan downgrade"
+      confirmation: 30
+      messages:
+        success: "You have successfully upgraded the clan to tier: {tier-label}"
+        confirmation-message: "Are you sure you want to downgrade the clan to tier {tier-label}? You will lose all the perks offered by your current tier. You have {confirm-time} seconds to /confirm !"
+        min-tier: "You already have the lowest tier clan!"
+        need-to-kick: "You can't downgrade because you have too many players for tier {tier-label}. You can have only max {player-amount} players."
+        need-to-unclaim: "You can't downgrade because you have too many claimed chunks for tier {tier-label}. You can have only max {chunk-amount} claimed chunks."
     chat:
       enabled: true
       description: "Toggles current chat to be only visible for clan members or global."
@@ -265,11 +278,37 @@ commands:
         target-clan-notification: "The clan {initiator-clan} has declared war on your clan!"
         clan-in-war: "The clan {clan-name} is already in war."
         declare-self: "You can't declare war on your own clan."
+        clan-not-found: "The clan {target-clan} does not exist."
+        clan-on-cooldown: "Your clan is on a war cooldown. Please wait {clan-cooldown} seconds before declaring another war."
+        target-on-cooldown: "The {target-clan} clan is on a war cooldown of {target-cooldown} seconds. You cannot declare war on them at this time."
+        tier-mismatch: "You can't declare war on {target-clan}: their tier is too low."
+        no-chunks: "The clan {no-chunk-clan} has no chunks and therefor can't be in a war"
     peace:
       enabled: true
-      description: "Sets up an offer with the other clan to make peace or to accept/deny that offer. Write a positive amount to request money for peace, Write a negative amount to offer money for peace"
-      usage: "/war peace <accept|deny|amount|-amount|0>"
+      description: "Sets up an offer with the other clan to make peace or to accept/decline that offer. Write a positive amount to request money for peace, Write a negative amount to offer money for peace"
+      usage: "/war peace <accept|decline|amount|-amount|0>"
+      confirmation: 30
       messages:
         success: "You have successfully offered peace to the clan {target-clan}"
         not-in-war: "You are not in a war to offer peace"
-
+        no-peace-treaty: "There is no peace treaty to accept or decline."
+        cant-accept-own-treaty: "Your clan was the one that offered this treaty, you can't accept it."
+        treaty-creator-cant-pay: "The person offering the treaty ({creator}) can't pay the amount of {amount}"
+        acceptor-cant-pay: "You can't pay for the treaty amount of {amount}"
+        peace-treaty-accepted: "The peace treaty has been accepted! War is over!"
+        peace-treaty-declined: "The peace treaty has been declined, the war will go on."
+        peace-treaty-offer: "Player {creator} is offering ${amount} to achieve peace."
+        peace-treaty-request: "Player {creator} is requesting ${amount} from the enemy to achieve peace."
+        invalid-amount: "valid amount is any positive or negative number or zero."
+    start:
+      enabled: true
+      description: "Allows the defenders to start the war earlier by shortening the grace period duration to 30 minutes"
+      usage: "/war start"
+      confirmation: 30
+      messages:
+        confirmation-message: "Are you sure you want to start the war in {duration} seconds? Type /confirm if you are sure"
+        grace-got-shortened: "The grace period got shortened, the war will start in {duration} seconds."
+        not-in-war: "You are not in a war."
+        not-in-grace: "This command can only be run during the grace period."
+        skip-too-late: "The war is about to start, can't start earlier than this."
+        not-defender: "Only the targets of a war declaration can start the war earlier."

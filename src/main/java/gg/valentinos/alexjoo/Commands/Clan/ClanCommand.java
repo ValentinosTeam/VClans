@@ -1,7 +1,9 @@
 package gg.valentinos.alexjoo.Commands.Clan;
 
 import gg.valentinos.alexjoo.Commands.SubCommand;
+import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Handlers.ClanTierHandler;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -31,6 +33,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ClanChatSubcommand());
         registerSubCommand(new ClanPrefixSubcommand());
         registerSubCommand(new ClanRenameSubcommand());
+        registerSubCommand(new ClanDowngradeSubcommand());
 
         clanHelpSubcommand.setSubCommands(subCommands);
     }
@@ -43,9 +46,11 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
             if (sender instanceof Player player) {
-                String clanName = VClans.getInstance().getClanHandler().getClanNameOfMember(player.getUniqueId());
-                if (clanName != null) {
-                    VClans.sendFormattedMessage(sender, "Your current clan: " + clanName, LogType.FINE);
+                Clan clan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
+                if (clan != null) {
+                    VClans.sendFormattedMessage(sender, "Your current clan: " + clan.getName(), LogType.FINE);
+                    ClanTierHandler clanTierHandler = VClans.getInstance().getClanTierHandler();
+                    VClans.sendFormattedMessage(sender, clanTierHandler.getTierInfo(clan.getTier()), LogType.FINE);
                 }
             }
             VClans.sendFormattedMessage(sender, "Use '/clan help' for help.", LogType.FINE);

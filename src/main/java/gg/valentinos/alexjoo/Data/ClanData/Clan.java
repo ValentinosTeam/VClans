@@ -204,9 +204,9 @@ public class Clan {
         component = component.append(Component.text("Rank ID: " + rank.getId())).append(Component.newline());
         component = component.append(Component.text("Priority: " + rank.getPriority())).append(Component.newline());
 
-        HashMap<String, Boolean> permissions = rank.getPermissions();
-        for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
-            String permission = entry.getKey();
+        HashMap<ClanRankPermission, Boolean> permissions = rank.getPermissions();
+        for (Map.Entry<ClanRankPermission, Boolean> entry : permissions.entrySet()) {
+            ClanRankPermission permission = entry.getKey();
             boolean value = entry.getValue();
             Component temp = Component.text(value);
             if (!value)

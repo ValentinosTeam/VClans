@@ -3,18 +3,19 @@ package gg.valentinos.alexjoo.Commands.War;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Data.WarData.War;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 public class WarDeclareSubcommand extends SubCommand {
     public WarDeclareSubcommand() {
-        super("war", "declare", List.of("success", "initiator-clan-notification", "clan-in-war", "target-clan-notification", "declare-self"));
+        super("war", "declare", List.of("success", "initiator-clan-notification", "clan-in-war", "target-clan-notification", "declare-self", "clan-on-cooldown", "target-on-cooldown", "clan-not-found", "tier-mismatch", "no-chunks"));
         hasToBePlayer = true;
         requiredArgs = 2;
     }
@@ -29,10 +30,10 @@ public class WarDeclareSubcommand extends SubCommand {
             warHandler.declareWar(playerClan, targetClan);
             for (Player onlinePlayer : playerClan.getOnlinePlayers()) {
                 if (onlinePlayer == player) continue;
-                sendFormattedPredefinedMessage(onlinePlayer, "initiator-clan-notification", LogType.INFO);
+                sendFormattedPredefinedMessage(onlinePlayer, "initiator-clan-notification", LogType.NULL);
             }
             for (Player onlinePlayer : targetClan.getOnlinePlayers()) {
-                sendFormattedPredefinedMessage(onlinePlayer, "target-clan-notification", LogType.INFO);
+                sendFormattedPredefinedMessage(onlinePlayer, "target-clan-notification", LogType.NULL);
             }
             sendFormattedPredefinedMessage(player, "success", LogType.INFO);
         };
@@ -67,8 +68,7 @@ public class WarDeclareSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "clan-not-found", LogType.WARNING);
             return true;
         }
-        HashMap<String, Boolean> permissions = clan.getRank(player.getUniqueId()).getPermissions();
-        if (!permissions.get("canDeclareWar")) {
+        if (!clanHandler.hasPermission(player, ClanRankPermission.CAN_DECLARE_WAR)) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
@@ -81,20 +81,36 @@ public class WarDeclareSubcommand extends SubCommand {
             return true;
         }
         if (warHandler.getWarCooldown(clan) > 0) {
-            sendFormattedMessage(sender, "Your clan is on a war cooldown. Please wait before declaring another war.", LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "clan-on-cooldown", LogType.WARNING);
             return true;
         }
         if (warHandler.getWarCooldown(targetClan) > 0) {
-            sendFormattedMessage(sender, "The target clan is on a war cooldown. You cannot declare war on them at this time.", LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "target-on-cooldown", LogType.WARNING);
             return true;
         }
+        if (targetClan.getTier() < clan.getTier() - 1) {
+            sendFormattedPredefinedMessage(sender, "tier-mismatch", LogType.WARNING);
+            return true;
+        }
+        if (targetClan.getChunks().isEmpty()) {
+            sendFormattedPredefinedMessage(sender, "no-chunks", LogType.WARNING);
+            return true;
+        }
+        if (clan.getChunks().isEmpty()) {
+            sendFormattedPredefinedMessage(sender, "no-chunks", LogType.WARNING);
+            return true;
+        }
+
         return false;
     }
     @Override
     public boolean suggestCommand(CommandSender sender) {
         if (sender instanceof Player player) {
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            return clan != null && clan.getRank(player.getUniqueId()).getPermissions().get("canDeclareWar");
+            if (clan == null) return false;
+            War war = warHandler.getWar(clan);
+            if (war != null) return false;
+            return clanHandler.hasPermission(player, ClanRankPermission.CAN_DECLARE_WAR);
         }
         return false;
     }
@@ -104,6 +120,9 @@ public class WarDeclareSubcommand extends SubCommand {
         String targetClanName = "ERROR";
         String playerName = "ERROR";
         String initiatorClanName = "ERROR";
+        String clanCooldown = "ERROR";
+        String targetCooldown = "ERROR";
+        String noChunkClan = "ERROR";
 
         if (sender instanceof Player player) {
             playerName = player.getName();
@@ -112,6 +131,10 @@ public class WarDeclareSubcommand extends SubCommand {
                 initiatorClanName = playerClan.getId();
                 if (warHandler.getWarEnemyClan(playerClan) != null) {
                     clanName = warHandler.getWarEnemyClan(playerClan).getId();
+                }
+                clanCooldown = "" + warHandler.getWarCooldown(playerClan);
+                if (playerClan.getChunks().isEmpty()) {
+                    noChunkClan = playerClan.getName();
                 }
             }
         }
@@ -123,11 +146,18 @@ public class WarDeclareSubcommand extends SubCommand {
                 if (warHandler.getWarEnemyClan(targetClan) != null) {
                     clanName = warHandler.getWarEnemyClan(targetClan).getId();
                 }
+                targetCooldown = "" + warHandler.getWarCooldown(targetClan);
+                if (targetClan.getChunks().isEmpty()) {
+                    noChunkClan = targetClan.getName();
+                }
             }
         }
         replacements.put("{clan-name}", clanName);
         replacements.put("{target-clan}", targetClanName);
         replacements.put("{player-name}", playerName);
         replacements.put("{initiator-clan}", initiatorClanName);
+        replacements.put("{clan-cooldown}", clanCooldown);
+        replacements.put("{target-cooldown}", targetCooldown);
+        replacements.put("{no-chunk-clan}", noChunkClan);
     }
 }

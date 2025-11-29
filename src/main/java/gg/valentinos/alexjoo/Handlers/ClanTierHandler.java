@@ -26,23 +26,21 @@ public class ClanTierHandler {
 
         @Override
         public String toString() {
-            return "ClanTier{" +
-                    "label='" + label + '\'' +
-                    ", price=" + price +
-                    ", playerLimit=" + playerLimit +
-                    ", chunkLimit=" + chunkLimit +
-                    ", buffs=" + formatEffects(buffs) +
-                    ", debuffs=" + formatEffects(debuffs) +
-                    '}';
+            return "Current Clan Tier: " + label + "\n" +
+                    "Price: " + price + "\n" +
+                    "Player Limit: " + playerLimit + "\n" +
+                    "Chunk Limit: " + chunkLimit + "\n" +
+                    "Buffs: \n" + formatEffects(buffs) + "\n" +
+                    "Debuffs: \n" + formatEffects(debuffs);
         }
 
         private String formatEffects(List<PotionEffect> effects) {
             if (effects == null) return "null";
-            List<String> list = new ArrayList<>();
+            StringBuilder builder = new StringBuilder();
             for (PotionEffect effect : effects) {
-                list.add(effect.getType().toString() + ":" + (effect.getAmplifier() + 1));
+                builder.append(" - ").append(effect.getType().getKey().asString().replace("minecraft:", "")).append(" [").append(effect.getAmplifier() + 1).append("]\n");
             }
-            return list.toString();
+            return builder.toString();
         }
     }
 
@@ -175,6 +173,11 @@ public class ClanTierHandler {
         }
     }
 
+    public String getTierInfo(int tier) {
+        ClanTier clanTier = tiers.get(tier);
+        if (clanTier == null) return "";
+        return clanTier.toString();
+    }
     public int getPlayerLimit(int tier) {
         return tiers.get(tier).playerLimit;
     }

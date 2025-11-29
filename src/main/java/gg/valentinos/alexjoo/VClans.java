@@ -117,8 +117,6 @@ public final class VClans extends JavaPlugin {
         confirmationHandler = null;
         chunkHandler = null;
 
-//        DynmapCommonAPIListener.unregister(dynmapHandler);
-//        dynmapHandler = null;
 
         blueMapHandler = null;
 

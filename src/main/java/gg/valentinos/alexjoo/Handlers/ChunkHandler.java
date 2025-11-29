@@ -343,8 +343,10 @@ public class ChunkHandler {
                             // give buff
                             effects = VClans.getInstance().getClanTierHandler().getBuffs(chunkClan.getTier());
                         } else {
-                            // give debuff
-                            effects = VClans.getInstance().getClanTierHandler().getDebuffs(chunkClan.getTier());
+                            // give debuff only if war
+                            if (VClans.getInstance().getWarHandler().isInWar(chunkClan)) {
+                                effects = VClans.getInstance().getClanTierHandler().getDebuffs(chunkClan.getTier());
+                            }
                         }
                     }
                     if (!effects.isEmpty()) {

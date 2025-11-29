@@ -3,13 +3,13 @@ package gg.valentinos.alexjoo.Commands.Chunk;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.VClans;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class ChunkClaimSubcommand extends SubCommand {
@@ -54,8 +54,7 @@ public class ChunkClaimSubcommand extends SubCommand {
             return true;
         }
         String clanId = clan.getId();
-        HashMap<String, Boolean> permissions = clan.getRank(player.getUniqueId()).getPermissions();
-        if (!permissions.get("canClaimChunks")) {
+        if (!clanHandler.hasPermission(player, ClanRankPermission.CAN_CLAIM_CHUNKS)) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
@@ -84,14 +83,17 @@ public class ChunkClaimSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "cant-afford", LogType.WARNING);
             return true;
         }
+        if (warHandler.isInWar(clan)) {
+            sendFormattedPredefinedMessage(sender, "is-in-war", LogType.WARNING);
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean suggestCommand(CommandSender sender) {
         if (sender instanceof Player player) {
-            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            return clan != null && clan.getRank(player.getUniqueId()).getPermissions().get("canClaimChunks");
+            return clanHandler.hasPermission(player, ClanRankPermission.CAN_CLAIM_CHUNKS);
         }
         return false;
     }

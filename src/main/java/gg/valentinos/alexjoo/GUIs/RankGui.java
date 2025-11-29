@@ -2,6 +2,7 @@ package gg.valentinos.alexjoo.GUIs;
 
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRank;
+import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.VClans;
@@ -61,12 +62,12 @@ public class RankGui extends AbstractGui {
         // top menu bar
         inventory.clear();
 
-        HashMap<String, Boolean> permissions = playerRank.getPermissions();
-        if (permissions.get("canCreateRank"))
+        HashMap<ClanRankPermission, Boolean> permissions = playerRank.getPermissions();
+        if (permissions.get(ClanRankPermission.CAN_CREATE_RANK))
             setItem(0, 0, createItemStack("createRank", Material.CRAFTING_TABLE, "Create Rank", "Click to create a new rank"));
-        if (permissions.get("canDeleteRank"))
+        if (permissions.get(ClanRankPermission.CAN_DELETE_RANK))
             setItem(0, 1, createItemStack("deleteRank", Material.TNT, "Delete Rank", "Click this and select a rank to delete it."));
-        if (permissions.get("canEditRank"))
+        if (permissions.get(ClanRankPermission.CAN_EDIT_RANK))
             setItem(0, 2, createItemStack("editRank", Material.WRITABLE_BOOK, "Edit Rank", "Click this and select a rank to edit it."));
         ItemStack playerHead = createItemStack("showInfo", Material.PLAYER_HEAD, "Your Rank", "Your rank is: " + playerRank.getTitle(), "Click this to send information about your rank in the chat.");
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
@@ -154,10 +155,10 @@ public class RankGui extends AbstractGui {
         ItemStack item = createItemStack("currentId", Material.NETHER_STAR, Component.text(newRank.getTitle()), Component.text("The current rank ID is: ").append(Component.text(newRank.getTitle())), Component.text("Input a valid ID in the anvil."));
         inventory.setItem(0, item);
     }
-    private void initializeRankPermissions(HashMap<String, Boolean> perms) {
+    private void initializeRankPermissions(HashMap<ClanRankPermission, Boolean> perms) {
         int pos = 9;
-        for (Map.Entry<String, Boolean> entry : perms.entrySet()) {
-            String permission = entry.getKey();
+        for (Map.Entry<ClanRankPermission, Boolean> entry : perms.entrySet()) {
+            ClanRankPermission permission = entry.getKey();
             boolean value = entry.getValue();
             ItemStack item = createPermissionBlock(permission, value);
             setItem(pos, item);
@@ -173,14 +174,14 @@ public class RankGui extends AbstractGui {
         }
         setItem(0, 4, createItemStack("priority", Material.OAK_HANGING_SIGN, Component.text("Priority number: ").append(Component.text(newRank.getPriority(), TextColor.color(255, 215, 0))), Component.text("This number determines the hierarchy of the rank."), Component.text("The higher the number, the higher the rank.")));
     }
-    private ItemStack createPermissionBlock(String permission, boolean value) {
+    private ItemStack createPermissionBlock(ClanRankPermission permission, boolean value) {
         String customTag = "perm-" + permission;
         Material material;
         Component lore;
-        Component name = Component.text(unCamelCase(permission) + ": ");
+        Component name = Component.text(unCamelCase(permission.key()) + ": ");
         TextColor color = value ? TextColor.color(0, 255, 0) : TextColor.color(255, 0, 0);
         name = name.append(Component.text(value, color));
-        if (!player.hasPermission(permission) || permission.equals("canDisband")) {
+        if (!player.hasPermission(permission.key()) || permission.equals(ClanRankPermission.CAN_DISBAND)) {
             material = value ? Material.GREEN_CONCRETE : Material.RED_CONCRETE;
             lore = Component.text("You cannot change this permission.")
                     .color(TextColor.color(255, 0, 0));
@@ -235,7 +236,7 @@ public class RankGui extends AbstractGui {
                 player.closeInventory();
                 return;
             }
-            HashMap<String, Boolean> newPermissions;
+            HashMap<ClanRankPermission, Boolean> newPermissions;
             if (e.getInventory().getType() == InventoryType.CHEST) {
                 if (!customTag.startsWith("rank-")) {
                     if (!cursorItem.getType().isAir()) {
@@ -299,10 +300,10 @@ public class RankGui extends AbstractGui {
                         break;
                     case "rankCopy":
                         // copy the configuration of the players current rank into the rank being edited
-                        HashMap<String, Boolean> playerPermissionsCopy = playerRank.copyPermissions();
+                        HashMap<ClanRankPermission, Boolean> playerPermissionsCopy = playerRank.copyPermissions();
                         newPermissions = ClanRank.createDefaultPermissions();
-                        for (String key : playerPermissionsCopy.keySet()) {
-                            if (playerPermissionsCopy.get(key) && !key.equals("canDisband")) {
+                        for (ClanRankPermission key : playerPermissionsCopy.keySet()) {
+                            if (playerPermissionsCopy.get(key) && !key.equals(ClanRankPermission.CAN_DISBAND)) {
                                 newPermissions.put(key, true);
                             }
                         }
@@ -354,8 +355,11 @@ public class RankGui extends AbstractGui {
                             }
                         } else if (customTag.startsWith("perm-")) {
                             // should toggle the permission, lime or red concrete and true or false permission
-                            String permission = customTag.substring(5);
+                            String permissionKey = customTag.substring(5);
                             newPermissions = newRank.copyPermissions();
+                            ClanRankPermission permission = ClanRankPermission.valueOf(permissionKey);
+                            Log("customTag: " + customTag + " permissionKey: " + permissionKey + " permission: " + permission, LogType.INFO);
+                            Log("new Permissions: " + newPermissions, LogType.INFO);
                             boolean value = newPermissions.get(permission);
                             if (item.getType() != Material.LIME_CONCRETE && item.getType() != Material.RED_CONCRETE) {
                                 newPermissions.put(permission, !value);

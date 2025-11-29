@@ -3,11 +3,11 @@ package gg.valentinos.alexjoo.Commands.Clan;
 import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
+import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,8 +44,7 @@ public class ClanColorSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "not-in-clan");
             return true;
         }
-        HashMap<String, Boolean> permissions = clan.getRank(playerUUID).getPermissions();
-        if (!permissions.get("canColor")) {
+        if (!clanHandler.hasPermission(player, ClanRankPermission.CAN_COLOR)) {
             sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
             return true;
         }
@@ -59,13 +58,7 @@ public class ClanColorSubcommand extends SubCommand {
     @Override
     public boolean suggestCommand(CommandSender sender) {
         Player player = (Player) sender;
-        UUID playerUUID = player.getUniqueId();
-        Clan clan = clanHandler.getClanByMember(playerUUID);
-        if (clan != null) {
-            HashMap<String, Boolean> permissions = clan.getRank(playerUUID).getPermissions();
-            return permissions.get("canColor");
-        }
-        return false;
+        return clanHandler.hasPermission(player, ClanRankPermission.CAN_COLOR);
     }
 
     @Override

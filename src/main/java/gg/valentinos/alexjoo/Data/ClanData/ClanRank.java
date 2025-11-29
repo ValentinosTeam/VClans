@@ -6,7 +6,7 @@ public class ClanRank {
     private String title;
     private int priority;
     private String id;
-    private HashMap<String, Boolean> permissions;
+    private HashMap<ClanRankPermission, Boolean> permissions;
 
     public ClanRank(String title, String id) {
         this.title = title;
@@ -32,36 +32,26 @@ public class ClanRank {
     public String getId() {
         return id;
     }
-    public HashMap<String, Boolean> getPermissions() {
+    public HashMap<ClanRankPermission, Boolean> getPermissions() {
         return permissions;
     }
-    public HashMap<String, Boolean> copyPermissions() {
-        HashMap<String, Boolean> newPermissions = new HashMap<>();
-        for (String key : permissions.keySet()) {
+    public HashMap<ClanRankPermission, Boolean> copyPermissions() {
+        HashMap<ClanRankPermission, Boolean> newPermissions = new HashMap<>();
+        for (ClanRankPermission key : permissions.keySet()) {
             newPermissions.put(key, permissions.get(key));
         }
         return newPermissions;
     }
-    public void setPermissions(HashMap<String, Boolean> permissions) {
+    public void setPermissions(HashMap<ClanRankPermission, Boolean> permissions) {
         this.permissions = permissions;
     }
-    public static HashMap<String, Boolean> createDefaultPermissions() {
-        HashMap<String, Boolean> newPermissions = new HashMap<>();
-        newPermissions.put("canDisband", false);
-        newPermissions.put("canInvite", false);
-        newPermissions.put("canKick", false);
-        newPermissions.put("canEditRank", false);
-        newPermissions.put("canCreateRank", false);
-        newPermissions.put("canDeleteRank", false);
-        newPermissions.put("canChangeRank", false);
-        newPermissions.put("canClaimChunks", false);
-        newPermissions.put("canUnclaimChunks", false);
-        newPermissions.put("canColor", false);
-        newPermissions.put("canUpgrade", false);
-        newPermissions.put("canSetPrefix", false);
-        newPermissions.put("canRename", false);
-        newPermissions.put("canDeclareWar", false);
-        newPermissions.put("canOfferPeace", false);
+    public static HashMap<ClanRankPermission, Boolean> createDefaultPermissions() {
+        HashMap<ClanRankPermission, Boolean> newPermissions = new HashMap<>();
+
+        for (ClanRankPermission perm : ClanRankPermission.values()) {
+            newPermissions.put(perm, false);
+        }
+
         return newPermissions;
     }
 }

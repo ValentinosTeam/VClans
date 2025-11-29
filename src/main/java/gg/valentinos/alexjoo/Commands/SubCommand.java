@@ -122,7 +122,7 @@ public abstract class SubCommand {
             String message = config.getString(configPath + "messages.confirmation-message");
             if (message == null) {
                 Log("Missing confirmation message in config.yml for " + configPath + "messages.confirmation-message", LogType.WARNING);
-                message = VClans.getInstance().getDefaultMessage("confirmation");
+                message = VClans.getInstance().getDefaultMessage("confirmation-message");
             }
             messages.put("confirmation-message", message);
         }

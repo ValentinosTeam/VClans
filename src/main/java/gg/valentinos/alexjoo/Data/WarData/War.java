@@ -22,6 +22,7 @@ public class War {
     private WarState state;
     private String loserClanId = null;
 
+    private transient PeaceTreaty peaceTreaty;
     private transient ClanHandler clanHandler;
     private transient TaskScheduler scheduler;
     private transient WarHandler warHandler;
@@ -85,10 +86,10 @@ public class War {
         for (ClanChunk chunk : targetClan.getChunks()) {
             scheduler.runTaskTimer(new ChunkOccupationTask(this, targetClan, initiatorClan, chunk), 0, 20);
         }
-        scheduler.runTaskLater(this::endWar, warHandler.WAR_DURATION * 20L);
+//        scheduler.runTaskLater(this::endWar, warHandler.WAR_DURATION * 20L);
     }
     public void endWar() {
-        if (state != WarState.IN_PROGRESS) return;
+//        if (state != WarState.IN_PROGRESS) return;
         Log("Ending war");
         state = WarState.ENDED;
         Clan initiatorClan = clanHandler.getClanById(initiatorClanId);
@@ -134,7 +135,6 @@ public class War {
         }
     }
 
-
     public String getInitiatorClanId() {
         return initiatorClanId;
     }
@@ -163,5 +163,11 @@ public class War {
         this.clanHandler = VClans.getInstance().getClanHandler();
         this.scheduler = VClans.getInstance().getTaskScheduler();
         this.warHandler = VClans.getInstance().getWarHandler();
+    }
+    public PeaceTreaty getPeaceTreaty() {
+        return peaceTreaty;
+    }
+    public void setPeaceTreaty(PeaceTreaty peaceTreaty) {
+        this.peaceTreaty = peaceTreaty;
     }
 }

@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRank;
+import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.RankGui;
 import net.kyori.adventure.text.Component;
@@ -13,7 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -108,8 +108,7 @@ public class ClanRankSubcommand extends SubCommand {
                     sendFormattedPredefinedMessage(sender, "rank-not-found", LogType.WARNING);
                     return true;
                 }
-                HashMap<String, Boolean> playerPermissions = clan.getRank(playerUUID).getPermissions();
-                if (!playerPermissions.get("canChangeRank")) {
+                if (!clanHandler.hasPermission(player, ClanRankPermission.CAN_CHANGE_RANK)) {
                     // the player does not have permission to change ranks
                     sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
                     return true;

@@ -25,6 +25,7 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
 
     private final int GRACE_PERIOD_DURATION;
     private final int WAR_DURATION;
+    private final int GRACE_SKIP_TILL;
     private final String GRACE_PERIOD_BOSSBAR_FORMAT;
     private final String WAR_BOSSBAR_FORMAT;
 
@@ -38,6 +39,7 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
 
         this.GRACE_PERIOD_DURATION = VClans.getInstance().getWarHandler().GRACE_PERIOD;
         this.WAR_DURATION = VClans.getInstance().getWarHandler().WAR_DURATION;
+        this.GRACE_SKIP_TILL = VClans.getInstance().getWarHandler().GRACE_SKIP_TILL;
         this.GRACE_PERIOD_BOSSBAR_FORMAT = VClans.getInstance().getWarHandler().GRACE_PERIOD_BOSSBAR_FORMAT;
         this.WAR_BOSSBAR_FORMAT = VClans.getInstance().getWarHandler().WAR_BOSSBAR_FORMAT;
 
@@ -57,7 +59,6 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
     @Override
     public void accept(BukkitTask bukkitTask) {
         timeLeftInSeconds--;
-        Log(timeLeftInSeconds + " seconds left.");
         if (timeLeftInSeconds <= 0) {
             switch (war.getState()) {
                 case DECLARED -> {
@@ -98,7 +99,6 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
         PlayerJoinEvent.getHandlerList().unregister(this);
     }
     private void updateBossBar() {
-//        timeLeftInSeconds = calculateTimeLeftInSeconds();
         Component name = Component.text(formatTime());
         float progress;
         switch (war.getState()) {
@@ -107,9 +107,11 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
             default -> progress = 0f;
         }
         if (war.getState() == WarState.ENDED) {
-            //TODO: hide bossbar and remove it
+            bossBar = BossBar.bossBar(name, 0, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS);
             return;
         }
+        if (progress > 1) progress = 1;
+        else if (progress < 0) progress = 0;
         if (bossBar == null) {
             BossBar.Color color = BossBar.Color.BLUE;
             if (war.getState() == WarState.IN_PROGRESS) {
@@ -139,6 +141,14 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
         long timeLeft = target - now;
         Log("Calculated time left: " + timeLeft + " s." + " (now: " + now + ", target: " + target + ")" + " for state: " + war.getState());
         return (int) Math.max(0, timeLeft);
+    }
+    public void skipForwardGrace() {
+        if (war.getState() != WarState.DECLARED) return;
+        if (timeLeftInSeconds <= GRACE_SKIP_TILL) return;
+        timeLeftInSeconds = GRACE_SKIP_TILL;
+    }
+    public int getTimeLeftInSeconds() {
+        return timeLeftInSeconds;
     }
     private String formatTime() {
         int hours = timeLeftInSeconds / 3600;

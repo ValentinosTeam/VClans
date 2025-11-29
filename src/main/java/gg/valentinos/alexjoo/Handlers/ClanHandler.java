@@ -86,7 +86,7 @@ public class ClanHandler {
     public void addRank(Clan clan, ClanRank newRank) {
         ClanRank rank = new ClanRank(newRank.getTitle(), newRank.getId());
         rank.setPriority(newRank.getPriority());
-        HashMap<String, Boolean> permissions = newRank.getPermissions();
+        HashMap<ClanRankPermission, Boolean> permissions = newRank.getPermissions();
         rank.setPermissions(permissions);
         clan.addRank(rank);
         saveClans();
@@ -111,6 +111,12 @@ public class ClanHandler {
     }
     public void upgradeClan(Clan clan) {
         clan.setTier(clan.getTier() + 1);
+
+        saveClans();
+    }
+    public void downgradeClan(Clan clan) {
+        if (clan.getTier() == 0) return;
+        clan.setTier(clan.getTier() - 1);
         saveClans();
     }
     public void setClanPrefix(Clan clan, String prefix) {
@@ -198,6 +204,14 @@ public class ClanHandler {
     public boolean clanIsFull(Clan clan) {
         return clan.getMembers().size() >= VClans.getInstance().getClanTierHandler().getPlayerLimit(clan.getTier());
     }
+    public boolean hasPermission(Player player, ClanRankPermission permission) {
+        Clan clan = getClanByMember(player.getUniqueId());
+        if (clan == null) return false;
+        HashMap<ClanRankPermission, Boolean> permissions = clan.getRank(player.getUniqueId()).getPermissions();
+        if (permissions == null) return false;
+        if (!permissions.containsKey(permission)) return false;
+        return permissions.get(permission);
+    }
 
     public Clan getClanById(String id) {
         return clans.getClans().stream().filter(c -> c.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
@@ -237,7 +251,7 @@ public class ClanHandler {
         //TODO: make sure to read the config here for default titles
         clan.createRank("owner", "leader");
         ClanRank ownerRank = clan.getRankById("owner");
-        HashMap<String, Boolean> permissions = ownerRank.getPermissions();
+        HashMap<ClanRankPermission, Boolean> permissions = ownerRank.getPermissions();
         permissions.replaceAll((k, v) -> true);
         ownerRank.setPermissions(permissions);
         ownerRank.setPriority(99);

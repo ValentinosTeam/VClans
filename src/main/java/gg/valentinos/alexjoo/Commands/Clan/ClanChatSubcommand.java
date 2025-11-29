@@ -50,6 +50,7 @@ public class ClanChatSubcommand extends SubCommand {
         }
         if (VClans.getInstance().getVaultHandler().getPermission() == null) {
             sendFormattedPredefinedMessage(sender, "no-vault");
+            return true;
         }
         return false;
     }
@@ -57,7 +58,7 @@ public class ClanChatSubcommand extends SubCommand {
     public boolean suggestCommand(CommandSender sender) {
         if (!(sender instanceof Player player)) return false;
         Clan clan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
-        return clan != null;
+        return VClans.getInstance().getVaultHandler().getChat() != null && clan != null;
     }
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {

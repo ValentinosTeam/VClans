@@ -26,6 +26,9 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         NEITHER
     }
 
+    private record OccupationAdvantage(Team team, int strength) {
+    }
+
     private final War war;
     private final Clan defenderClan;
     private final Clan attackerClan;
@@ -77,6 +80,9 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
             chunk.setOccupationState(ChunkOccupationState.SECURED);
             chunk.setOccupationProgress(CHUNK_HEALTH_POINTS);
         } else {
+            OccupationAdvantage advantage = getOccupationAdvantage();
+            Team team = advantage.team;
+            int strength = advantage.strength;
             switch (chunk.getOccupationState()) {
                 case SECURED -> {
                     if (!chunkHandler.chunkShouldBeSecured(chunk)) {
@@ -85,15 +91,13 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
                     }
                 }
                 case CONTROLLED -> {
-                    if (getOccupatingTeam() == Team.ATTACKERS) {
+                    if (team == Team.ATTACKERS) {
                         chunk.setOccupationState(ChunkOccupationState.CAPTURING);
                     }
                 }
                 case CAPTURING -> {
-                    if (getOccupatingTeam() == Team.ATTACKERS) {
-                        int attackerAmount = 0;
-                        if (playersInChunk.containsKey(attackerClan.getId())) attackerAmount = playersInChunk.get(attackerClan.getId()).size();
-                        int newProgress = chunk.getOccupationProgress() - CHUNK_OCCUPATION_DAMAGE * attackerAmount;
+                    if (team == Team.ATTACKERS) {
+                        int newProgress = chunk.getOccupationProgress() - CHUNK_OCCUPATION_DAMAGE * strength;
                         if (newProgress <= 0) {
                             chunk.setOccupationState(ChunkOccupationState.CAPTURED);
                             war.checkWarEndCondition();
@@ -101,29 +105,27 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
                         } else {
                             chunk.setOccupationProgress(newProgress);
                         }
-                    } else if (getOccupatingTeam() == Team.DEFENDERS) {
+                    } else if (team == Team.DEFENDERS) {
                         chunk.setOccupationState(ChunkOccupationState.LIBERATING);
-                    } else if (getOccupatingTeam() == Team.BOTH) {
+                    } else if (team == Team.BOTH) {
                         chunk.setOccupationState(ChunkOccupationState.CONTESTED);
                     }
                 }
                 case CAPTURED -> {
-                    if (getOccupatingTeam() == Team.DEFENDERS) {
+                    if (team == Team.DEFENDERS) {
                         chunk.setOccupationState(ChunkOccupationState.LIBERATING);
                     }
                 }
                 case CONTESTED -> {
-                    if (getOccupatingTeam() == Team.ATTACKERS) {
+                    if (team == Team.ATTACKERS) {
                         chunk.setOccupationState(ChunkOccupationState.CAPTURING);
-                    } else if (getOccupatingTeam() == Team.DEFENDERS) {
+                    } else if (team == Team.DEFENDERS) {
                         chunk.setOccupationState(ChunkOccupationState.LIBERATING);
                     }
                 }
                 case LIBERATING -> {
-                    if (getOccupatingTeam() == Team.DEFENDERS) {
-                        int defendersAmount = 0;
-                        if (playersInChunk.containsKey(defenderClan.getId())) defendersAmount = playersInChunk.get(defenderClan.getId()).size();
-                        int newProgress = chunk.getOccupationProgress() + CHUNK_OCCUPATION_DAMAGE * defendersAmount;
+                    if (team == Team.DEFENDERS) {
+                        int newProgress = chunk.getOccupationProgress() + CHUNK_OCCUPATION_DAMAGE * strength;
                         if (newProgress >= CHUNK_HEALTH_POINTS) {
                             if (chunkHandler.chunkShouldBeSecured(chunk)) {
                                 chunk.setOccupationState(ChunkOccupationState.SECURED);
@@ -134,9 +136,9 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
                         } else {
                             chunk.setOccupationProgress(newProgress);
                         }
-                    } else if (getOccupatingTeam() == Team.ATTACKERS) {
+                    } else if (team == Team.ATTACKERS) {
                         chunk.setOccupationState(ChunkOccupationState.CAPTURING);
-                    } else if (getOccupatingTeam() == Team.BOTH) {
+                    } else if (team == Team.BOTH) {
                         chunk.setOccupationState(ChunkOccupationState.CONTESTED);
                     }
                 }
@@ -190,16 +192,32 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         bossBar = null;
     }
 
-    private Team getOccupatingTeam() {
+    //    private Team getOccupatingTeam() {
+//        int defendersAmount = 0;
+//        if (playersInChunk.containsKey(defenderClan.getId())) defendersAmount = playersInChunk.get(defenderClan.getId()).size();
+//        int attackerAmount = 0;
+//        if (playersInChunk.containsKey(attackerClan.getId())) attackerAmount = playersInChunk.get(attackerClan.getId()).size();
+//
+//        if (defendersAmount == 0 && attackerAmount > 0) return Team.ATTACKERS;
+//        if (defendersAmount > 0 && attackerAmount == 0) return Team.DEFENDERS;
+//        if (defendersAmount > 0 && attackerAmount > 0) return Team.BOTH;
+//        return Team.NEITHER;
+//    }
+    private OccupationAdvantage getOccupationAdvantage() {
         int defendersAmount = 0;
         if (playersInChunk.containsKey(defenderClan.getId())) defendersAmount = playersInChunk.get(defenderClan.getId()).size();
         int attackerAmount = 0;
         if (playersInChunk.containsKey(attackerClan.getId())) attackerAmount = playersInChunk.get(attackerClan.getId()).size();
 
-        if (defendersAmount == 0 && attackerAmount > 0) return Team.ATTACKERS;
-        if (defendersAmount > 0 && attackerAmount == 0) return Team.DEFENDERS;
-        if (defendersAmount > 0 && attackerAmount > 0) return Team.BOTH;
-        return Team.NEITHER;
+        int strength = Math.abs(defendersAmount - attackerAmount);
+
+        Team team;
+        if (attackerAmount > defendersAmount) team = Team.ATTACKERS;
+        else if (defendersAmount > attackerAmount) team = Team.DEFENDERS;
+        else if (attackerAmount == 0 && defendersAmount == 0) team = Team.NEITHER;
+        else team = Team.BOTH;
+
+        return new OccupationAdvantage(team, strength);
     }
 
     private static PlayerDiff getChunkDiff(Map<String, List<Player>> previous, Map<String, List<Player>> current) {
