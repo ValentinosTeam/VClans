@@ -29,7 +29,7 @@ public class ClanCreateSubcommand extends SubCommand {
 
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
-            cooldownHandler.createCooldown(playerUUID, selfCooldownQuery, cooldownDuration);
+            cooldownHandler.createCooldown(playerUUID, targetCooldownQuery, cooldownDuration);
             Clan clan = clanHandler.createClan(playerUUID, clanName);
             VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
         };

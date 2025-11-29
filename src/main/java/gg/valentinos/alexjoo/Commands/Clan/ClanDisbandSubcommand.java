@@ -34,7 +34,7 @@ public class ClanDisbandSubcommand extends SubCommand {
                 }
             }
             sendFormattedMessage(player, messages.get("success"), LogType.FINE);
-            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.disbandClan(player.getUniqueId());
         };
     }

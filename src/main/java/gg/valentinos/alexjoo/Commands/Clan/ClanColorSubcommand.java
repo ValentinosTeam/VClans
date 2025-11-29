@@ -30,7 +30,7 @@ public class ClanColorSubcommand extends SubCommand {
         int b = Integer.parseInt(args[3]);
         return () -> {
             sendFormattedPredefinedMessage(player, "success", LogType.FINE);
-            cooldownHandler.createCooldown(playerUUID, selfCooldownQuery, cooldownDuration);
+            cooldownHandler.createCooldown(playerUUID, targetCooldownQuery, cooldownDuration);
             clanHandler.setClanColor(clan, r, g, b);
         };
     }

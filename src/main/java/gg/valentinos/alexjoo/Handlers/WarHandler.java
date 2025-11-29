@@ -21,6 +21,7 @@ public class WarHandler {
     public final int GRACE_SKIP_TILL;
     public final int CHUNK_HEALTH_POINTS;
     public final int CHUNK_OCCUPATION_DAMAGE;
+    public final int MIN_CLAN_TIER;
     public final String GRACE_PERIOD_BOSSBAR_FORMAT;
     public final String WAR_BOSSBAR_FORMAT;
 
@@ -31,12 +32,13 @@ public class WarHandler {
 
     public WarHandler() {
         ConfigurationSection config = VClans.getInstance().getConfig().getConfigurationSection("settings.war");
-        GRACE_PERIOD = config != null ? config.getInt("grace-period") : 60 * 60 * 24 * 20;
-        WAR_DURATION = config != null ? config.getInt("war-duration") : 60 * 60 * 4 * 20;
-        WAR_COOLDOWN = config != null ? config.getInt("war-cooldown") : 60 * 60 * 24 * 20;
-        GRACE_SKIP_TILL = config != null ? config.getInt("grace-skip-up-to") : 30 * 60;
+        GRACE_PERIOD = config != null ? config.getInt("grace-period") : 86400;
+        WAR_DURATION = config != null ? config.getInt("war-duration") : 25200;
+        WAR_COOLDOWN = config != null ? config.getInt("war-cooldown") : 86400;
+        GRACE_SKIP_TILL = config != null ? config.getInt("grace-skip-up-to") : 1800;
         CHUNK_HEALTH_POINTS = config != null ? config.getInt("chunk-health-points") : 1000;
         CHUNK_OCCUPATION_DAMAGE = config != null ? config.getInt("chunk-occupation-damage") : 1;
+        MIN_CLAN_TIER = config != null ? config.getInt("min_clan_tier") : 1;
         GRACE_PERIOD_BOSSBAR_FORMAT = config != null ? config.getString("grace-period-bossbar-name") : "Grace Period ends in: {h}h {m}m {s}s.";
         WAR_BOSSBAR_FORMAT = config != null ? config.getString("war-bossbar-name") : "{h}:{m}:{s} before war ends!";
         scheduler = VClans.getInstance().getTaskScheduler();

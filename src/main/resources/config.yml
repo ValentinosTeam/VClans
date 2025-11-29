@@ -13,14 +13,15 @@ settings:
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: 50 #     ... and respectively the lowest ...
   war:
-    grace-period: 100 # 24 hours, how long the clan has to prepare for war after a war declaration
-    war-duration: 300 # 7 hours, how long the war lasts after the grace period
-    war-cooldown: 10 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
-    chunk-health-points: 100 # how much hp does a chunk has when it is being captured (hurt) or liberated (healed) during war
-    chunk-occupation-damage: 5 # how much damage/healing does capture/liberating does to a chunk once a second PER PLAYER occupying
+    grace-period: 86400 # 24 hours, how long the clan has to prepare for war after a war declaration
+    war-duration: 25200 # 7 hours, how long the war lasts after the grace period
+    war-cooldown: 86400 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
+    chunk-health-points: 1000 # how much hp does a chunk has when it is being captured (hurt) or liberated (healed) during war
+    chunk-occupation-damage: 1 # how much damage/healing does capture/liberating does to a chunk once a second PER PLAYER occupying
     grace-period-bossbar-name: "Grace Period ends in: {h}h {m}m {s}s."
     war-bossbar-name: "{h}:{m}:{s} before war ends!"
-    grace-skip-up-to: 30 # when /war start is run by the defenders, the time to wait gets forwarded until there is this amount of seconds left until the end of grace period.
+    grace-skip-up-to: 1800 # when /war start is run by the defenders, the time to wait gets forwarded until there is this amount of seconds left until the end of grace period.
+    min_clan_tier: 1 # What clan tier should a clan have to be eligible for war.
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
@@ -101,7 +102,7 @@ commands:
     create:
       enabled: true
       target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
-      cooldown: 60*60*24 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
+      cooldown: 8 #6400 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
       confirmation: 30
       description: "Creates a new clan."
       usage: "/clan create <id>"
@@ -116,7 +117,7 @@ commands:
     disband:
       enabled: true
       target-cooldown: "clan-create"
-      cooldown: 10
+      cooldown: 8 #6400
       confirmation: 30 # This is the time in seconds the player has to confirm the action.
       description: "Disbands your clan."
       usage: "/clan disband"
@@ -282,6 +283,7 @@ commands:
         clan-on-cooldown: "Your clan is on a war cooldown. Please wait {clan-cooldown} seconds before declaring another war."
         target-on-cooldown: "The {target-clan} clan is on a war cooldown of {target-cooldown} seconds. You cannot declare war on them at this time."
         tier-mismatch: "You can't declare war on {target-clan}: their tier is too low."
+        tier-too-low: "Clans that don't have a minimum clan tier of {min-tier} can't participate in a war."
         no-chunks: "The clan {no-chunk-clan} has no chunks and therefor can't be in a war"
     peace:
       enabled: true

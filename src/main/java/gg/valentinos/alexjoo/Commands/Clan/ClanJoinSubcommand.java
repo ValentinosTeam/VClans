@@ -36,7 +36,7 @@ public class ClanJoinSubcommand extends SubCommand {
                     sendFormattedPredefinedMessage(memberPlayer.getPlayer(), "joined-notification", LogType.FINE);
                 }
             }
-            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             Clan clan = clanHandler.joinClan(player.getUniqueId(), clanId);
             VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
         };

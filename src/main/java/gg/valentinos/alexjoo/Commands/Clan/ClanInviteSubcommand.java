@@ -33,7 +33,7 @@ public class ClanInviteSubcommand extends SubCommand {
             OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
             if (target.getPlayer() != null && target.isOnline())
                 sendFormattedMessage(target.getPlayer(), messages.get("invitation"), LogType.INFO);
-            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.invitePlayer(player.getUniqueId(), targetName);
         };
     }

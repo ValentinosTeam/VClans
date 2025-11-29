@@ -15,7 +15,7 @@ import java.util.Objects;
 
 public class WarDeclareSubcommand extends SubCommand {
     public WarDeclareSubcommand() {
-        super("war", "declare", List.of("success", "initiator-clan-notification", "clan-in-war", "target-clan-notification", "declare-self", "clan-on-cooldown", "target-on-cooldown", "clan-not-found", "tier-mismatch", "no-chunks"));
+        super("war", "declare", List.of("success", "initiator-clan-notification", "clan-in-war", "target-clan-notification", "declare-self", "clan-on-cooldown", "target-on-cooldown", "clan-not-found", "tier-mismatch", "no-chunks", "tier-too-low"));
         hasToBePlayer = true;
         requiredArgs = 2;
     }
@@ -88,6 +88,10 @@ public class WarDeclareSubcommand extends SubCommand {
             sendFormattedPredefinedMessage(sender, "target-on-cooldown", LogType.WARNING);
             return true;
         }
+        if (targetClan.getTier() < warHandler.MIN_CLAN_TIER || clan.getTier() < warHandler.MIN_CLAN_TIER) {
+            sendFormattedPredefinedMessage(sender, "tier-too-low", LogType.WARNING);
+            return true;
+        }
         if (targetClan.getTier() < clan.getTier() - 1) {
             sendFormattedPredefinedMessage(sender, "tier-mismatch", LogType.WARNING);
             return true;
@@ -123,6 +127,7 @@ public class WarDeclareSubcommand extends SubCommand {
         String clanCooldown = "ERROR";
         String targetCooldown = "ERROR";
         String noChunkClan = "ERROR";
+        String minTier = warHandler.MIN_CLAN_TIER + "";
 
         if (sender instanceof Player player) {
             playerName = player.getName();
@@ -159,5 +164,6 @@ public class WarDeclareSubcommand extends SubCommand {
         replacements.put("{clan-cooldown}", clanCooldown);
         replacements.put("{target-cooldown}", targetCooldown);
         replacements.put("{no-chunk-clan}", noChunkClan);
+        replacements.put("{min-tier}", noChunkClan);
     }
 }

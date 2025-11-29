@@ -6,7 +6,6 @@ import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
@@ -68,12 +67,8 @@ public class ClanListSubcommand extends SubCommand {
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String clanId = "ERROR";
 
-        Player player = (Player) sender;
-        if (player != null) {
-            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            if (clan != null) {
-                clanId = clan.getId();
-            }
+        if (args.length == 2) {
+            clanId = args[1];
         }
 
         replacements.put("{clan-id}", clanId);

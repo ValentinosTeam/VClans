@@ -20,15 +20,12 @@ public class PlayerCooldownsMap {
     }
 
     public void purgeCooldowns() {
-        for (UUID player : playerCooldownsMap.keySet()) {
-            HashSet<Cooldown> cooldowns = playerCooldownsMap.get(player);
-            if (cooldowns != null) {
-                cooldowns.removeIf(Cooldown::isExpired);
-                if (cooldowns.isEmpty()) {
-                    playerCooldownsMap.remove(player);
-                }
-            }
-        }
+        playerCooldownsMap.entrySet().removeIf(entry -> {
+            HashSet<Cooldown> set = entry.getValue();
+            if (set == null) return true;
+            set.removeIf(Cooldown::isExpired);
+            return set.isEmpty();
+        });
     }
 
     public void addCooldown(UUID player, String query, long duration) {

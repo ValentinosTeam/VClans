@@ -34,7 +34,7 @@ public class ClanLeaveSubcommand extends SubCommand {
                     sendFormattedPredefinedMessage(p, "leave-notification", LogType.INFO);
                 }
             }
-            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.leaveClan(player.getUniqueId());
             VClans.getInstance().getVaultHandler().removePlayerPrefix(player);
         };

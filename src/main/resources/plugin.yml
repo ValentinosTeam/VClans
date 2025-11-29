@@ -1,5 +1,5 @@
 name: VClans
-version: '0.7'
+version: '0.8'
 main: gg.valentinos.alexjoo.VClans
 api-version: '1.21.8'
 authors: [ Alex_Joo ]
@@ -31,7 +31,4 @@ commands:
   cancel:
     description: Cancels your action.
     usage: /cancel
-  test:
-    description: This is VClans test command. you should not see this
-    usage: /test
 

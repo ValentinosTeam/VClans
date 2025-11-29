@@ -48,9 +48,12 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
             if (sender instanceof Player player) {
                 Clan clan = VClans.getInstance().getClanHandler().getClanByMember(player.getUniqueId());
                 if (clan != null) {
-                    VClans.sendFormattedMessage(sender, "Your current clan: " + clan.getName(), LogType.FINE);
+                    StringBuilder builder = new StringBuilder();
                     ClanTierHandler clanTierHandler = VClans.getInstance().getClanTierHandler();
-                    VClans.sendFormattedMessage(sender, clanTierHandler.getTierInfo(clan.getTier()), LogType.FINE);
+                    builder.append("Your current clan: [").append(clan.getPrefix()).append("&r] ").append(clan.getName()).append("&r, level ").append(clanTierHandler.getLabel(clan.getTier())).append("\n");
+                    builder.append("Players: ").append(clan.getMembers().size()).append("/").append(clanTierHandler.getPlayerLimit(clan.getTier())).append(" (").append(clan.getOnlinePlayers().size()).append(" online)\n");
+                    builder.append("Chunks: ").append(clan.getChunks().size()).append("/").append(clanTierHandler.getChunkLimit(clan.getTier()));
+                    VClans.sendFormattedMessage(sender, builder.toString(), LogType.FINE);
                 }
             }
             VClans.sendFormattedMessage(sender, "Use '/clan help' for help.", LogType.FINE);

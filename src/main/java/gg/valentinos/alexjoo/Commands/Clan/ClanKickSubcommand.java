@@ -43,7 +43,7 @@ public class ClanKickSubcommand extends SubCommand {
             }
             if (target != null && target.isOnline())
                 sendFormattedPredefinedMessage(target.getPlayer(), "kicked");
-            cooldownHandler.createCooldown(player.getUniqueId(), selfCooldownQuery, cooldownDuration);
+            cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.kickPlayer(player.getUniqueId(), targetName);
             VClans.getInstance().getVaultHandler().removePlayerPrefix(target);
         };

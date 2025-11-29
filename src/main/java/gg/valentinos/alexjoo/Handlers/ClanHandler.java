@@ -124,7 +124,9 @@ public class ClanHandler {
         saveClans();
         for (UUID memberUUID : clan.getMemberUUIDs()) {
             Player player = Bukkit.getPlayer(memberUUID);
-            VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
+            if (player != null) {
+                VClans.getInstance().getVaultHandler().setPlayerPrefix(player, clan.getPrefix());
+            }
         }
     }
     public void setClanName(Clan clan, String name) {

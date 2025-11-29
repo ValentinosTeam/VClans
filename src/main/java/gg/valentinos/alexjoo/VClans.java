@@ -86,9 +86,6 @@ public final class VClans extends JavaPlugin {
         Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
         Objects.requireNonNull(getCommand("cancel")).setExecutor(new CancelCommand());
 
-//        getCommand("test").setExecutor(new TestCommand());
-
-
         WORLD_NAME = getConfig().getString("settings.world-name");
 
         getLogger().info("vClans has been enabled!");
