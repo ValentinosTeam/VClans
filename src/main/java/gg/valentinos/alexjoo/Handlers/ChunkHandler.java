@@ -4,7 +4,9 @@ import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanChunk;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.ChunkRadar;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
@@ -99,12 +101,14 @@ public class ChunkHandler {
         if (radars.containsKey(player)) {
             ChunkRadar radar = radars.get(player);
             if (radar != null) {
+                Decorator.PlaySound(player, Key.key("minecraft:block.sculk_sensor.clicking_stop"), 1.4f);
                 radar.closeRadar();
                 radars.remove(player);
             }
         } else {
             if (!(player.getWorld().getName().equals(WORLD_NAME))) return;
             ChunkRadar chunkRadar = new ChunkRadar(player);
+            Decorator.PlaySound(player, Key.key("minecraft:block.sculk_sensor.clicking"), 1f);
             chunkRadar.initializeRadar();
             radars.put(player, chunkRadar);
         }

@@ -45,6 +45,13 @@ public class ClanHandler {
     }
     public void disbandClan(UUID playerUUID) {
         Clan clan = getClanByMember(playerUUID);
+        List<UUID> memberUUIDs = clan.getMemberUUIDs();
+        for (UUID memberUUID : memberUUIDs) {
+            Player member = VClans.getInstance().getServer().getPlayer(memberUUID);
+            if (member != null && member.isOnline()) {
+                VClans.getInstance().getVaultHandler().removePlayerPrefix(member);
+            }
+        }
         disbandClan(clan);
         Log("Player " + Objects.requireNonNull(Bukkit.getPlayer(playerUUID)).getName() + " has successfully disbanded the clan " + clan.getId());
     }

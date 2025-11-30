@@ -6,7 +6,11 @@ import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Data.WarData.War;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,11 +33,15 @@ public class WarDeclareSubcommand extends SubCommand {
             Clan targetClan = clanHandler.getClanById(targetClanId);
             warHandler.declareWar(playerClan, targetClan);
             for (Player onlinePlayer : playerClan.getOnlinePlayers()) {
+                Decorator.PlaySound(onlinePlayer, Key.key("minecraft:item.goat_horn.sound.2"), 1);
+                Decorator.Broadcast(onlinePlayer, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), Component.text("Your clan declared war on " + targetClan.getName()), 5);
                 if (onlinePlayer == player) continue;
                 sendFormattedPredefinedMessage(onlinePlayer, "initiator-clan-notification", LogType.NULL);
             }
             for (Player onlinePlayer : targetClan.getOnlinePlayers()) {
                 sendFormattedPredefinedMessage(onlinePlayer, "target-clan-notification", LogType.NULL);
+                Decorator.PlaySound(onlinePlayer, Key.key("minecraft:item.goat_horn.sound.2"), 1);
+                Decorator.Broadcast(onlinePlayer, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), Component.text(playerClan.getName() + " declared war on your clan"), 5);
             }
             sendFormattedPredefinedMessage(player, "success", LogType.INFO);
         };
@@ -164,6 +172,6 @@ public class WarDeclareSubcommand extends SubCommand {
         replacements.put("{clan-cooldown}", clanCooldown);
         replacements.put("{target-cooldown}", targetCooldown);
         replacements.put("{no-chunk-clan}", noChunkClan);
-        replacements.put("{min-tier}", noChunkClan);
+        replacements.put("{min-tier}", minTier);
     }
 }

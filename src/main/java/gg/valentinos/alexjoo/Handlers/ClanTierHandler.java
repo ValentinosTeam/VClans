@@ -190,6 +190,16 @@ public class ClanTierHandler {
     public int getHighestTierNumber() {
         return tiers.size() - 1;
     }
+    public int getTotalPriceSum(int tierId) {
+        int sum = 0;
+
+        for (int i = 0; i < tiers.size(); i++) {
+            sum += tiers.get(i).price;
+            if (i == tierId) break;
+        }
+
+        return sum;
+    }
     public String getLabel(int tier) {
         return tiers.get(tier).label;
     }

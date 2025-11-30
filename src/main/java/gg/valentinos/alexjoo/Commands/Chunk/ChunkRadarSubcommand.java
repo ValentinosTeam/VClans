@@ -17,6 +17,7 @@ public class ChunkRadarSubcommand extends SubCommand {
         hasToBePlayer = true;
         requiredArgs = 1;
         this.chunkHandler = VClans.getInstance().getChunkHandler();
+        successVolume = 0;
     }
 
     @Override
@@ -29,8 +30,7 @@ public class ChunkRadarSubcommand extends SubCommand {
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         if (args.length == 1) {
             return List.of("radar");
-        }
-        else{
+        } else {
             return List.of();
         }
     }

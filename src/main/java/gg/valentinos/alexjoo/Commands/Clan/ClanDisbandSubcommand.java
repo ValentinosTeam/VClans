@@ -5,7 +5,9 @@ import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -25,15 +27,14 @@ public class ClanDisbandSubcommand extends SubCommand {
         Player player = (Player) sender;
         return () -> {
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-            List<UUID> memberUUIDs = clan.getMemberUUIDs();
-            for (UUID memberUUID : memberUUIDs) {
+            for (UUID memberUUID : clan.getMemberUUIDs()) {
                 Player member = VClans.getInstance().getServer().getPlayer(memberUUID);
                 if (member != null && member.isOnline()) {
-                    sendFormattedMessage(member, messages.get("disband-notification"), LogType.FINE);
-                    VClans.getInstance().getVaultHandler().removePlayerPrefix(member);
+                    sendFormattedPredefinedMessage(member, "disband-notification", LogType.FINE);
+                    Decorator.PlaySound(member, Key.key("minecraft:item.lodestone_compass.lock"), 1.4f);
                 }
             }
-            sendFormattedMessage(player, messages.get("success"), LogType.FINE);
+            sendFormattedPredefinedMessage(player, "success", LogType.FINE);
             cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.disbandClan(player.getUniqueId());
         };

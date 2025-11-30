@@ -2,11 +2,15 @@ package gg.valentinos.alexjoo.Data.WarData;
 
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanChunk;
-import gg.valentinos.alexjoo.Handlers.ChunkHandler;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -33,7 +37,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
     private final Clan defenderClan;
     private final Clan attackerClan;
     private final ClanChunk chunk;
-    private final ChunkHandler chunkHandler;
+    //private final ChunkHandler chunkHandler;
 
     private final int CHUNK_HEALTH_POINTS;
     private final int CHUNK_OCCUPATION_DAMAGE;
@@ -46,7 +50,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         this.defenderClan = defenderClan;
         this.attackerClan = attackerClan;
         this.chunk = chunk;
-        this.chunkHandler = VClans.getInstance().getChunkHandler();
+        //this.chunkHandler = VClans.getInstance().getChunkHandler();
 
         this.CHUNK_HEALTH_POINTS = VClans.getInstance().getWarHandler().CHUNK_HEALTH_POINTS;
         this.CHUNK_OCCUPATION_DAMAGE = VClans.getInstance().getWarHandler().CHUNK_OCCUPATION_DAMAGE;
@@ -76,7 +80,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
     }
 
     private void handleChunkOccupation() {
-        if (chunk.getOccupationState() != ChunkOccupationState.SECURED && chunkHandler.chunkShouldBeSecured(chunk)) {
+        if (chunk.getOccupationState() != ChunkOccupationState.SECURED && VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
             chunk.setOccupationState(ChunkOccupationState.SECURED);
             chunk.setOccupationProgress(CHUNK_HEALTH_POINTS);
         } else {
@@ -85,7 +89,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
             int strength = advantage.strength;
             switch (chunk.getOccupationState()) {
                 case SECURED -> {
-                    if (!chunkHandler.chunkShouldBeSecured(chunk)) {
+                    if (!VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
                         chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
                         chunk.setOccupationProgress(CHUNK_HEALTH_POINTS);
                     }
@@ -99,7 +103,11 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
                     if (team == Team.ATTACKERS) {
                         int newProgress = chunk.getOccupationProgress() - CHUNK_OCCUPATION_DAMAGE * strength;
                         if (newProgress <= 0) {
+                            boolean oldIsLost = chunk.getIsLost();
                             chunk.setOccupationState(ChunkOccupationState.CAPTURED);
+                            if (!oldIsLost) {
+                                summonFireworks(true);
+                            }
                             war.checkWarEndCondition();
                             chunk.setOccupationProgress(0);
                         } else {
@@ -127,10 +135,14 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
                     if (team == Team.DEFENDERS) {
                         int newProgress = chunk.getOccupationProgress() + CHUNK_OCCUPATION_DAMAGE * strength;
                         if (newProgress >= CHUNK_HEALTH_POINTS) {
-                            if (chunkHandler.chunkShouldBeSecured(chunk)) {
+                            boolean oldIsLost = chunk.getIsLost();
+                            if (VClans.getInstance().getChunkHandler().chunkShouldBeSecured(chunk)) {
                                 chunk.setOccupationState(ChunkOccupationState.SECURED);
                             } else {
                                 chunk.setOccupationState(ChunkOccupationState.CONTROLLED);
+                            }
+                            if (oldIsLost) {
+                                summonFireworks(false);
                             }
                             chunk.setOccupationProgress(CHUNK_HEALTH_POINTS);
                         } else {
@@ -220,6 +232,33 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
         return new OccupationAdvantage(team, strength);
     }
 
+    private void summonFireworks(boolean isLost) {
+        FireworkEffect.Type type;
+        Color color;
+        if (isLost) {
+            type = FireworkEffect.Type.BURST;
+            color = Color.RED;
+        } else {
+            type = FireworkEffect.Type.STAR;
+            color = Color.BLUE;
+        }
+        int x = chunk.getX() * 16;
+        int z = chunk.getZ() * 16;
+        World world = VClans.getInstance().getServer().getWorld(chunk.getWorld());
+
+        Location corner1 = new Location(world, x, world.getHighestBlockYAt(x, z) + 2, z);
+        Location corner2 = new Location(world, x + 15, world.getHighestBlockYAt(x + 15, z) + 2, z);
+        Location corner3 = new Location(world, x, world.getHighestBlockYAt(x, z + 15) + 2, z + 15);
+        Location corner4 = new Location(world, x + 15, world.getHighestBlockYAt(x + 15, z + 15) + 2, z + 15);
+        Location center = new Location(world, x + 7.5, world.getHighestBlockYAt(x + 8, z + 8) + 2, z + 7.5);
+
+        Decorator.SummonFirework(corner1, color, 1, true, true, type);
+        Decorator.SummonFirework(corner2, color, 1, true, true, type);
+        Decorator.SummonFirework(corner3, color, 1, true, true, type);
+        Decorator.SummonFirework(corner4, color, 1, true, true, type);
+        Decorator.SummonFirework(center, color, 2, true, true, type);
+
+    }
     private static PlayerDiff getChunkDiff(Map<String, List<Player>> previous, Map<String, List<Player>> current) {
         List<Player> previousList = new ArrayList<>();
         for (List<Player> list : previous.values()) previousList.addAll(list);

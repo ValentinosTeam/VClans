@@ -8,6 +8,7 @@ import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClanTierHandler;
 import gg.valentinos.alexjoo.Handlers.VaultHandler;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,6 +20,8 @@ public class ClanUpgradeSubcommand extends SubCommand {
         super("clan", "upgrade", List.of("success", "max-tier", "cant-afford"));
         hasToBePlayer = true;
         requiredArgs = 1;
+        successSound = Key.key("minecraft:block.enchantment_table.use");
+        successVolume = 1;
     }
 
     @Override

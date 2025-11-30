@@ -7,6 +7,7 @@ import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,6 +21,8 @@ public class ChunkUnclaimSubcommand extends SubCommand {
         hasToBePlayer = true;
         requiredArgs = 1;
         this.chunkHandler = VClans.getInstance().getChunkHandler();
+        successSound = Key.key("minecraft:block.amethyst_cluster.break");
+        successVolume = 1f;
     }
 
     @Override

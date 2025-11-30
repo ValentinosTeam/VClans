@@ -68,7 +68,7 @@ public class WarProgressBarTask implements Consumer<BukkitTask>, Listener {
                     VClans.getInstance().getWarHandler().saveWars();
                 }
                 case IN_PROGRESS -> {
-                    war.endWar();
+                    war.endWar(false);
                     VClans.getInstance().getWarHandler().saveWars();
                 }
             }

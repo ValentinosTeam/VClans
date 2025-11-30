@@ -7,6 +7,7 @@ import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClanTierHandler;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,6 +19,8 @@ public class ClanDowngradeSubcommand extends SubCommand {
         super("clan", "downgrade", List.of("success", "min-tier"));
         hasToBePlayer = true;
         requiredArgs = 1;
+        successSound = Key.key("minecraft:block.grindstone.use");
+        successVolume = 1f;
     }
 
     @Override

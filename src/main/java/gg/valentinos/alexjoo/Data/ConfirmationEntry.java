@@ -14,11 +14,11 @@ public class ConfirmationEntry {
         this.timestamp = System.currentTimeMillis();
     }
 
-    public void execute(){
+    public void execute() {
         commandAction.execute();
     }
 
-    public boolean isExpired(){
+    public boolean isExpired() {
         return System.currentTimeMillis() - timestamp > duration;
     }
 

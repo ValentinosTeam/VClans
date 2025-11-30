@@ -5,7 +5,9 @@ import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.Handlers.ConfirmationHandler;
 import gg.valentinos.alexjoo.Handlers.CooldownHandler;
 import gg.valentinos.alexjoo.Handlers.WarHandler;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -35,6 +37,10 @@ public abstract class SubCommand {
     protected HashMap<String, String> messages;
     protected HashMap<String, String> replacements;
 
+    protected Key successSound = Key.key("minecraft:entity.experience_orb.pickup");
+    protected Key errorSound = Key.key("minecraft:block.netherite_block.place");
+    protected float successVolume = 0.3f;
+    protected float errorVolume = 0.5f;
     protected boolean hasToBePlayer = false;
     protected int minArgs = -1;
     protected int maxArgs = -1;
@@ -67,12 +73,16 @@ public abstract class SubCommand {
 
     public final void execute(CommandSender sender, String[] args) {
         loadReplacementValues(sender, args);
-        if (hasCommonIssues(sender, args)) return;
-        if (hasSpecificErrors(sender, args)) return;
-        if (isOnCooldown(sender, selfCooldownQuery)) return;
+        if (hasCommonIssues(sender, args) || hasSpecificErrors(sender, args) || isOnCooldown(sender, selfCooldownQuery)) {
+            if (sender instanceof Player player) {
+                Decorator.PlaySound(player, errorSound, errorVolume);
+            }
+            return;
+        }
 
         CommandAction action = getAction(sender, args);
-        executeWithConfirmation(sender, action);
+        executeWithConfirmation(sender, action, args);
+
     }
 
     public abstract CommandAction getAction(CommandSender sender, String[] args);
@@ -192,14 +202,28 @@ public abstract class SubCommand {
         return false;
     }
 
-    private void executeWithConfirmation(CommandSender sender, CommandAction action) {
+    private void executeWithConfirmation(CommandSender sender, CommandAction action, String[] args) {
         if (sender instanceof Player player && confirmationDuration > 0) {
             String confirmationTime = Objects.requireNonNullElse(String.valueOf(confirmationDuration), "ERROR");
             replacements.put("{confirm-time}", confirmationTime);
-            sendFormattedMessage(player, messages.get("confirmation-message"), LogType.INFO);
-            confirmationHandler.addConfirmationEntry(player, confirmationDuration, action);
+            sendFormattedPredefinedMessage(player, "confirmation-message", LogType.INFO);
+            CommandAction reconfirmingAction = new CommandAction() { // Need to do a second check for errors. (how have I not implemented this earlier?)
+                @Override
+                public void execute() {
+                    if (hasCommonIssues(sender, args) || hasSpecificErrors(sender, args)) {
+                        Decorator.PlaySound(player, errorSound, errorVolume);
+                        return;
+                    }
+                    Decorator.PlaySound(player, successSound, successVolume);
+                    action.execute();
+                }
+            };
+            confirmationHandler.addConfirmationEntry(player, confirmationDuration, reconfirmingAction);
         } else {
             action.execute();
+            if (sender instanceof Player player) {
+                Decorator.PlaySound(player, successSound, successVolume);
+            }
         }
     }
 

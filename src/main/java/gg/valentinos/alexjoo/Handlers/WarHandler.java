@@ -72,7 +72,7 @@ public class WarHandler {
         PeaceTreaty peaceTreaty = war.getPeaceTreaty();
         if (peaceTreaty == null) return;
         peaceTreaty.payOutTreaty(acceptor);
-        war.endWar();
+        war.endWar(true);
     }
     public void declinePeaceTreaty(War war) {
         war.setPeaceTreaty(null);
@@ -170,7 +170,10 @@ public class WarHandler {
                 } else {
                     wars.addWar(war);
                     war.initHandlers();
-                    scheduler.runTaskTimer(new WarProgressBarTask(war, targetClan, initiatorClan), 1, 20);
+                    WarProgressBarTask warProgressBarTask = new WarProgressBarTask(war, targetClan, initiatorClan);
+                    scheduler.runTaskTimer(warProgressBarTask, 1, 20);
+                    warMap.put(war, warProgressBarTask);
+                    war.loadTasks();
                 }
             }
         }

@@ -5,7 +5,9 @@ import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -41,8 +43,10 @@ public class ClanKickSubcommand extends SubCommand {
                     sendFormattedPredefinedMessage(p, "kicked-notification");
                 }
             }
-            if (target != null && target.isOnline())
+            if (target != null && target.isOnline()) {
                 sendFormattedPredefinedMessage(target.getPlayer(), "kicked");
+                Decorator.PlaySound(target, Key.key("minecraft:block.iron_door.close"), 1f);
+            }
             cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.kickPlayer(player.getUniqueId(), targetName);
             VClans.getInstance().getVaultHandler().removePlayerPrefix(target);

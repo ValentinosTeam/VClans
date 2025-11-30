@@ -6,7 +6,10 @@ import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ChunkHandler;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,6 +32,7 @@ public class ChunkClaimSubcommand extends SubCommand {
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
             chunkHandler.claimChunk(player.getChunk(), player);
+            Decorator.SummonFirework(player, Color.LIME, 1, true, true, FireworkEffect.Type.BALL_LARGE);
         };
     }
 

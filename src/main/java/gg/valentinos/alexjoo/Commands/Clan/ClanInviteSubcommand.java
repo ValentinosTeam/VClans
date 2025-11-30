@@ -5,7 +5,9 @@ import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,8 +33,10 @@ public class ClanInviteSubcommand extends SubCommand {
         return () -> {
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
             OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
-            if (target.getPlayer() != null && target.isOnline())
+            if (target.getPlayer() != null && target.isOnline()) {
                 sendFormattedMessage(target.getPlayer(), messages.get("invitation"), LogType.INFO);
+                Decorator.PlaySound(target.getPlayer(), Key.key("minecraft:item.book.page_turn"), 1f);
+            }
             cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.invitePlayer(player.getUniqueId(), targetName);
         };

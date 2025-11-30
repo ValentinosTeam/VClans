@@ -2,10 +2,14 @@ package gg.valentinos.alexjoo.Listeners;
 
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.List;
@@ -44,5 +48,22 @@ public class PlayerListener implements Listener {
         if (!invitedClanNames.isEmpty())
             player.sendMessage("You have been invited to: \n" + sb);
     }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        if (!(damager instanceof Firework firework)) return;
+        if (firework.hasMetadata(Decorator.HARMLESS_METADATA_KEY)) {
+            event.setCancelled(true);
+        }
+    }
+
+//    @EventHandler
+//    public void onPlayerJump(PlayerJumpEvent event) {
+//        Decorator.SummonFirework(event.getPlayer(), Color.GREEN, 1, true, true, FireworkEffect.Type.CREEPER);
+//        Decorator.SummonLightning(event.getPlayer());
+//        Decorator.Broadcast(event.getPlayer(), Component.text("War Ended").color(TextColor.color(255, 10, 10)), Component.text("thats it you won").color(TextColor.color(10, 255, 10)), 5);
+//        Decorator.PlaySound(event.getPlayer(), Key.key("minecraft:entity.experience_orb.pickup"), 0.2f);
+//    }
 
 }
