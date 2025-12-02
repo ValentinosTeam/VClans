@@ -35,7 +35,7 @@ public class ClanInviteSubcommand extends SubCommand {
             OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
             if (target.getPlayer() != null && target.isOnline()) {
                 sendFormattedMessage(target.getPlayer(), messages.get("invitation"), LogType.INFO);
-                Decorator.PlaySound(target.getPlayer(), Key.key("minecraft:item.book.page_turn"), 1f);
+                Decorator.PlaySound(target.getPlayer(), Key.key("minecraft:item.book.page_turn"), 1.5f);
             }
             cooldownHandler.createCooldown(player.getUniqueId(), targetCooldownQuery, cooldownDuration);
             clanHandler.invitePlayer(player.getUniqueId(), targetName);

@@ -1,25 +1,23 @@
 show-current-clan-on-join: true
 settings:
   world-name: "world" # The world name where chunk claiming will be enabled
-  max-clan-name-length: 16
+  max-clan-name-length: 21
   min-clan-name-length: 4
   max-prefix-length: 4
   chunk-cost-formula: "100x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
-  enemy-proximity-radius: 3 # the minimum amount of chunks between two different clan chunk claims
+  enemy-proximity-radius: 16 # the minimum amount of chunks between two different clan chunk claims
   region-proximity-radius: 3 # the minimum amount of chunks between a claimed chunk and a VClans protected WorldGuard region
-  invite-expiration: 60*60*24*7 # 7 days
-  default-clan-owner-title: "Leader"
-  default-clan-member-title: "Member"
+  invite-expiration: 86400 # 7 days
   extrude-max-y: 200 # the highest       ...        points on an area marker in BlueMap
   extrude-min-y: 50 #     ... and respectively the lowest ...
   war:
     grace-period: 86400 # 24 hours, how long the clan has to prepare for war after a war declaration
-    war-duration: 25200 # 7 hours, how long the war lasts after the grace period
+    war-duration: 10800 # 3 hours, how long the war lasts after the grace period
     war-cooldown: 86400 # 24 hours, how long the clan has to wait after a war ends before being able to be involved in another war
     chunk-health-points: 1000 # how much hp does a chunk has when it is being captured (hurt) or liberated (healed) during war
     chunk-occupation-damage: 1 # how much damage/healing does capture/liberating does to a chunk once a second PER PLAYER occupying
     grace-period-bossbar-name: "Grace Period ends in: {h}h {m}m {s}s."
-    war-bossbar-name: "{h}:{m}:{s} before war ends!"
+    war-bossbar-name: "{h}:{m}:{s} until war ends 🏹"
     grace-skip-up-to: 1800 # when /war start is run by the defenders, the time to wait gets forwarded until there is this amount of seconds left until the end of grace period.
     min_clan_tier: 1 # What clan tier should a clan have to be eligible for war.
 clan-tiers:
@@ -199,6 +197,7 @@ commands:
       messages:
         success: "You have successfully upgraded the clan to tier: {tier-label}"
         confirmation-message: "Are you sure you want to upgrade the clan to tier {tier-label} for the price of ${tier-price}? You have {confirm-time} seconds to /confirm !"
+        clan-upgraded: "Your clan got upgraded to {tier-label}!"
         max-tier: "You already have the highest tier clan!"
         cant-afford: "You can't afford the tier upgrade ({tier-price})"
     downgrade:
@@ -209,6 +208,7 @@ commands:
       messages:
         success: "You have successfully upgraded the clan to tier: {tier-label}"
         confirmation-message: "Are you sure you want to downgrade the clan to tier {tier-label}? You will lose all the perks offered by your current tier. You have {confirm-time} seconds to /confirm !"
+        clan-downgraded: "Your clan got downgraded to {tier-label}!"
         min-tier: "You already have the lowest tier clan!"
         need-to-kick: "You can't downgrade because you have too many players for tier {tier-label}. You can have only max {player-amount} players."
         need-to-unclaim: "You can't downgrade because you have too many claimed chunks for tier {tier-label}. You can have only max {chunk-amount} claimed chunks."

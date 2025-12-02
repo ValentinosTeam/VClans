@@ -118,7 +118,7 @@ public class ClanRenameSubcommand extends SubCommand {
         } else if (args.length == 2) {
             Clan clan = clanHandler.getClanByMember(player.getUniqueId());
             if (clan == null) return List.of();
-            return List.of(clan.getId());
+            return List.of(clan.getName());
         } else {
             return List.of();
         }

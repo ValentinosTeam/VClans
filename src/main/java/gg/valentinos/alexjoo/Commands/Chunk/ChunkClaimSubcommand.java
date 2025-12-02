@@ -32,7 +32,7 @@ public class ChunkClaimSubcommand extends SubCommand {
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
             chunkHandler.claimChunk(player.getChunk(), player);
-            Decorator.SummonFirework(player, Color.LIME, 1, true, true, FireworkEffect.Type.BALL_LARGE);
+            Decorator.SummonFirework(player, Color.LIME, 1, true, true, FireworkEffect.Type.BALL);
         };
     }
 

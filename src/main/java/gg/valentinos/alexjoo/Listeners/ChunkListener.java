@@ -9,6 +9,7 @@ import gg.valentinos.alexjoo.Handlers.ClanHandler;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;
@@ -33,6 +34,8 @@ import org.bukkit.event.world.StructureGrowEvent;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+
+import static gg.valentinos.alexjoo.VClans.Log;
 
 public class ChunkListener implements Listener {
     private final ChunkHandler chunkHandler;
@@ -64,34 +67,41 @@ public class ChunkListener implements Listener {
     }
 
     private void enterExitNotification(Player player, Chunk fromChunk, Chunk toChunk) {
-        String fromClanName = chunkHandler.getClanIdByChunk(fromChunk);
-        String toClanName = chunkHandler.getClanIdByChunk(toChunk);
-        TextColor color = TextColor.color(125, 125, 125);
-        if (toClanName != null) {
-            Clan toClan = clanHandler.getClanById(toClanName);
-            color = TextColor.color(toClan.getColor().get(0), toClan.getColor().get(1), toClan.getColor().get(2));
+        //TODO: make use of the clan Name not Id
+        Clan fromClan = chunkHandler.getClanByChunk(fromChunk);
+        Clan toClan = chunkHandler.getClanByChunk(toChunk);
+        TextColor toClanColor = GREEN;
+        TextColor fromClanColor = RED;
+        if (toClan != null) {
+            toClanColor = TextColor.color(toClan.getColor().get(0), toClan.getColor().get(1), toClan.getColor().get(2));
+        }
+        if (fromClan != null) {
+            fromClanColor = TextColor.color(fromClan.getColor().get(0), fromClan.getColor().get(1), fromClan.getColor().get(2));
         }
         Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
+        LegacyComponentSerializer amp = LegacyComponentSerializer.legacyAmpersand();
         Component title = null;
         Component subtitle = null;
 
-        if (fromClanName == null && toClanName != null) {
-            title = Component.text(toClanName).color(color);
-            if (playerClan != null && playerClan.getId().equals(toClanName)) {
-                subtitle = Component.text("Entered your territory").color(GREEN);
+        if (fromClan == null && toClan != null) { // from wilderness to clan
+            Log("to clan: " + toClan.getName());
+            title = amp.deserialize(toClan.getName());
+            if (playerClan != null && playerClan.getId().equals(toClan.getId())) {
+                subtitle = Component.text("Entered your territory").color(toClanColor);
             } else {
-                subtitle = Component.text("Entered territory").color(RED);
+                subtitle = Component.text("Entered territory").color(toClanColor);
             }
-        } else if (fromClanName != null && toClanName == null) {
+        } else if (fromClan != null && toClan == null) { // from clan to wilderness
+            Log("from clan: " + fromClan.getName());
             title = Component.text("");
-            subtitle = Component.text("Left territory");
-        } else if (!Objects.equals(fromClanName, toClanName)) {
-            Clan toClan = clanHandler.getClanById(toClanName);
-            title = Component.text(toClanName).color(TextColor.color(toClan.getColor().get(0), toClan.getColor().get(1), toClan.getColor().get(2)));
-            if (playerClan != null && playerClan.getId().equals(toClanName)) {
-                subtitle = Component.text("Entered your territory").color(GREEN);
+            subtitle = Component.text("Left territory").color(fromClanColor);
+        } else if (!Objects.equals(fromClan, toClan)) { // from clan to clan that are different
+            Log("from: " + fromClan.getName() + " to: " + toClan.getName());
+            title = amp.deserialize(toClan.getName());
+            if (playerClan != null && playerClan.getId().equals(toClan.getId())) {
+                subtitle = Component.text("Entered your territory").color(toClanColor);
             } else {
-                subtitle = Component.text("Entered territory").color(RED);
+                subtitle = Component.text("Entered territory").color(toClanColor);
             }
         }
 
@@ -99,7 +109,7 @@ public class ChunkListener implements Listener {
             player.showTitle(Title.title(
                     title,
                     subtitle,
-                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(1), Duration.ofMillis(500))
+                    Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))
             ));
         }
     }
@@ -110,9 +120,7 @@ public class ChunkListener implements Listener {
     private boolean shouldBlockPlayerInteraction(Chunk chunk, Player player, WarBypassRule warBypassRule) {
         if (player.isOp()) return false;
         // helper method for all the player related events
-        String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
-        if (chunkClanName == null) return false;
-        Clan chunkClan = clanHandler.getClanById(chunkClanName);
+        Clan chunkClan = clanHandler.getClanByChunkLocation(chunk);
         if (chunkClan != null && !chunkClan.isPlayerMember(player.getUniqueId())) {
 //                player.sendMessage(Component.text("You cannot interact with this territory").color(RED));
             if (warBypassRule == WarBypassRule.NONE) return true;
@@ -179,8 +187,7 @@ public class ChunkListener implements Listener {
             event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
         } else {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
-            if (chunkClanName != null) {
+            if (chunkHandler.isChunkClaimed(chunk)) {
                 event.setCancelled(true);
             }
         }
@@ -258,8 +265,7 @@ public class ChunkListener implements Listener {
         List<Block> blocks = event.blockList();
         blocks.removeIf(block -> {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
-            return chunkClanName != null; // Remove blocks in claimed chunks
+            return chunkHandler.isChunkClaimed(chunk); // Remove blocks in claimed chunks
         });
     }
 
@@ -311,12 +317,12 @@ public class ChunkListener implements Listener {
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
         Entity remover = event.getRemover();
         Chunk chunk = event.getEntity().getChunk();
-        String chunkClan = chunkHandler.getClanIdByChunk(chunk);
+        String chunkClanId = chunkHandler.getClanIdByChunk(chunk);
 
-        if (chunkClan == null) return;
+        if (chunkHandler.isChunkClaimed(chunk)) return;
 
         if (remover instanceof Player player) {
-            if (!clanHandler.isPlayerInClan(player.getUniqueId(), chunkClan)) {
+            if (!clanHandler.isPlayerInClan(player.getUniqueId(), chunkClanId)) {
                 event.setCancelled(true);
             }
         } else {
@@ -331,9 +337,7 @@ public class ChunkListener implements Listener {
         // forbid liquid flow from outside into a claimed territory
         Chunk fromChunk = event.getBlock().getChunk();
         Chunk toChunk = event.getToBlock().getChunk();
-        String fromClanName = chunkHandler.getClanIdByChunk(fromChunk);
-        String toClanName = chunkHandler.getClanIdByChunk(toChunk);
-        if (fromClanName == null && toClanName != null) {
+        if (chunkHandler.isChunkClaimed(fromChunk) && chunkHandler.isChunkClaimed(toChunk)) {
             event.setCancelled(true);
         }
     }
@@ -342,8 +346,8 @@ public class ChunkListener implements Listener {
     public void onBlockBurn(BlockBurnEvent event) {
         // block fire or lava from destroying blocks (does not apply to ice smelting)
         Chunk chunk = event.getBlock().getChunk();
-        String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
-        if (chunkClanName != null) {
+        if (chunkHandler.isChunkClaimed(chunk)) return;
+        {
             event.setCancelled(true);
         }
     }
@@ -354,8 +358,7 @@ public class ChunkListener implements Listener {
         List<Block> blocks = event.blockList();
         blocks.removeIf(block -> {
             Chunk chunk = block.getChunk();
-            String chunkClanName = chunkHandler.getClanIdByChunk(chunk);
-            return chunkClanName != null; // Remove blocks in claimed chunks
+            return chunkHandler.isChunkClaimed(chunk); // Remove blocks in claimed chunks
         });
     }
 
@@ -363,8 +366,7 @@ public class ChunkListener implements Listener {
     public void onTreeGrow(StructureGrowEvent event) {
         // removes blocks that would grow from outside claimed chunk inside (sapling -> tree, mushroom -> big mushroom)
         Chunk saplingChunk = event.getLocation().getChunk();
-        String clanName = chunkHandler.getClanIdByChunk(saplingChunk);
-        if (clanName != null) return;
+        if (chunkHandler.isChunkClaimed(saplingChunk)) return;
         event.getBlocks().removeIf(blockState -> {
             Chunk chunk = blockState.getLocation().getChunk();
             String targetClan = chunkHandler.getClanIdByChunk(chunk);

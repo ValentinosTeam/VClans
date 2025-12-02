@@ -6,6 +6,7 @@ import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClanTierHandler;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 public class ClanDowngradeSubcommand extends SubCommand {
     public ClanDowngradeSubcommand() {
-        super("clan", "downgrade", List.of("success", "min-tier"));
+        super("clan", "downgrade", List.of("success", "min-tier", "clan-downgraded", "need-to-kick", "need-to-unclaim"));
         hasToBePlayer = true;
         requiredArgs = 1;
         successSound = Key.key("minecraft:block.grindstone.use");
@@ -30,6 +31,11 @@ public class ClanDowngradeSubcommand extends SubCommand {
 
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
+            for (Player member : clan.getOnlinePlayers()) {
+                if (member.getUniqueId().equals(player.getUniqueId())) continue;
+                sendFormattedPredefinedMessage(member, "clan-downgraded", LogType.FINE);
+                Decorator.PlaySound(member, successSound, successVolume);
+            }
             VClans.getInstance().getClanHandler().downgradeClan(clan);
         };
     }

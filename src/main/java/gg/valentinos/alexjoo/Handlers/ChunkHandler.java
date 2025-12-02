@@ -172,6 +172,9 @@ public class ChunkHandler {
         }
         return clanChunk.getClanId();
     }
+    public boolean isChunkClaimed(Chunk chunk) {
+        return getClanIdByChunk(chunk.getX(), chunk.getZ()) != null;
+    }
     public boolean isChunkClaimedByClan(Chunk chunk, String clanName) {
         ClanChunk clanChunk = getClanChunk(chunk.getX(), chunk.getZ());
         return clanChunk != null && clanChunk.getClanId().equals(clanName);
@@ -339,7 +342,6 @@ public class ChunkHandler {
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
-                    String clanChunkName = getClanIdByChunk(player.getChunk());
                     Clan chunkClan = clanHandler.getClanByChunkLocation(player.getChunk());
                     List<PotionEffect> effects = new ArrayList<>();
                     if (chunkClan != null) {

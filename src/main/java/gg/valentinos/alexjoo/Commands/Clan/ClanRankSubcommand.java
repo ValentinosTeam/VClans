@@ -7,6 +7,8 @@ import gg.valentinos.alexjoo.Data.ClanData.ClanRank;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.GUIs.RankGui;
+import gg.valentinos.alexjoo.Utility.Decorator;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -49,6 +51,7 @@ public class ClanRankSubcommand extends SubCommand {
                 if (target.isOnline()) {
                     Player targetPlayer = (Player) target;
                     sendFormattedPredefinedMessage(targetPlayer, "rank-changed", LogType.INFO);
+                    Decorator.PlaySound(targetPlayer, Key.key("minecraft:block.note_block.pling"), 1f);
                 }
 
             }

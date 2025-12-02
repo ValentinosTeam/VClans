@@ -4,7 +4,9 @@ import gg.valentinos.alexjoo.Commands.CommandAction;
 import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.LogType;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,6 +18,7 @@ public class ClanChatSubcommand extends SubCommand {
         super("clan", "chat", List.of("success", "no-vault"));
         hasToBePlayer = true;
         requiredArgs = 1;
+        successVolume = 0;
     }
 
     @Override
@@ -25,10 +28,13 @@ public class ClanChatSubcommand extends SubCommand {
 
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
-            if (VClans.getInstance().getVaultHandler().getClanChat(player) == null)
+            if (VClans.getInstance().getVaultHandler().getClanChat(player) == null) {
                 VClans.getInstance().getVaultHandler().setPlayerChat(player, clan);
-            else
+                Decorator.PlaySound(player, Key.key("minecraft:block.ender_chest.open"), 0.1f);
+            } else {
                 VClans.getInstance().getVaultHandler().setPlayerChat(player, null);
+                Decorator.PlaySound(player, Key.key("minecraft:block.ender_chest.close"), 0.1f);
+            }
         };
     }
     @Override

@@ -34,14 +34,14 @@ public class WarDeclareSubcommand extends SubCommand {
             warHandler.declareWar(playerClan, targetClan);
             for (Player onlinePlayer : playerClan.getOnlinePlayers()) {
                 Decorator.PlaySound(onlinePlayer, Key.key("minecraft:item.goat_horn.sound.2"), 1);
-                Decorator.Broadcast(onlinePlayer, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), Component.text("Your clan declared war on " + targetClan.getName()), 5);
+                Decorator.Broadcast(onlinePlayer, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), "Your clan declared war on " + targetClan.getName(), 5);
                 if (onlinePlayer == player) continue;
                 sendFormattedPredefinedMessage(onlinePlayer, "initiator-clan-notification", LogType.NULL);
             }
             for (Player onlinePlayer : targetClan.getOnlinePlayers()) {
                 sendFormattedPredefinedMessage(onlinePlayer, "target-clan-notification", LogType.NULL);
                 Decorator.PlaySound(onlinePlayer, Key.key("minecraft:item.goat_horn.sound.2"), 1);
-                Decorator.Broadcast(onlinePlayer, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), Component.text(playerClan.getName() + " declared war on your clan"), 5);
+                Decorator.Broadcast(onlinePlayer, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), playerClan.getName() + " declared war on your clan", 5);
             }
             sendFormattedPredefinedMessage(player, "success", LogType.INFO);
         };

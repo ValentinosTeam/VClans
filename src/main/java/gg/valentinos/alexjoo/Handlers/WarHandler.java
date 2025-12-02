@@ -28,7 +28,7 @@ public class WarHandler {
     private final TaskScheduler scheduler;
 
     private Wars wars;
-    private HashMap<War, WarProgressBarTask> warMap;
+    private final HashMap<War, WarProgressBarTask> warMap;
 
     public WarHandler() {
         ConfigurationSection config = VClans.getInstance().getConfig().getConfigurationSection("settings.war");

@@ -12,6 +12,7 @@ softdepend:
   - LuckPerms
   - BlueMap
   - WorldGuard
+  - CombatLogX
 commands:
   clan:
     description: Handles all clan related commands.

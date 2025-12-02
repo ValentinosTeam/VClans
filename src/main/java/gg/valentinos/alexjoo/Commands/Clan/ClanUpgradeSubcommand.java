@@ -7,6 +7,7 @@ import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Handlers.ClanTierHandler;
 import gg.valentinos.alexjoo.Handlers.VaultHandler;
+import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 public class ClanUpgradeSubcommand extends SubCommand {
     public ClanUpgradeSubcommand() {
-        super("clan", "upgrade", List.of("success", "max-tier", "cant-afford"));
+        super("clan", "upgrade", List.of("success", "max-tier", "cant-afford", "clan-upgraded"));
         hasToBePlayer = true;
         requiredArgs = 1;
         successSound = Key.key("minecraft:block.enchantment_table.use");
@@ -31,6 +32,11 @@ public class ClanUpgradeSubcommand extends SubCommand {
 
         return () -> {
             sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
+            for (Player member : clan.getOnlinePlayers()) {
+                if (member.getUniqueId().equals(player.getUniqueId())) continue;
+                sendFormattedPredefinedMessage(member, "clan-upgraded", LogType.FINE);
+                Decorator.PlaySound(member, successSound, successVolume);
+            }
             VClans.getInstance().getClanHandler().upgradeClan(clan);
             VaultHandler vaultHandler = VClans.getInstance().getVaultHandler();
             if (vaultHandler.getEconomy() != null) {

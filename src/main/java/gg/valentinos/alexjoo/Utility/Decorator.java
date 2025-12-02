@@ -4,6 +4,7 @@ import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -59,6 +60,17 @@ public class Decorator {
                 Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(duration), Duration.ofMillis(500))
         ));
     }
+    public static void Broadcast(Player player, String titleMessage, String subtitleMessage, int duration) {
+        LegacyComponentSerializer amp = LegacyComponentSerializer.legacyAmpersand();
+        Component title = amp.deserialize(titleMessage);
+        Component subtitle = amp.deserialize(subtitleMessage);
+        Broadcast(player, title, subtitle, duration);
+    }
+    public static void Broadcast(Player player, Component title, String subtitleMessage, int duration) {
+        LegacyComponentSerializer amp = LegacyComponentSerializer.legacyAmpersand();
+        Component subtitle = amp.deserialize(subtitleMessage);
+        Broadcast(player, title, subtitle, duration);
+    }
 
     public static void PlaySound(Player player, Key soundKey, float volume) {
         Sound sound = Sound.sound()
@@ -69,5 +81,13 @@ public class Decorator {
                 .build();
         player.playSound(sound, Sound.Emitter.self());
 
+    }
+
+    public static String formatSeconds(int seconds) {
+        int h = seconds / 3600;
+        int m = (seconds % 3600) / 60;
+        int s = seconds % 60;
+
+        return String.format("%02d", h) + ":" + String.format("%02d", m) + ":" + String.format("%02d", s);
     }
 }

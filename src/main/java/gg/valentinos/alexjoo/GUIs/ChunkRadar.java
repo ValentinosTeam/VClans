@@ -46,7 +46,7 @@ public class ChunkRadar {
 
         this.scoreboard = manager.getNewScoreboard();
 
-        objective = scoreboard.registerNewObjective("Chunk Radar", Criteria.DUMMY, Component.text("North").decorate(TextDecoration.BOLD).color(TextColor.color(255, 85, 85)));
+        objective = scoreboard.registerNewObjective("Chunk Radar", Criteria.DUMMY, Component.text(" North").decorate(TextDecoration.BOLD).color(TextColor.color(255, 85, 85)));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         updateRadar(player.getChunk());

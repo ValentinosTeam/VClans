@@ -240,7 +240,7 @@ public class ChunkOccupationTask implements Consumer<BukkitTask> {
             color = Color.RED;
         } else {
             type = FireworkEffect.Type.STAR;
-            color = Color.BLUE;
+            color = Color.fromRGB(102, 204, 255);
         }
         int x = chunk.getX() * 16;
         int z = chunk.getZ() * 16;

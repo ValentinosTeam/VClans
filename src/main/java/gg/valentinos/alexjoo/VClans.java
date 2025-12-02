@@ -39,16 +39,18 @@ public final class VClans extends JavaPlugin {
     private WorldGuardHandler worldGuardHandler = null;
     private VaultHandler vaultHandler = null;
     private TaskScheduler taskScheduler;
+    private CombatLogXHandler combatLogXHandler = null;
     private HashMap<String, String> defaultMessages;
 
     @Override
     public void onEnable() {
         instance = this;
 
+        WORLD_NAME = getConfig().getString("settings.world-name");
+
         saveDefaultConfig();
 
         loadDefaultMessages();
-
 
         taskScheduler = new TaskScheduler(this);
         vaultHandler = new VaultHandler();
@@ -59,6 +61,7 @@ public final class VClans extends JavaPlugin {
         cooldownHandler = new CooldownHandler();
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();
+        combatLogXHandler = new CombatLogXHandler();
 
         if (worldGuardHandler == null || !worldGuardHandler.enable()) {
             Log("Something went really wrong when enabling the WorldGuard plugin", LogType.SEVERE);
@@ -72,6 +75,7 @@ public final class VClans extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new ChunkListener(), this);
         getServer().getPluginManager().registerEvents(new ChatListener(vaultHandler.getChat()), this);
+        if (combatLogXHandler.isEnabled()) getServer().getPluginManager().registerEvents(combatLogXHandler, this);
 
         ClanCommand clanCommand = new ClanCommand();
         Objects.requireNonNull(getCommand("clan")).setExecutor(clanCommand);
@@ -86,17 +90,13 @@ public final class VClans extends JavaPlugin {
         Objects.requireNonNull(getCommand("confirm")).setExecutor(new ConfirmCommand());
         Objects.requireNonNull(getCommand("cancel")).setExecutor(new CancelCommand());
 
-        WORLD_NAME = getConfig().getString("settings.world-name");
-
         getLogger().info("vClans has been enabled!");
 
     }
 
     @Override
     public void onLoad() {
-        if (!setupWorldGuard()) {
-//            Log("WorldGuard plugin not found. This plugin has support for it, just so u know :)", LogType.WARNING);
-        }
+        setupWorldGuard();
     }
 
     @Override
@@ -121,9 +121,11 @@ public final class VClans extends JavaPlugin {
 
         taskScheduler = null;
 
+        combatLogXHandler = null;
+
         instance = null;
 
-        getLogger().info("vClans has been disabled.");
+        getLogger().info("VClans has been disabled.");
     }
 
     public static VClans getInstance() {

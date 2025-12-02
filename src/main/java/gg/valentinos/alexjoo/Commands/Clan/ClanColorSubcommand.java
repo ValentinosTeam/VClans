@@ -5,6 +5,7 @@ import gg.valentinos.alexjoo.Commands.SubCommand;
 import gg.valentinos.alexjoo.Data.ClanData.Clan;
 import gg.valentinos.alexjoo.Data.ClanData.ClanRankPermission;
 import gg.valentinos.alexjoo.Data.LogType;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,6 +18,7 @@ public class ClanColorSubcommand extends SubCommand {
         super("clan", "color", List.of("success", "invalid-input"));
         hasToBePlayer = true;
         requiredArgs = 4;
+        successSound = Key.key("minecraft:item.bucket.empty");
     }
 
     @Override

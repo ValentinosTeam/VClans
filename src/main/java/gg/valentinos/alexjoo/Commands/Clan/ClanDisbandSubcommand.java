@@ -50,7 +50,7 @@ public class ClanDisbandSubcommand extends SubCommand {
             return true;
         }
         if (!clanHandler.hasPermission(player, ClanRankPermission.CAN_DISBAND)) {
-            sendFormattedPredefinedMessage(sender, "no-permission", LogType.WARNING);
+            sendFormattedPredefinedMessage(sender, "not-owner", LogType.WARNING);
             return true;
         }
         if (warHandler.isInWar(clan)) {

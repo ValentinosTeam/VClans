@@ -81,11 +81,11 @@ public class War {
         Clan targetClan = clanHandler.getClanById(targetClanId);
         for (Player player : initiatorClan.getOnlinePlayers()) {
             Decorator.PlaySound(player, Key.key("minecraft:item.goat_horn.sound.2"), 1);
-            Decorator.Broadcast(player, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), Component.text("Your clan declared war on " + targetClan.getName()), 5);
+            Decorator.Broadcast(player, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), "Your clan declared war on " + targetClan.getName(), 5);
         }
         for (Player player : targetClan.getOnlinePlayers()) {
             Decorator.PlaySound(player, Key.key("minecraft:item.goat_horn.sound.2"), 1);
-            Decorator.Broadcast(player, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), Component.text(initiatorClan.getName() + " declared war on your clan"), 5);
+            Decorator.Broadcast(player, Component.text("War Declared!").color(TextColor.color(255, 0, 0)), initiatorClan.getName() + " declared war on your clan", 5);
         }
     }
     public void startWar() {
@@ -124,7 +124,7 @@ public class War {
             }
             for (Player player : loserClan.getOnlinePlayers()) {
                 sendFormattedMessage(player, "You lost the war and the clan is gone...", LogType.INFO); // TODO: Make this message configurable
-                Decorator.PlaySound(player, Key.key("minecraft:item.goat_horn.sound.7"), 1);
+                Decorator.PlaySound(player, Key.key("minecraft:entity.ender_dragon.death"), 1);
                 Decorator.Broadcast(player, Component.text("Lost the war.").color(TextColor.color(255, 0, 0)), Component.text("Your clan got disbanded..."), 5);
                 Decorator.SummonLightning(player);
             }

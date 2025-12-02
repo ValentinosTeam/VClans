@@ -206,9 +206,9 @@ public class ClanHandler {
     public boolean clanExists(String name) {
         return clans.getClans().stream().anyMatch(c -> c.getId().equalsIgnoreCase(name));
     }
-    public boolean isPlayerInClan(UUID playerUUID, String clanName) {
+    public boolean isPlayerInClan(UUID playerUUID, String clanId) {
         Clan clan = getClanByMember(playerUUID);
-        return clan != null && clan.getId().equals(clanName);
+        return clan != null && clan.getId().equals(clanId);
     }
     public boolean clanIsFull(Clan clan) {
         return clan.getMembers().size() >= VClans.getInstance().getClanTierHandler().getPlayerLimit(clan.getTier());
