@@ -967,7 +967,7 @@ commands:
       description: "Creates a new faction with the specified faction ID."
       usage: "/f create <faction-id>"
       messages:
-        success: "&aYou have successfully created a faction with the ID: &f{clan-id}&a. Use '/f rename' to change the faction name." # {name} will be replaced with the name of the clan. Works on most messages.
+        success: "&aYou have successfully created a faction with the ID: &f{clan-id}&a. Use '&f/f rename' &ato change the faction name." # {name} will be replaced with the name of the clan. Works on most messages.
         confirmation-message: "&7Are you sure you want to create this faction with the ID: &f{clan-id}&7? This &c&ncannot&7 be changed! Type '&f/confirm&7' if you are sure."
         already-exists: "&cA faction with the ID: &f{clan-id} &calready exists. Try using a different ID."
         too-long: "&cThe faction ID is too long. Maximum length is 10 characters."

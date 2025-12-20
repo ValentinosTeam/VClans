@@ -31,11 +31,6 @@ public class WarPeaceSubcommand extends SubCommand {
         Clan otherClan = warHandler.getWarEnemyClan(playerClan);
         War war = warHandler.getWar(playerClan);
 
-        if (args.length < 2) {
-            return () -> {
-
-            };
-        }
         String arg = args[1].toLowerCase();
 
         if (arg.equals("accept")) {
