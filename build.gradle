@@ -1,12 +1,12 @@
 plugins {
     id 'java'
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "com.gradleup.shadow" version "8.3.5"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 description = 'VClans is a plugin that allows players to create and manage clans in Minecraft. Developing for the Valentinos Minecraft server.'
 group = 'gg.valentinos'
-version = '0.10'
+version = '0.11'
 
 repositories {
     mavenCentral()
@@ -32,6 +32,8 @@ dependencies {
     implementation 'net.kyori:adventure-text-minimessage:4.23.0'
     compileOnly 'com.github.sirblobman.api:core:2.9-SNAPSHOT'
     compileOnly 'com.github.sirblobman.combatlogx:api:11.6-SNAPSHOT'
+
+    implementation 'net.objecthunter:exp4j:0.4.8'
 }
 
 
@@ -43,6 +45,7 @@ tasks.jar {
 }
 tasks.shadowJar {
     archiveClassifier.set("")
+    relocate 'net.objecthunter.exp4j', 'gg.valentinos.vclans.libs.exp4j'
 }
 
 def targetJavaVersion = 21

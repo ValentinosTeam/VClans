@@ -5,11 +5,11 @@ import gg.valentinos.alexjoo.Data.LogType;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.util.HashMap;
 
 import static gg.valentinos.alexjoo.VClans.Log;
@@ -21,8 +21,6 @@ public class VaultHandler {
     private Permission perm;
 
     private HashMap<Player, Clan> playerChatMap;
-
-    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
 
     public VaultHandler() {
         playerChatMap = new HashMap<>();
@@ -69,20 +67,28 @@ public class VaultHandler {
     }
     public double calculateFormula(String formula, double x) {
         if (econ == null) return 0;
-        double result;
+
         try {
-            String expr = formula.replace("x", String.valueOf(x)).replace("^", "**");
-            Object engineResult = engine.eval(expr);
-            result = Double.parseDouble(engineResult.toString());
+            Expression expression = new ExpressionBuilder(formula)
+                    .variable("x")
+                    .build()
+                    .setVariable("x", x);
+
+            double result = expression.evaluate();
+
+            if (Double.isNaN(result) || Double.isInfinite(result)) {
+                Log("Invalid formula result: " + result + ", y = " + formula + ", x = " + x, LogType.WARNING);
+                return 0;
+            }
+
+            result = Math.floor(result);
+            Log(" formula result: " + result + ", y = " + formula + ", x = " + x, LogType.INFO);
+            return result;
+
         } catch (Exception e) {
-            Log("Error evaluating formula: " + formula, LogType.SEVERE);
+            Log("Error evaluating formula: " + formula + " with x=" + x + " | " + e.getMessage(), LogType.SEVERE);
             return 0;
         }
-        if (Double.isNaN(result) || Double.isInfinite(result)) {
-            Log("Invalid formula result: " + result + ", y = " + formula + ", x = " + x, LogType.WARNING);
-            return 0;
-        }
-        return result;
     }
 
     public Chat getChat() {

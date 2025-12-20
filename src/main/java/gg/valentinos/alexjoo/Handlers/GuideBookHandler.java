@@ -41,10 +41,10 @@ public class GuideBookHandler {
     public boolean areBooksReady() {
         return booksReady;
     }
-    public void reloadBooks() {
-        VClans.getInstance().reloadConfig();
-        this.booksReady = loadBooks();
-    }
+//    public void reloadBooks() {
+//        VClans.getInstance().reloadConfig();
+//        this.booksReady = loadBooks();
+//    }
 
     private boolean loadBooks() {
         ConfigurationSection config = VClans.getInstance().getConfig().getConfigurationSection("guide-books");

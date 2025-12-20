@@ -31,9 +31,7 @@ public class ClanGuideSubcommand extends SubCommand {
             if (args.length == 2) {
                 chapter = args[1];
             }
-            //TODO: TESTING ------------------
-            guideBookHandler.reloadBooks();
-            //TODO: TESTING ------------------
+//            guideBookHandler.reloadBooks();
             Player player = (Player) sender;
             guideBookHandler.openBook(player, chapter);
         };

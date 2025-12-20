@@ -4,7 +4,7 @@ settings:
   max-clan-name-length: 21
   min-clan-name-length: 4
   max-prefix-length: 4
-  chunk-cost-formula: "100x" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
+  chunk-cost-formula: "100 * x^1.1" # x is the amount of currently claimed chunks by the clan (REQUIRES VAULT)
   enemy-proximity-radius: 16 # the minimum amount of chunks between two different clan chunk claims
   region-proximity-radius: 3 # the minimum amount of chunks between a claimed chunk and a VClans protected WorldGuard region
   invite-expiration: 86400 # 7 days
@@ -21,8 +21,8 @@ settings:
     grace-skip-up-to: 3600 # when /war start is run by the defenders, the time to wait gets forwarded until there is this amount of seconds left until the end of grace period.
     min_clan_tier: 2 # What clan tier should a clan have to be eligible for war.
 guide-books:
-  title: "<gold><bold>Clan Guide</bold></gold>"
-  author: "<aqua>Valentinos</aqua>"
+  title: "<dark_red><b>V</b></dark_red>Clans Handbook"
+  author: "Alex & Kellogg"
   books:
     # a navigation chapter is necessary
     navigation:
@@ -797,8 +797,8 @@ guide-books:
 
         <dark_red><b>V</b></dark_red>Clans has integrations with CombatLog preventing PVP logging between enemies but allows it when damaging your fellow faction members.
         
-        <aqua>test</aqua>
-        <dark_aqua>test</dark_aqua>
+        
+        
         
         <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
 clan-tiers:
