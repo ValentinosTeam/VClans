@@ -182,7 +182,6 @@ public class Clan {
     }
     public void removeRank(String name) {
         ranks.remove(name);
-        //TODO: set rank to default for all members with this rank
     }
     public void setRank(UUID playerUUID, String rankId) {
         ClanMember member = members.get(playerUUID);
@@ -204,17 +203,17 @@ public class Clan {
         component = component.append(Component.text("Rank ID: " + rank.getId())).append(Component.newline());
         component = component.append(Component.text("Priority: " + rank.getPriority())).append(Component.newline());
 
-        HashMap<ClanRankPermission, Boolean> permissions = rank.getPermissions();
-        for (Map.Entry<ClanRankPermission, Boolean> entry : permissions.entrySet()) {
-            ClanRankPermission permission = entry.getKey();
-            boolean value = entry.getValue();
-            Component temp = Component.text(value);
-            if (!value)
-                temp = temp.color(TextColor.color(255, 0, 0));
-            else
-                temp = temp.color(TextColor.color(0, 255, 0));
-            component = component.append(Component.text(permission + ": ")).append(temp).append(Component.newline());
-        }
+//        HashMap<ClanRankPermission, Boolean> permissions = rank.getPermissions();
+//        for (Map.Entry<ClanRankPermission, Boolean> entry : permissions.entrySet()) {
+//            ClanRankPermission permission = entry.getKey();
+//            boolean value = entry.getValue();
+//            Component temp = Component.text(value);
+//            if (!value)
+//                temp = temp.color(TextColor.color(255, 0, 0));
+//            else
+//                temp = temp.color(TextColor.color(0, 255, 0));
+//            component = component.append(Component.text(permission + ": ")).append(temp).append(Component.newline());
+//        }
 
         List<UUID> uuids = getMemberUUIDsFromRank(rank.getId());
         StringBuilder sb = new StringBuilder();

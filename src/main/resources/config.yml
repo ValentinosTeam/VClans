@@ -18,37 +18,900 @@ settings:
     chunk-occupation-damage: 1 # how much damage/healing does capture/liberating does to a chunk once a second PER PLAYER occupying
     grace-period-bossbar-name: "Grace Period ends in: {h}h {m}m {s}s."
     war-bossbar-name: "{h}:{m}:{s} until war ends 🏹"
-    grace-skip-up-to: 1800 # when /war start is run by the defenders, the time to wait gets forwarded until there is this amount of seconds left until the end of grace period.
-    min_clan_tier: 1 # What clan tier should a clan have to be eligible for war.
+    grace-skip-up-to: 3600 # when /war start is run by the defenders, the time to wait gets forwarded until there is this amount of seconds left until the end of grace period.
+    min_clan_tier: 2 # What clan tier should a clan have to be eligible for war.
+guide-books:
+  title: "<gold><bold>Clan Guide</bold></gold>"
+  author: "<aqua>Valentinos</aqua>"
+  books:
+    # a navigation chapter is necessary
+    navigation:
+      - |
+        <b>     Navigation</b>
+        <dark_green>     Getting Started</dark_green>
+        
+        Welcome to <b><dark_red>V</dark_red></b>Clans! Click the link below to get started with your first faction.
+        
+        <blue>   <u><click:run_command:'/clan guide quick-start'>Get Started Here!</click></u></blue>
+        
+        For more information flip through the pages to find what you are looking for.
+      - |
+        <b>     Navigation</b>
+        <dark_aqua>  Faction Management</dark_aqua>
+        
+        <click:run_command:'/clan guide faction-creation'><blue><u>Faction Creation</u></blue></click>
+        
+        <click:run_command:'/clan guide faction-chat'><blue><u>Faction Chat</u></blue></click>
+        
+        <click:run_command:'/clan guide faction-formatting'><blue><u>Faction Customization</u></blue></click>
+        
+        <click:run_command:'/clan guide faction-tiers'><blue><u>Faction Upgrades</u></blue></click>
+
+      - |
+        <b>     Navigation</b>
+        <dark_aqua>  Faction Management</dark_aqua>
+        
+        <click:run_command:'/clan guide faction-members'><blue><u>Faction Members</u></blue></click>
+        
+        <click:run_command:'/clan guide faction-tiers'><blue><u>Faction Ranks</u></blue></click>
+        
+        <click:run_command:'/clan guide faction-disbanding'><blue><u>Faction Disbanding</u></blue></click>
+      - |
+        <b>     Navigation</b>
+        <dark_gray> Territory Management</dark_gray>
+
+        <click:run_command:'/clan guide chunk-claiming'><blue><u>Chunk Claiming</u></blue></click>
+        
+        <click:run_command:'/clan guide chunk-unclaiming'><blue><u>Chunk Unclaiming</u></blue></click>
+        
+        <click:run_command:'/clan guide chunk-radar'><blue><u>Chunk Radar</u></blue></click>
+        
+        <click:run_command:'/clan guide chunk-protections'><blue><u>Chunk Protections</u></blue></click>
+      - |
+        <b>     Navigation</b>
+        <dark_red>       War System</dark_red>
+        
+        <click:run_command:'/clan guide what-is-war'><blue><u>Introduction</u></blue></click>
+        
+        <click:run_command:'/clan guide war-declaration'><blue><u>War Declaration</u></blue></click>
+        
+        <click:run_command:'/clan guide war-sieges'><blue><u>Base Sieges</u></blue></click>
+        
+        <click:run_command:'/clan guide war-peace-treaties'><blue><u>Peace Treaties</u></blue></click>
+        
+        <click:run_command:'/clan guide war-ending'><blue><u>War Ending</u></blue></click>
+      - |
+        <b>     Navigation</b>
+        <dark_purple>     Miscellaneous</dark_purple>
+
+        <click:run_command:'/clan guide bluemap'><blue><u>BlueMap Support</u></blue></click>
+        
+        <click:run_command:'/clan guide combatlog'><blue><u>CombatLog Support</u></blue></click>
+    quick-start:
+      - |
+        <dark_green>   <b>Getting Started</b></dark_green>
+
+        To create a faction use the 
+        '<i>/f create <id></i>' command.
+
+        Then invite your friends to the faction using the 
+        '<i>/f invite <player></i>'
+        command.
+      - |
+        <dark_green>   <b>Getting Started</b></dark_green>
+        
+        To accept an invite use the 
+        '<i>/f join <faction-id></i>' command.
+
+        Claim land for your faction base by running the '<i>/c claim</i>' command.
+      - |
+        <dark_green>   <b>Getting Started</b></dark_green>
+        
+        If you need money use the '<i>/shop</i>' command to sell resources.
+      - |
+        <dark_green>   <b>Getting Started</b></dark_green>
+        
+        To attack an enemy faction base start by upgrading your faction to <b>Tier III</b> with the 
+        '<i>/f upgrade</i>' command and then run the 
+        '<i>/w declare <id></i>' command using the target faction ID.
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    faction-creation:
+      - |
+        <dark_aqua>  <b>Faction Creation</b></dark_aqua>
+        
+        Use '<i>/f create <id></i>' to create a faction. 
+
+        All factions have a unique ID which is used to refer to the faction in commands. 
+        
+        The ID is permanent and can <b>not</b> be changed. 
+
+      - |
+        <dark_aqua>  <b>Faction Creation</b></dark_aqua>
+        
+        The ID is <b>not</b> the faction name. You can rename the faction at any time.
+
+        A faction ID can consist of 4 - 10 lowercase alphabetical characters including underscores '_' and dashes '-'.
+
+      - |
+        <dark_aqua>  <b>Faction Creation</b></dark_aqua>
+        
+        Use '<i>/clan list</i>' to see a list of all other factions and their IDs.
+
+        You can <b>not</b> create a faction while you are already in a faction. 
+
+        You will be unable to create a new faction immediately after disbanding one.
+      - |
+        <dark_aqua>  <b>Faction Creation</b></dark_aqua>
+
+        The creator of a faction will always be its leader and can <b>not</b> relinquish that rank nor leave said faction.
+
+
+
+
+
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    faction-disbanding:
+      - |
+        <dark_aqua><b>Faction Disbanding</b></dark_aqua>
+
+        It is possible to disband a faction as its leader by using the 
+        '<i>/f disband</i>' command. 
+
+        This will <b>kick</b> all of the members, <b>unclaim</b> all of the claimed chunks and the faction will be <red><b>destroyed</b></red>.
+      - |
+        <dark_aqua><b>Faction Disbanding</b></dark_aqua>
+        
+        A faction can not be disbanded immediately after its creation and once disbanded its leader will have to wait out a cooldown before creating a new faction.
+
+        It is not possible to disband a faction during <click:run_command:'/clan guide what-is-war'><blue><u>war</u></blue></click>.
+      - |
+        <dark_aqua><b>Faction Disbanding</b></dark_aqua>
+        
+        Disbanding a faction is the only way for a faction leader to leave their faction.
+        
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+
+    faction-formatting:
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        You can rename your faction by using the '<i>/f rename <name></i>' command.
+        
+        A faction name can consist of 4 - 21 alphanumerical  characters including underscores '_', spaces ' ', and dashes '-'.
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        Every faction has a prefix which is visible in front of the username of each member in said faction.
+        
+        The prefix can be changed using the 
+        '<i>/f prefix <prefix></i>' command.
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        A faction prefix can only consist of 1 - 4 alphabetical characters.
+        
+        Both the faction name and prefix can be formatted with legacy colors using '&1-9' and '&a-f'.
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        The faction <click:run_command:'/clan guide faction-ranks'><blue><u>rank titles</u></blue></click> can also be formatted with legacy colors as well as legacy formatting.
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        Formatting does not count towards the character limits.
+        
+        <b><dark_blue>1</dark_blue> <dark_green>2</dark_green> <dark_aqua>3</dark_aqua> <dark_red>4</dark_red> <dark_purple>5</dark_purple> <gold>6</gold> <gray>7</gray> <dark_gray>8</dark_gray>
+        <blue>9</blue> <green>a</green> <aqua>b</aqua> <red>c</red> <light_purple>d</light_purple> <yellow>e</yellow> <white>f</white></b>
+        <b>l</b>, <st>m</st>, <u>n</u>, <i>o</i>
+
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        Each faction starts with a random theme color which determines its appearance on <click:run_command:'/clan guide bluemap'><blue><u>bluemaps</u></blue></click> and the <click:run_command:'/clan guide chunk-radar'><blue><u>chunk radar</u></blue></click>.
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        You can change this color using the 
+        '<i>/f color <r> <g> \<b></i>' command.
+        
+        The values for <dark_red><b>r</b></dark_red>, <dark_green><b>g</b></dark_green>, and <dark_blue><b>b</b></dark_blue> must lay in between 0 - 255 each.
+        
+        You can pick a color and get its RGB code <click:open_url:'https://share.google/TryfbvnT7MOeHyhJZ'><blue><u>here</u></blue></click>.
+      - |
+        <dark_aqua>    <b>Customization</b></dark_aqua>
+        
+        Each command used to customize a faction requires you to have a <click:run_command:'/clan guide faction-ranks'><blue><u>rank</u></blue></click> with appropriate permissions.
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    faction-chat:
+      - |
+        <dark_aqua>     <b>Faction Chat</b></dark_aqua>
+
+        You are able to toggle between a global chat and a faction chat '<i>/f chat</i>' command. 
+
+        The global chat is the default Minecraft server chat visible to all players.
+      - |
+        <dark_aqua>     <b>Faction Chat</b></dark_aqua>
+
+        All messages sent in your faction chat will start with the 
+        '[Faction Chat]' prefix. 
+        Messages sent in the faction chat will be visible to you no matter which chat you have toggled on.
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    faction-tiers:
+      - |
+        <dark_aqua> <b>Faction Upgrades</b></dark_aqua>
+
+        Each faction has a member limit, a claimed chunks limit, and at higher tiers special perks.
+
+        When a faction is created it will start off as a <b>Tier I</b> faction.
+      - |
+        <dark_aqua> <b>Faction Upgrades</b></dark_aqua>
+        
+        A list of all faction tiers is available in the final pages of this chapter.
+
+        You can upgrade your faction for a <gold>$</gold> price using the '<i>/f upgrade</i>' command.
+      - |
+        <dark_aqua> <b>Faction Upgrades</b></dark_aqua>
+        
+        Upgrading a faction grants it a higher member limit, a higher claimed chunks limit, and eventually, buffs for its members and debuffs for any enemy invaders.
+      - |
+        <dark_aqua> <b>Faction Upgrades</b></dark_aqua>
+        
+        Once your faction is upgraded to <b>Tier III</b> it will be susceptible to <click:run_command:'/clan guide war-declaration'><blue><u>declarations of war</u></blue></click> from other factions as well as unlock the ability to declare war against other factions itself.
+      - |
+        <dark_aqua> <b>Faction Upgrades</b></dark_aqua>
+        
+        <b>To stay pacifist keep your faction tier <u>below</u> Tier III.</b>
+        
+        It is possible to downgrade a faction using the 
+        '<i>/f downgrade</i>' command. 
+        <b>No refunds!</b>
+      - |
+        <dark_aqua> <b>Faction Upgrades</b></dark_aqua>
+        
+        Upgrading or downgrading a faction requires you to have a <click:run_command:'/clan guide faction-ranks'><blue><u>rank</u></blue></click> with appropriate permissions. 
+
+        The next page and onwards lists all available faction tiers.
+
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+      - |
+        <b>Tier [I]</b>
+        Upgrade Cost: <gold>$0</gold>
+        Member Limit: 3
+        Claimed Chunk Limit: 5
+        Member Buffs: <dark_gray>None</dark_gray>
+        Invader Debuffs: <dark_gray>None</dark_gray>
+      - |
+        <b>Tier [II]</b>
+        Upgrade Cost: <gold>$1,000</gold>
+        Member Limit: 5
+        Claimed Chunk Limit: 9
+        Member Buffs: <dark_gray>None</dark_gray>
+        Invader Debuffs: <dark_gray>None</dark_gray>
+      - |
+        <b>Tier [III]</b>
+        Upgrade Cost: <gold>$10,000</gold>
+        Member Limit: 10
+        Claimed Chunk Limit: 25
+        Member Buffs: <dark_gray>None</dark_gray>
+        Invader Debuffs: <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        <b>Tier [IV]</b>
+        Upgrade Cost: <gold>$50,000</gold>
+        Member Limit: 12
+        Claimed Chunk Limit: 29
+        Member Buffs: <red>Regeneration I</red>
+        Invader Debuffs: <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        <b>Tier [V]</b>
+        Upgrade Cost: <gold>$150,000</gold>
+        Member Limit: 14
+        Claimed Chunk Limit: 34
+        Member Buffs: <red>Regeneration I</red>
+        Invader Debuffs: <dark_green>Hunger I</dark_green>, <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        <b>Tier [VI]</b>
+        Upgrade Cost: <gold>$350,000</gold>
+        Member Limit: 17
+        Claimed Chunk Limit: 39
+        Member Buffs: <dark_blue>Water Breathing I</dark_blue>, <red>Regeneration I</red>
+        Invader Debuffs: <dark_green>Hunger I</dark_green>, <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        <b>Tier [VII]</b>
+        Upgrade Cost: <gold>$500,000</gold>
+        Member Limit: 20
+        Claimed Chunk Limit: 44
+        Member Buffs: <dark_blue>Water Breathing I</dark_blue>, <red>Regeneration I</red>
+        Invader Debuffs: <dark_green>Hunger I</dark_green>, <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        <b>Tier [VIII]</b>
+        Upgrade Cost: <gold>$1,000,000</gold>
+        Member Limit: 22
+        Claimed Chunk Limit: 49
+        Member Buffs: <dark_blue>Water Breathing I</dark_blue>, <red>Regeneration I</red>
+        Invader Debuffs: <dark_green>Hunger I</dark_green>, <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        <b>Tier [IX]</b>
+        Upgrade Cost: <gold>$3,000,000</gold>
+        Member Limit: 25
+        Claimed Chunk Limit: 55
+        Member Buffs: <dark_red>Fire Resistance I</dark_red>, <dark_blue>Water Breathing I</dark_blue>, <red>Regeneration I</red>
+        Invader Debuffs: <dark_green>Hunger I</dark_green>, <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        <b>Tier [X]</b>
+        Upgrade Cost: <gold>$????</gold>
+        Member Limit: 30
+        Claimed Chunk Limit: 61
+        Member Buffs: <gold>Resistance I</gold>, <dark_red>Fire Resistance I</dark_red>, <dark_blue>Water Breathing I</dark_blue>, <red>Regeneration I</red>
+        Invader Debuffs: <gray>Infested I</gray>, <dark_green>Hunger I</dark_green>, <gray>Glowing I</gray>, <dark_gray>Mining Fatigue I</dark_gray>
+      - |
+        More to come...
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    faction-members:
+      - |
+        <dark_aqua>  <b>Faction Members</b></dark_aqua>
+
+        To invite a player to your faction use the '<i>/f invite <player></i>' command.
+
+        To accept a faction invitation you must not already be in any faction and use the '<i>/f join <faction-id></i>' command.
+      - |
+        <dark_aqua>  <b>Faction Members</b></dark_aqua>
+        
+        To leave a faction run the 
+        '<i>/f leave</i>' command.
+
+        To kick a faction member from the faction use the 
+        '<i>/f kick <player></i>' command.
+      - |
+        <dark_aqua>  <b>Faction Members</b></dark_aqua>
+        
+        To kick and invite members you need to have a rank with the relevant permissions. 
+        
+        To create, edit, and assign ranks + permissions to your faction members refer to the rank system <click:run_command:'/clan guide faction-ranks'><blue><u>here</u></blue></click>.
+      - |
+        <dark_aqua>  <b>Faction Members</b></dark_aqua>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    faction-ranks:
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+
+        To change the rank of a faction member use the 
+        '<i>/f rank <player> <rank></i>' command.
+
+        The rank of the faction leader can not be switched out nor can any other faction member be promoted to faction leader.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        The ranks available to the members of a faction can be created, customized, and have permissions added to them using a <b>GUI</b> accessible with the '<i>/f rank</i>' command.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        Your own rank is displayed by hovering over the player head in the top right of the <b>GUI</b>.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        In the <b>GUI</b> you can create new ranks from scratch by selecting the '<i>Create Rank</i>' tool. You can also edit or delete existing ranks by picking up and putting down the '<i>Edit Rank</i>' or '<i>Delete Rank</i>' tools on a specific rank in the <b>GUI</b>.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        The default 'leader' and 'member' ranks can <b>not</b> be deleted and may only be renamed in terms of any editing.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        In the creation/editing tool you can select which permissions the rank has by toggling the <dark_red>red</dark_red>/<dark_green>green</dark_green> blocks.
+
+        You can also change the rank title by selecting the nametag. The rank title can also be <click:run_command:'/clan guide faction-formatting'><blue><u>formatted</u></blue></click> with colors and more.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        You can also change a ranks 'priority' by selecting the torches or lanterns on either polarity of the sign.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        The priority number indicates the ranks hierarchical position in the faction. A rank with a higher number has control over ranks with lower numbers.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        If you have created a new rank and select '<i>Save Changes</i>' you will have to input a rank <b>ID</b>. The rank <b>ID</b> must be unique and of lowercase alphanumerical characters.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        In the <b>GUI</b> the gold block is the faction leader rank and the nugget is the default member rank. Ingots in the menu represent any custom ranks created in the faction.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        In the <b>GUI</b> a golden rank indicates that there are faction members with that rank and iron ranks indicate that the rank is currently unused.
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        The rank permissions are mostly self explanatory, but here is a more detailed description of a few special cases:
+
+        '<i>Can Disband</i>' is the only permission that can’t be applied to any rank other than leader.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        '<i>Can Create / Edit / Delete Rank</i>' allows the member with said permission to create, edit, and delete ranks that have a lower priority number than their own. Note that they can not give out any permission that their rank does not have.
+      - |
+        <dark_aqua>    <b>Faction Ranks</b></dark_aqua>
+        
+        '<i>Can Offer Peace</i>' allows the member to interact with peace treaties during war.
+        
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    chunk-claiming:
+      - |
+        <dark_gray>   <b>Chunk Claiming</b></dark_gray>
+
+        You can claim chunks for your faction with the '<i>/c claim</i>' command. Use <b>F3 + G</b> to see chunk borders.
+
+        A claimed chunk is <click:run_command:'/clan guide chunk-protections'><blue><u>protected</u></blue></click> from everyone except its faction members.
+      - |
+        <dark_gray>   <b>Chunk Claiming</b></dark_gray>
+        
+        Certain claimed chunk protections are dropped during <click:run_command:'/clan guide what-is-war'><blue><u>war</u></blue></click>. 
+
+        The cost of claiming chunks increases the more chunks a faction has already claimed.
+      - |
+        <dark_gray>   <b>Chunk Claiming</b></dark_gray>
+        
+        Each faction has a limit of how many chunks it can claim depending on its <click:run_command:'/clan guide faction-tiers'><blue><u>faction tier</u></blue></click>. 
+
+        You can only claim chunks that are directly adjacent to one another.
+      - |
+        <dark_gray>   <b>Chunk Claiming</b></dark_gray>
+        
+        To be able to claim a chunk it must not be too close to an existing chunk claim of another faction.
+
+        It is not possible to claim or <click:run_command:'/clan guide chunk-unclaiming'><blue><u>unclaim</u></blue></click> chunks during war.
+      - |
+        <dark_gray>   <b>Chunk Claiming</b></dark_gray>
+        
+        To claim chunks for your faction you will need the appropriate <click:run_command:'/clan guide faction-ranks'><blue><u>rank permission</u></blue></click>.
+        
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    chunk-unclaiming:
+      - |
+        <dark_gray>  <b>Chunk Unclaiming</b></dark_gray>
+
+        You can unclaim a chunk by standing in it and running the '<i>/c unclaim</i>' command.
+
+        Unclaiming a chunk does <b>not</b> refund any money spent on claiming that chunk.
+      - |
+        <dark_gray>  <b>Chunk Unclaiming</b></dark_gray>
+        
+        It is not possible to unclaim a chunk in such a way that it will cause other claimed chunks to no longer be directly adjacent to one another.
+
+        To unclaim chunks for your faction you will need the appropriate <click:run_command:'/clan guide faction-ranks'><blue><u>rank permission</u></blue></click>.
+      - |
+        <dark_gray>  <b>Chunk Unclaiming</b></dark_gray>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    chunk-radar:
+      - |
+        <dark_gray>     <b>Chunk Radar</b></dark_gray>
+
+        The chunk radar is a minimap that displays all chunks and their ownership around you in a 5x5 area of tiles. The radar <b>always</b> points north, use <b>F3</b> to orient yourself.
+      - |
+        <dark_gray>     <b>Chunk Radar</b></dark_gray>
+        
+        Run the '<i>/chunk radar</i>' command to toggle the radar on/off.
+
+        You as the user of the chunk radar will always take on the center position in the middle of its grid.
+      - |
+        <dark_gray>     <b>Chunk Radar</b></dark_gray>
+        
+        If a chunk is claimed by a faction the tile representing it will be filled with the corresponding <click:run_command:'/clan guide faction-formatting'><blue><u>faction color</u></blue></click>.
+      - |
+        <dark_gray>     <b>Chunk Radar</b></dark_gray>
+        
+        Consider changing your faction color if you are <click:run_command:'/clan guide what-is-war'><blue><u>invading</u></blue></click> or are being invaded by another faction with a similar color.
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    chunk-protections:
+      - |
+        <dark_gray> <b>Chunk Protections</b></dark_gray>
+
+        Claimed faction chunks have protections that prevent other players and external factors from interacting with anything inside the chunk.
+      - |
+        <dark_gray> <b>Chunk Protections</b></dark_gray>
+        
+        When a <click:run_command:'/clan guide what-is-war'><blue><u>war</u></blue></click> is declared, claimed chunk protection for PVP and crystal explosion block damage are temporarily dropped for both factions involved throughout the war duration.
+      - |
+        <dark_gray> <b>Chunk Protections</b></dark_gray>
+        
+        If a chunk were to get <click:run_command:'/clan guide war-sieges'><blue><u>occupied</u></blue></click> during the war then almost all protections for that claimed chunk are dropped for as long as the chunk stays occupied.
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    what-is-war:
+      - |
+        <dark_red>      <b>What is War</b></dark_red>
+
+        In <dark_red><b>V</b></dark_red>Clans factions of <click:run_command:'/clan guide faction-tiers'><blue><u>Tier III</u></blue></click> or higher have the ability to <click:run_command:'/clan guide war-declaration'><blue><u>declare war</u></blue></click> against each other.
+      - |
+        <dark_red>      <b>What is War</b></dark_red>
+        
+        The goal of a war for both parties involved is ultimately to destroy the opposing faction by <click:run_command:'/clan guide war-sieges'><blue><u>capturing</u></blue></click> all of their claimed chunks before the war duration is over.
+        
+        Now it is not expected that this be the outcome in most cases.
+      - |
+        <dark_red>      <b>What is War</b></dark_red>
+        
+        However succeeding in it depends on both a good offense by being able to efficiently invade the enemy base, as well as a strong defense by building a robust and defensible faction base.
+      - |
+        <dark_gray>    <b>Strategy Tips</b></dark_gray>
+
+        When sieging an enemy faction base keep in mind that until you have captured a chunk you will not be able to break blocks inside of it using normal means.
+      - |
+        <dark_gray>    <b>Strategy Tips</b></dark_gray>
+        
+        Instead use <b>end crystal explosions</b> to break through walls or other hindrances to get inside and start capturing the chunk.
+      - |
+        <dark_gray>    <b>Strategy Tips</b></dark_gray>
+        
+        Alternatively use <b>ender pearls</b> or <b>chorus fruit</b> to attempt to teleport inside if you are feeling brave.
+      - |
+        <dark_gray>    <b>Strategy Tips</b></dark_gray>
+        
+        For defense build walls along each of your chunk borders to prevent invaders from sneaking inside without resistance. Use strong explosion resistant blocks like deepslate or obsidian and coat the outside with water or lava for additional protection.
+      - |
+        <dark_gray>    <b>Strategy Tips</b></dark_gray>
+        
+        Finally, remember that if you are the target of a declaration of war then your faction can start said war early, potentially catching the attackers off guard by running '<i>/w start</i>'. Good luck!
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    war-declaration:
+      - |
+        <dark_red>   <b>War Declaration</b></dark_red>
+
+        To declare war against another faction use the 
+        '<i>/w declare <id></i>' command.
+
+        This will start a grace period of 24 hours which by the time it ends will start the war.
+      - |
+        <dark_red>   <b>War Declaration</b></dark_red>
+        
+        Keep in mind that the target faction can at any time during the grace period run the '<i>/w start</i>' command which will shorten the grace period to 60 minutes.
+
+      - |
+        <dark_red>   <b>War Declaration</b></dark_red>
+        
+        Once a war has started it will last for a maximum of <b>3 hours</b> unless <click:run_command:'/clan guide war-ending'><blue><u>ended earlier</u></blue></click>.
+      - |
+        <dark_red>   <b>War Declaration</b></dark_red>
+        
+        To be able to declare a war your faction and the target faction must be of <click:run_command:'/clan guide faction-tiers'><blue><u>Tier III</u></blue></click> or higher. The target faction can also not be of 2 or more tiers below the attacking faction.
+      - |
+        <dark_red>   <b>War Declaration</b></dark_red>
+        
+        Your faction must also not already be involved in an active war. After said war has ended both factions can not be involved in any wars for 24 hours.
+      - |
+        <dark_red>   <b>War Declaration</b></dark_red>
+        
+        To be able to declare war for your faction you will need a <click:run_command:'/clan guide faction-ranks'><blue><u>rank</u></blue></click> with the appropriate permission.
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    war-sieges:
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+
+        During war the claimed chunks of both factions at war lose certain protections and become vulnerable to capture by the enemy forces. 
+
+        The claimed chunks can be in <b>4</b> different states as listed on the next page.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        <dark_blue><b>Secured</b></dark_blue>, <blue><b>controlled</b></blue>, <dark_purple><b>contested</b></dark_purple>, or <dark_red><b>captured</b></dark_red>.
+
+        At the start of a war all chunks owned by each faction are either <blue>controlled</blue> or <dark_blue>secured</dark_blue>.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        When members from an invading faction enter a <blue>controlled</blue> chunk they will start the process of <red>capturing</red> said chunk.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        If there are more defenders than invaders in the chunk it will remain <blue>controlled</blue>, however if the balance flip and the invaders outnumber the defenders then the chunk will eventually get <dark_red>captured</dark_red>.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        If there are equal amounts of defenders and invaders then the chunk will become <dark_purple>contested</dark_purple> and no progress will be made for any of the factions.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        Once a chunk has been <dark_red>captured</dark_red> it will lose almost all of its <click:run_command:'/clan guide chunk-protections'><blue><u>protections</u></blue></click>. The defenders are able to <dark_aqua>liberate</dark_aqua> it by outnumbering the invaders in the chunk which will turn it back into a <blue>controlled</blue> chunk, reinstating its protections.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        There are also <dark_blue>secured</dark_blue> chunks which are <b>unable</b> to be <dark_red>captured</dark_red>. A chunk is <dark_blue>secured</dark_blue> if it is surrounded on all sides by <blue>controlled</blue> or other <dark_blue>secured</dark_blue> chunks.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        The more of each faction members there are over the other faction in a chunk the faster the <red>capturing</red> or <dark_aqua>liberation</dark_aqua> progress is in favour of the majority.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        During a siege the state of each claimed chunk is visible on the <click:run_command:'/clan guide chunk-radar'><blue><u>chunk radar</u></blue></click>. The color of the radar tiles will change to the faction color of whoever occupies said chunk.
+      - |
+        <dark_red>      <b>War Sieges</b></dark_red>
+        
+        If all chunks of either of the factions involved in the war are <dark_red>captured</dark_red> the war will be <click:run_command:'/clan guide war-ending'><blue><u>ended</u></blue></click> and the overtaken faction <click:run_command:'/clan guide faction-disbanding'><blue><u>disbanded</u></blue></click>.
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    war-peace-treaties:
+      - |
+        <dark_red>   <b>Peace Treaties</b></dark_red>
+
+        Both factions involved in a war can at any time offer a peace treaty to end the war using the 
+        '<i>/w peace <<gold>amount</gold>></i>'.
+      - |
+        <dark_red>   <b>Peace Treaties</b></dark_red>
+        
+        The '<gold>amount</gold>' can be a positive number (<dark_green>100</dark_green>) to demand money for the treaty, a negative number (<dark_red>-100</dark_red>) to offer money for the treaty, or nothing (<dark_gray>0</dark_gray>) to neither offer nor demand money for the treaty.
+      - |
+        <dark_red>   <b>Peace Treaties</b></dark_red>
+        
+        To accept a peace treaty offer use the '<i>/w peace <dark_green>accept</dark_green></i>' command or to deny it the '<i>/w peace <dark_red>deny</dark_red></i>' command.
+
+        To see an active peace offer run the '<i>/war</i>' command.
+      - |
+        <dark_red>   <b>Peace Treaties</b></dark_red>
+        
+        To be able to create, deny, or accept a peace treaty you will need a <click:run_command:'/clan guide faction-ranks'><blue><u>rank</u></blue></click> with the appropriate permissions.
+
+
+
+
+
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    war-ending:
+      - |
+        <dark_red>      <b>War ending</b></dark_red>
+
+        A war can end in multiple ways depending on how it unfolds.
+      - |
+        <dark_red>      <b>War ending</b></dark_red>
+        
+        By default a war lasts for no longer than <b>3 hours</b> which unless ended earlier results in a stalemate. No real outcome other than what transpired in the war.
+      - |
+        <dark_red>      <b>War ending</b></dark_red>
+        
+        Would one of the factions involved offer a <click:run_command:'/clan guide war-peace-treaties'><blue><u>peace treaty</u></blue></click> that gets accepted then this will end the war earlier by the conditions agreed upon in the treaty.
+      - |
+        <dark_red>      <b>War ending</b></dark_red>
+        
+        If either of the factions were to have all of their claimed chunks captured by the enemy faction then the faction will be <click:run_command:'/clan guide faction-disbanding'><blue><u>disbanded</u></blue></click> and the war ended immediately.
+      - |
+        <dark_red>      <b>War ending</b></dark_red>
+        
+        This outcome would result in an official victory for the other faction, distributing the total amount of money spent by the disbanded faction in their <click:run_command:'/clan guide faction-tiers'><blue><u>tier upgrades</u></blue></click> between all currently online victors.
+      - |
+        <dark_red>      <b>War ending</b></dark_red>
+        
+        When a war has ended each remaining faction will be protected from, and unable to declare, war for <b>24 hours</b>.
+        
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    bluemap:
+      - |
+        <b>  <blue>Blue</blue><dark_purple>Map Support</dark_purple></b>
+
+        <dark_red><b>V</b></dark_red>Clans has integrations with Bluemaps making faction territories visible on the overworld map. 
+
+        Click on the link below to view the world map!
+
+        <click:open_url:'map.valentinos.gg'><blue><u>map.valentinos.gg</u></blue></click>
+      - |
+        <b>  <blue>Blue</blue><dark_purple>Map Support</dark_purple></b>
+        
+        Make sure to enable <b>graphics acceleration</b> in your browser when viewing the map to avoid lag.
+        
+        
+        
+        
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
+    combatlog:
+      - |
+        <dark_purple>      <b>CombatLog</b></dark_purple>
+
+        <dark_red><b>V</b></dark_red>Clans has integrations with CombatLog preventing PVP logging between enemies but allows it when damaging your fellow faction members.
+        
+        <aqua>test</aqua>
+        <dark_aqua>test</dark_aqua>
+        
+        <u><blue><click:run_command:'/clan guide'>Back to Navigation</click></blue></u>
 clan-tiers:
   # Potion effects for the buffs and debuffs https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
   0:
     label: "[I]"
-    player-limit: 5
-    chunk-limit: 10
+    player-limit: 3
+    chunk-limit: 5
     buffs: [ ]
     debuffs: [ ]
     price: 0 # this tear gets automatically applied so price doesn't matter
   1:
     label: "[II]"
-    player-limit: 10
-    chunk-limit: 20
-    buffs:
-      - [ "REGENERATION", 1 ] # applied to clan mates
-    debuffs:
-      - [ "GLOWING", 1 ]
-    price: 20000
+    player-limit: 5
+    chunk-limit: 9
+    buffs: [ ]
+    debuffs: [ ]
+    price: 1000
   2:
     label: "[III]"
-    player-limit: 15
-    chunk-limit: 30
-    buffs:
-      - [ "REGENERATION", 2 ]
-      - [ "SPEED", 1 ]
+    player-limit: 10
+    chunk-limit: 25
+    buffs: [ ]
     debuffs:
       - [ "GLOWING", 1 ]
-      - [ "DARKNESS", 1 ]
-    price: 100000
+      - [ "MINING_FATIGUE", 1 ]
+    price: 10000
+  3:
+    label: "[IV]"
+    player-limit: 12
+    chunk-limit: 29
+    buffs:
+      - [ "REGENERATION", 1 ]
+    debuffs:
+      - [ "GLOWING", 1 ]
+      - [ "MINING_FATIGUE", 1 ]
+    price: 50000
+  4:
+    label: "[V]"
+    player-limit: 14
+    chunk-limit: 34
+    buffs:
+      - [ "REGENERATION", 1 ]
+    debuffs:
+      - [ "HUNGER", 1 ]
+      - [ "GLOWING", 1 ]
+      - [ "MINING_FATIGUE", 1 ]
+    price: 150000
+  5:
+    label: "[VI]"
+    player-limit: 17
+    chunk-limit: 39
+    buffs:
+      - [ "WATER_BREATHING", 1 ]
+      - [ "REGENERATION", 1 ]
+    debuffs:
+      - [ "HUNGER", 1 ]
+      - [ "GLOWING", 1 ]
+      - [ "MINING_FATIGUE", 1 ]
+    price: 350000
+  6:
+    label: "[VII]"
+    player-limit: 20
+    chunk-limit: 44
+    buffs:
+      - [ "WATER_BREATHING", 1 ]
+      - [ "REGENERATION", 1 ]
+    debuffs:
+      - [ "HUNGER", 1 ]
+      - [ "GLOWING", 1 ]
+      - [ "MINING_FATIGUE", 1 ]
+    price: 500000
+  7:
+    label: "[VIII]"
+    player-limit: 22
+    chunk-limit: 49
+    buffs:
+      - [ "WATER_BREATHING", 1 ]
+      - [ "REGENERATION", 1 ]
+    debuffs:
+      - [ "HUNGER", 1 ]
+      - [ "GLOWING", 1 ]
+      - [ "MINING_FATIGUE", 1 ]
+    price: 1000000
+  8:
+    label: "[IX]"
+    player-limit: 25
+    chunk-limit: 55
+    buffs:
+      - [ "FIRE_RESISTANCE", 1 ]
+      - [ "WATER_BREATHING", 1 ]
+      - [ "REGENERATION", 1 ]
+    debuffs:
+      - [ "HUNGER", 1 ]
+      - [ "GLOWING", 1 ]
+      - [ "MINING_FATIGUE", 1 ]
+    price: 3000000
+  9:
+    label: "[X]"
+    player-limit: 30
+    chunk-limit: 61
+    buffs:
+      - [ "RESISTANCE", 1 ]
+      - [ "FIRE_RESISTANCE", 1 ]
+      - [ "FIRE_RESISTANCE", 1 ]
+      - [ "WATER_BREATHING", 1 ]
+      - [ "REGENERATION", 1 ]
+    debuffs:
+      - [ "INFESTED", 1 ]
+      - [ "HUNGER", 1 ]
+      - [ "GLOWING", 1 ]
+      - [ "MINING_FATIGUE", 1 ]
+    price: 6769420
 commands:
   # cooldown can not be applied to some commands that are not required to be sent by a player, for example help or list
   # target-cooldown is the cooldown that is applied to the command that is specified in the target-cooldown field
@@ -57,260 +920,269 @@ commands:
   #       {confirm-time} - the time left to confirm the action
   default:
     messages: # general messages used by many commands
-      no-permission: "You do not have permission to use this command."
+      no-permission: "&cYou do not have permission to use this command. Ask your leader to give you a rank to access this command."
       player-only: "This command can only be used by players."
-      not-enough-arguments: "Not enough arguments."
-      too-many-arguments: "Too many arguments."
-      wrong-number-of-arguments: "Wrong number of arguments."
-      on-cooldown: "The command is on cooldown. Time left: {time}."
-      command-disabled: "This command is disabled. Contact an administrator for more information."
-      not-in-clan: "You are not in a clan."
-      not-owner: "You are not the owner of your clan."
-      never-joined: "That player has never played on this server."
-      confirmation-message: "'/confirm' in the next {confirm-time} seconds to confirm the action."
-      confirmation-expired: "The confirmation has expired."
-      nothing-to-confirm: "There is nothing to confirm."
-      is-in-war: "You can't do this while in war."
+      not-enough-arguments: "&cNot enough arguments. There is likely something missing in your command."
+      too-many-arguments: "&cToo many arguments. You've likely typed in more than you should."
+      wrong-number-of-arguments: "&cWrong number of arguments. Read below for proper command usage."
+      on-cooldown: "&7This command is on cooldown. Time left: &f{time}&7."
+      command-disabled: "&cThis command is disabled. Contact an administrator for more information."
+      not-in-clan: "&cYou are not in any form of faction. Ask someone for an invite or create your own."
+      not-owner: "&cYou are not the leader of this faction and cannot use this command."
+      never-joined: "&cThat player has never joined this server before. You likely misspelled the username."
+      confirmation-message: "&7'/confirm' in the next &f{confirm-time} &7seconds to confirm the action."
+      confirmation-expired: "&cThe confirmation has expired."
+      nothing-to-confirm: "&cThere is no command to confirm."
+      is-in-war: "&cThis command is blocked when you are at war."
   clan:
     help:
       enabled: true
-      description: "Displays the help menu."
-      usage: "/clan help"
+      description: "Displays this help menu."
+      usage: "/f help"
       show-command-list: true
       messages:
-        header: "=============Clan Commands============="
+        header: "&8---- &7Help &8-- &4V&fClans &7Commands &8----"
         content: "
-        Thank you for using Valentinos Clans plugin made by Alex_Joo!
-        To view the list of available commands, use /clan help.
+        &8For information about war or chunk claiming refer to '&f/war help&8' and '&f/chunk help&8'.
         "
-        list-item: " &7- {item}: &r&l{desc}"
-        footer: "======================================="
+        list-item: " &7- &f{item}&7: {desc}"
+        footer: ""
     list:
       enabled: true
-      description: "Lists all clans."
-      usage: "/clan list"
+      description: "Lists all player factions or the members of any specified faction."
+      usage: "/f list [faction-id]"
       messages:
-        clan-list-header: "=============Clans============="
-        clan-list-item: "&8 -&r &8{clan-id}&r [{clan-prefix}&r] {clan-name}&r"
-        clan-list-footer: "==============================="
-        member-list-header: "============Members of {clan-name}============"
-        member-list-item: "&8 - [{priority}]&r {rank}&r <{player-name}&r>"
-        member-list-footer: "========================================="
-        clan-not-found: "The clan {clan-id} does not exist."
+        clan-list-header: "&8---- &7List &8-- &7Factions &8----"
+        clan-list-item: "&7 - {clan-id} &r[{clan-prefix}&r] {clan-name}&r"
+        clan-list-footer: ""
+        member-list-header: "&8---- &7Member list &8-- &r{clan-name} &8----"
+        member-list-item: "&7 - [{priority}]&r {rank}&r {player-name}&r"
+        member-list-footer: ""
+        clan-not-found: "&cThe faction {clan-id} does not exist. You've likely mistaken the faction name for it's ID."
     create:
       enabled: true
       target-cooldown: "clan-disband" # This tells that the cooldown bellow will be applied to the disband command. I.E. You can't disband a clan for 30 seconds after creating it.
-      cooldown: 8 #6400 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
+      cooldown: 86400 # This cooldown is applied to the target-cooldown, which when unspecified will be applied to itself.
       confirmation: 30
-      description: "Creates a new clan."
-      usage: "/clan create <id>"
+      description: "Creates a new faction with the specified faction ID."
+      usage: "/f create <faction-id>"
       messages:
-        success: "You have successfully created the clan - {clan-id}." # {name} will be replaced with the name of the clan. Works on most messages.
-        confirmation-message: "Are you sure you want to create this clan with the id [{clan-id}]? This can't be changed! Type /confirm if you are sure"
-        already-exists: "Clan with name {clan-id} already exists."
-        too-long: "The clan name is too long. Maximum length is 10 characters."
-        too-short: "The clan name is too short. Minimum length is 4 characters."
-        invalid-characters: "The clan name contains invalid characters. Only lowercase letters and underscores are allowed."
-        already-in-clan: "You, {player-name}, are already in a clan. Leave your current clan to create a new one."
+        success: "&aYou have successfully created a faction with the ID: &f{clan-id}&a. Use '/f rename' to change the faction name." # {name} will be replaced with the name of the clan. Works on most messages.
+        confirmation-message: "&7Are you sure you want to create this faction with the ID: &f{clan-id}&7? This &c&ncannot&7 be changed! Type '&f/confirm&7' if you are sure."
+        already-exists: "&cA faction with the ID: &f{clan-id} &calready exists. Try using a different ID."
+        too-long: "&cThe faction ID is too long. Maximum length is 10 characters."
+        too-short: "&cThe faction ID is too short. Minimum length is 4 characters."
+        invalid-characters: "&cThe clan name contains invalid characters. Only lowercase letters and underscores are allowed."
+        already-in-clan: "&cYou are already in the faction with the ID: &f{clan-id}&c. Leave the faction before attempting to create a new one."
     disband:
       enabled: true
       target-cooldown: "clan-create"
-      cooldown: 8 #6400
+      cooldown: 3600 # 6400
       confirmation: 30 # This is the time in seconds the player has to confirm the action.
-      description: "Disbands your clan."
-      usage: "/clan disband"
+      description: "Disbands your faction."
+      usage: "/f disband"
       messages:
-        success: "You have disbanded the clan {clan-name}."
-        no-permission: "You don't have the permission to disband the clan."
-        disband-notification: "The clan you are in, {clan-name}, has been disbanded by {player-name}."
-        confirmation-message: "Are you sure you want to disband your clan? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
+        success: "&aYou have disbanded &r{clan-name}."
+        no-permission: "&cYou do not have permission to disband this faction."
+        disband-notification: "&7The faction you were in, &r{clan-name}&7, has been disbanded by &r{player-name}&7."
+        confirmation-message: "&7Are you sure you want to disband your faction? Type '&f/confirm&7' in the next &f{confirm-time} &7seconds to confirm this action."
     invite:
       enabled: true
-      description: "Invites a player to your clan."
-      usage: "/clan invite <player>"
+      description: "Invites the specified player to your faction."
+      usage: "/f invite <player>"
       messages:
-        success: "You have invited {target-name} to your clan."
-        no-permission: "You don't have the permission to invite players to the clan."
-        invitation: "You have been invited to join the clan {clan-name} by {player-name}. Use '/clan join {clan-id}' to accept the invitation."
-        invite-self: "You can't invite yourself to your clan."
-        already-in-a-clan: "The player {target-name} is already in a clan."
-        already-in-the-clan: "That player is already in the clan."
-        already-invited: "That player has already been invited to your clan."
-        clan-full: "The clan {clan-name} is full."
+        success: "&aYou have invited &r{target-name} &ato this faction."
+        no-permission: "&cYou do not have permission to invite players to this faction."
+        invitation: "&6You have been invited to join &r{clan-name} &6by &r{player-name}&6. Use '&f/f join {clan-id}&6' to accept the invitation."
+        invite-self: "&cYou can not invite yourself to a faction."
+        already-in-a-clan: "&cThe player &r{target-name} &cis already in a faction. Ask them to leave their faction before retrying."
+        already-in-the-clan: "&cThe player &r{target-name} &cis already in this faction."
+        already-invited: "&cThe player &r{target-name} &chas already been invited to this faction."
+        clan-full: "&cThis faction has reached it's maximum member capacity and inviting more players in not possible. Upgrade your faction with '&f/f upgrade&c' to increase the capacity."
     kick:
       enabled: true
-      description: "Kicks a player from your clan."
-      usage: "/clan kick <player>"
+      description: "Kicks a player out of your faction."
+      usage: "/f kick <player>"
       confirmation: 30
       messages:
-        success: "You have kicked {target-name} from your clan."
-        no-permission: "You don't have the permission to kick players from the clan."
-        kicked: "You have been kicked from the clan {clan-name} by {player-name}."
-        kicked-notification: "Player {target-name} has been kicked from the clan by {player-name}." # This is sent to all clan members online
-        cant-kick-yourself: "You can't kick yourself from your clan."
-        target-not-in-clan: "That player is not in your clan."
-        insufficient-rank: "Your rank priority is too low to kick {target-name} from the clan."
-        confirmation-message: "Are you sure you want to kick {target-name} from your clan? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
+        success: "&aYou have kicked &r{target-name} &aout of this faction."
+        no-permission: "&cYou do not have permission to kick players out of this faction."
+        kicked: "&7You have been kicked out of &r{clan-name} &7by &r{player-name}&7."
+        kicked-notification: "&r{target-name} &7has been kicked out of the faction by &r{player-name}&7." # This is sent to all clan members online
+        cant-kick-yourself: "&cYou can not kick yourself out of your faction. Use '&f/f leave&c' to leave this faction."
+        target-not-in-clan: "&cThat player is not in this faction."
+        insufficient-rank: "&cYour faction rank priority is too low to kick &r{target-name} &cfrom this faction."
+        confirmation-message: "&7Are you sure you want to kick &r{target-name} &7out of this faction? Type '&f/confirm&7' in the next &f{confirm-time} &7seconds to confirm the action."
     join:
       enabled: true
-      description: "Joins a clan if you have been invited."
-      usage: "/clan join <clan>"
+      description: "Joins the specified faction if you have been invited to it."
+      usage: "/f join <faction-id>"
       messages:
-        success: "You have joined the clan {clan-name} successfully!"
-        joined-notification: "{player-name} has joined the clan!" # This will be sent to all online clan members when a player joins.
-        clan-not-exist: "The clan {clan-id} does not exist."
-        not-invited: "You have not been invited to join the clan {clan-name}."
-        invite-expired: "The invitation to join the clan {clan-name} has expired."
-        already-in-a-clan: "You are already in a clan."
-        already-in-the-clan: "You are already in the clan."
-        clan-full: "The clan {clan-name} is full."
+        success: "&aYou have joined &r{clan-name}&a!"
+        joined-notification: "&r{player-name} &7has joined this faction!" # This will be sent to all online clan members when a player joins.
+        clan-not-exist: "&cA faction with the ID: &r{clan-id} &cdoes not exist. Remember to use the faction ID and not the faction name when running this command."
+        not-invited: "&cYou need an invitation from &r{clan-name} &cto be able to join the faction."
+        invite-expired: "&cThe invitation to join &r{clan-name} &chas expired."
+        already-in-a-clan: "&cYou are already in a faction. Use '&f/f leave&c' before attempting to join a different faction."
+        already-in-the-clan: "&cYou are already in this faction."
+        clan-full: "&r{clan-name} &chas reached it's member capacity. Ask a faction leader to use '&f/f upgrade&c' to increase the capacity before attempting to join."
     leave:
       enabled: true
-      description: "Leaves your current clan."
-      usage: "/clan leave"
+      description: "Leaves your current faction."
+      usage: "/f leave"
+      confirmation: 30
       messages:
-        success: "You have left the clan {clan-name} successfully."
-        leave-notification: "Your fellow clan member {player-name} has left the clan."
-        owner-cant-leave: "You can't leave your clan. Disband it instead."
+        success: "&aYou have left &r{clan-name}&a."
+        leave-notification: "&r{player-name} &7has left the faction."
+        owner-cant-leave: "&cYou can not leave this faction as it's leader. Use '&f/f disband&c' to destroy the faction."
     rank:
       enabled: true
-      description: "Changes the rank of a player in your clan."
-      usage: "/clan rank"
+      description: "Opens up the faction ranks GUI."
+      usage: "/f rank"
       messages:
-        success: "You have changed the rank of {target-name} to {rank}."
-        rank-changed: "Your rank has been changed to {rank} by {player-name}."
-        target-not-in-clan: "{target-name} is not in your clan."
-        rank-not-found: "The rank {rank} does not exist."
-        rank-priority-low: "Your rank priority is too low"
+        success: "&aYou have appointed the rank of &r{rank} &ato &r{target-name}&a."
+        rank-changed: "&r{player-name} &7has appointed you the rank of &r{rank}&7."
+        target-not-in-clan: "&r{target-name} &cis not in this faction."
+        rank-not-found: "&cThe rank &r{rank} &cdoes not exist in this faction."
+        rank-priority-low: "&cYour rank priority is too low to change this ranks permissions. Ask your leader to promote you to a higher rank priority." # continue here
     color:
       enabled: true
-      description: "Changes the color of the clan."
-      usage: "/clan color <0-255> <0-255> <0-255>"
+      description: "Changes the faction color using the specified RGB values."
+      usage: "/f color <0-255> <0-255> <0-255>"
       messages:
-        success: "You have successfully changed the clan color!"
-        invalid-input: "Invalid RGB Input, only accepts: /clan color <0-255> <0-255> <0-255>"
+        success: "&aYou have changed your faction color."
+        invalid-input: "&cYour specified RGB values are invalid. Use the correct format: '&f/clan color <0-255> <0-255> <0-255>&c'"
     upgrade:
       enabled: true
-      description: "Upgrades the clans tier to gain perks."
-      usage: "/clan upgrade"
+      description: "Upgrades your factions tier. Tier 3 enables war declarations for the faction."
+      usage: "/f upgrade"
       confirmation: 30
       messages:
-        success: "You have successfully upgraded the clan to tier: {tier-label}"
-        confirmation-message: "Are you sure you want to upgrade the clan to tier {tier-label} for the price of ${tier-price}? You have {confirm-time} seconds to /confirm !"
+        success: "&aYou have upgraded the faction to tier: &f{tier-label}"
+        confirmation-message: "&7Are you sure you want to upgrade this faction to tier &f{tier-label} &7for the price of &e${tier-price}&7? Type '&f/confirm&7' within &f{confirm-time} &7seconds."
+        max-tier: "&cThis faction is already of the highest tier possible and can not be upgraded further."
         clan-upgraded: "Your clan got upgraded to {tier-label}!"
-        max-tier: "You already have the highest tier clan!"
-        cant-afford: "You can't afford the tier upgrade ({tier-price})"
+        cant-afford: "&cYou do not have enough money to upgrade this faction. The cost of this upgrade is &e${tier-price}&c."
     downgrade:
       enabled: true
-      description: "Downgrades the clans tier. You don't get your money back."
-      usage: "/clan downgrade"
+      description: "Downgrades the faction tier. No refunds!"
+      usage: "/f downgrade"
       confirmation: 30
       messages:
-        success: "You have successfully upgraded the clan to tier: {tier-label}"
-        confirmation-message: "Are you sure you want to downgrade the clan to tier {tier-label}? You will lose all the perks offered by your current tier. You have {confirm-time} seconds to /confirm !"
+        success: "&aYou have downgraded this faction to tier: &f{tier-label}&a."
+        confirmation-message: "&7Are you sure you want to downgrade this faction to tier &f{tier-label}&7? You will lose all the benefits of your current tier. Type '&f/confirm&7' within &f{confirm-time} &7seconds."
         clan-downgraded: "Your clan got downgraded to {tier-label}!"
-        min-tier: "You already have the lowest tier clan!"
-        need-to-kick: "You can't downgrade because you have too many players for tier {tier-label}. You can have only max {player-amount} players."
-        need-to-unclaim: "You can't downgrade because you have too many claimed chunks for tier {tier-label}. You can have only max {chunk-amount} claimed chunks."
+        min-tier: "&cThis faction is already of the lowest tier possible!"
+        need-to-kick: "&cYou can not downgrade this faction as it would lower the maximum member capacity to below the current amount of faction members. The lower tier has a maximum capacity of only &f{player-amount} &cplayers."
+        need-to-unclaim: "&cYou can not downgrade this faction as it would lower the maximum claimed chunks amount to below the current amount of claimed chunks. the lower tier has a maximum amount of only &f{chunk-amount} &cclaimed chunks."
     chat:
       enabled: true
-      description: "Toggles current chat to be only visible for clan members or global."
-      usage: "/clan chat"
+      description: "Toggles between the faction chat and the global chat."
+      usage: "/f chat"
       messages:
-        success: "You have entered {chat} chat."
-        no-vault: "Vault has not been properly enabled, contact an administrator for help."
+        success: "&aYou have entered the &f{chat} &achat."
+        no-vault: "&cVault has not been properly enabled, contact an administrator for help."
     prefix:
       enabled: true
-      description: "Sets the clan's prefix that will be used in chat. Max size is 4, allows for legacy color formatting."
-      usage: "/clan prefix <prefix>"
+      description: "Changes the prefix of this factions members."
+      usage: "/f prefix <prefix>"
       messages:
-        success: "Successfully set the clans prefix to {prefix}"
-        too-big: "The max prefix length is {max-length}"
-        forbidden-formatting: "Doesn't allow text formatting and the black color"
-        invalid-characters: "Invalid characters found. If you want to change color, use &[1-9,a-u]"
+        success: "&aYou've set the faction prefix to &f[&r{prefix}&f]&a."
+        too-big: "&cThe max prefix length is {max-length} characters."
+        forbidden-formatting: "&cThe faction prefix may not contain formatting or the black color."
+        invalid-characters: "&cInvalid characters found! The faction prefix may only contain alphabetical characters."
     rename:
       enabled: true
-      description: "Renames the clan."
-      usage: "/clan prefix <name>"
+      description: "Changes the faction name."
+      usage: "/f rename <faction-name>"
       messages:
-        success: "Successfully set the clans name to {name}"
-        too-big: "The max clan name length is {max-length}"
-        too-small: "The min clan name length is {min-length}"
-        forbidden-formatting: "Doesn't allow text formatting and the black color"
-        invalid-characters: "Invalid characters found. If you want to change color, use &[1-9,a-u]"
+        success: "&aThis faction now goes by the name &r{name}&a."
+        too-big: "&cThe maximum faction name length is &f{max-length}&c! Consider picking a shorter name."
+        too-small: "&cThe minimum faction name length is &f{min-length}&c! Consider picking a longer name."
+        forbidden-formatting: "&cThe faction name may not contain formatting or the black color."
+        invalid-characters: "&cInvalid characters found! The faction name may only contain alphanumerical characters."
+    guide:
+      enabled: true
+      description: "Opens up a guide book."
+      usage: "/clan guide [page]"
+      messages:
+        no-book: "Book failed to be created."
+        not-a-book: "This book is not recognised."
   chunk:
     claim:
       enabled: true
-      description: "Claims a chunk for your clan."
+      description: "Claims a chunk for your faction."
       usage: "/chunk claim"
       confirmation: 30
       messages:
-        success: "You have claimed the chunk for your clan."
-        confirmation-message: "Are you sure you want to claim this chunk for the cost of ${price}? Type '/confirm' in the next {confirm-time} seconds to confirm the action."
-        already-claimed: "This chunk is already claimed by the clan - {clan-name}."
-        no-permission: "You don't have the permission to claim chunks."
-        max-chunks: "You have reached the maximum number ({max-chunks}) of chunks your clan can claim."
-        not-adjacent: "You can only claim chunks that are adjacent to your clan's claimed chunks."
-        too-close: "You can't claim this chunk because it is too close to another clan's claimed chunk."
-        too-close-region: "You can't claim this chunk because it is too close to a VClans protected WorldGuard region."
-        wrong-world: "You can't claim chunks in this world."
-        cant-afford: "You can't afford this chunk: ${price}."
+        success: "&aThis chunk has been claimed for your faction!"
+        confirmation-message: "&7Are you sure you want to claim this chunk for &e${price}&7? Type '&f/confirm&7' within &f{confirm-time} &7seconds."
+        already-claimed: "&cThis chunk is already claimed by &r{clan-name}."
+        no-permission: "&cYou do not have permission to claim chunks for this faction."
+        max-chunks: "&cYou have reached the maximum amount of &f{max-chunks} &cclaimed chunks that your current faction tier allows. Upgrade your tier with '&f/f upgrade&c'."
+        not-adjacent: "&cClaimed faction chunks are required to be directly adjacent to eachother, not diagonally adjacent or elsewhere in the world."
+        too-close: "&cYou can not claim this chunk because it is too close to another factions claimed chunk. Check '&fvalentinos.gg/bluemaps' &cfor an overview of all claimed territories."
+        too-close-region: "&cYou can not claim this chunk because it is too close to a major location."
+        wrong-world: "&cYou can not claim chunks in this world. Return to the overworld to claim chunks for this faction."
+        cant-afford: "&cYou do not have enough money to claim this chunk for &e${price}&c."
     unclaim:
       enabled: true
-      description: "Unclaims a chunk for your clan."
+      description: "Unclaims a chunk for your faction."
       usage: "/chunk unclaim"
+      confirmation: 30
       messages:
-        success: "You have unclaimed the chunk for your clan."
-        not-claimed: "This chunk is not claimed by your clan. Currently claimed by {clan-name}."
-        no-permission: "You don't have the permission to unclaim chunks."
-        territory-split: "You can't unclaim this chunk because it would split your clan's territory."
+        success: "&aYou have unclaimed this chunk for your faction."
+        not-claimed: "&cThis chunk is not claimed by this faction. It is currently owned by &r{clan-name}&c."
+        no-permission: "&cYou do not have permission to unclaim chunks for this faction."
+        territory-split: "&cYou can not unclaim this chunk because it would result in one of this factions claimed chunk not being adjacent to any other claimed chunk."
     radar:
       enabled: true
-      description: "Displays the radar of your claimed chunks around you in a 5x5 grid."
+      description: "Toggles a radar of nearby chunks and their ownership."
       usage: "/chunk radar"
   war:
     declare:
       enabled: true
-      description: "Declares a war with another clan."
-      usage: "/war declare <clanId>"
+      description: "Declares a war against the specified faction."
+      usage: "/war declare <faction-Id>"
+      confirmation: 30
       messages:
-        success: "You have declared war on the {target-clan}."
-        initiator-clan-notification: "{player-name} of this clan has declared war on the clan {target-clan}."
-        target-clan-notification: "The clan {initiator-clan} has declared war on your clan!"
-        clan-in-war: "The clan {clan-name} is already in war."
-        declare-self: "You can't declare war on your own clan."
-        clan-not-found: "The clan {target-clan} does not exist."
-        clan-on-cooldown: "Your clan is on a war cooldown. Please wait {clan-cooldown} seconds before declaring another war."
-        target-on-cooldown: "The {target-clan} clan is on a war cooldown of {target-cooldown} seconds. You cannot declare war on them at this time."
-        tier-mismatch: "You can't declare war on {target-clan}: their tier is too low."
-        tier-too-low: "Clans that don't have a minimum clan tier of {min-tier} can't participate in a war."
-        no-chunks: "The clan {no-chunk-clan} has no chunks and therefor can't be in a war"
+        success: "&aYou have declared war on &r{target-clan}&a."
+        initiator-clan-notification: "&r{player-name} &7has declared a war against &r{target-clan} &7on behalf of this faction."
+        target-clan-notification: "&r{initiator-clan} &7has declared war on this faction!"
+        clan-in-war: "&r{clan-name} &cis already engaged in a war. Wait until they are at peace to declare war against them."
+        declare-self: "&cYou can not declare war against your own faction."
+        clan-not-found: "&cThere is no faction with the ID &r{target-clan}&c. Keep in mind to use the faction ID and not the faction name when attempting to declare war."
+        clan-on-cooldown: "&cYour faction is already exhausted from a recent war. Wait &f{clan-cooldown} &cseconds before attempting to declare another war."
+        target-on-cooldown: "&r{target-clan} &cwas recently in a war and is protected for &f{target-cooldown} &cseconds. Wait until the protection has run it's course before attempting to declare war."
+        tier-mismatch: "&cYou can not declare war on &r{target-clan} &cas their faction is 2 or more tiers lower than your factions tier. Downgrade this faction or wait for the target faction to upgrade their tier before attempting to declare war."
+        tier-too-low: "&cThe target faction has not yet reached tier &f{min-tier} &cwhich is the minimum tier required to be the target of a declaration of war. Wait for them to upgrade their clan tier before attempting to declare war."
+        no-chunks: "&r{no-chunk-clan} &chas no claimed chunks or territory and is not possible to invade. Consider hunting down the target factions members in the wilderness instead."
     peace:
       enabled: true
-      description: "Sets up an offer with the other clan to make peace or to accept/decline that offer. Write a positive amount to request money for peace, Write a negative amount to offer money for peace"
+      description: "Offers a peace treaty to the enemy faction with an optional offer or demand for money."
       usage: "/war peace <accept|decline|amount|-amount|0>"
       confirmation: 30
       messages:
-        success: "You have successfully offered peace to the clan {target-clan}"
-        not-in-war: "You are not in a war to offer peace"
-        no-peace-treaty: "There is no peace treaty to accept or decline."
-        cant-accept-own-treaty: "Your clan was the one that offered this treaty, you can't accept it."
-        treaty-creator-cant-pay: "The person offering the treaty ({creator}) can't pay the amount of {amount}"
-        acceptor-cant-pay: "You can't pay for the treaty amount of {amount}"
-        peace-treaty-accepted: "The peace treaty has been accepted! War is over!"
-        peace-treaty-declined: "The peace treaty has been declined, the war will go on."
-        peace-treaty-offer: "Player {creator} is offering ${amount} to achieve peace."
-        peace-treaty-request: "Player {creator} is requesting ${amount} from the enemy to achieve peace."
-        invalid-amount: "valid amount is any positive or negative number or zero."
+        success: "&aYou have sent a peace offer to &r{target-clan}&a."
+        not-in-war: "&cYou are not at war and have no one to offer a peace treaty to."
+        no-peace-treaty: "&cThere is no peace treaty to accept or decline."
+        cant-accept-own-treaty: "&cYour faction were the ones to offer this peace treaty, only the enemy can decline or accept it."
+        treaty-creator-cant-pay: "&r{creator} &cno longer has the amount of &e${amount} &cpreviously offered for this peace treaty and so it can not currently be accepted."
+        acceptor-cant-pay: "&cYou do not have enough money to pay the peace treaty demand of &e${amount}&c."
+        peace-treaty-accepted: "&7The peace treaty has been accepted and the war has ended."
+        peace-treaty-declined: "&7The peace treaty has been declined and the war will continue."
+        peace-treaty-offer: "&r{creator} &7has offered &e${amount} on behalf of this faction to achieve a peace treaty with the enemy."
+        peace-treaty-request: "&r{creator} &7has requested &e${amount} &7from the enemy to achieve peace."
+        invalid-amount: "&cThe amount of money offered can only be a number amount, negative to offer money, positive to demand, and zero for neither."
     start:
       enabled: true
-      description: "Allows the defenders to start the war earlier by shortening the grace period duration to 30 minutes"
+      description: "Allows the faction targeted by a declaration of war to start the war earlier by shortening the grace period."
       usage: "/war start"
       confirmation: 30
       messages:
-        confirmation-message: "Are you sure you want to start the war in {duration} seconds? Type /confirm if you are sure"
-        grace-got-shortened: "The grace period got shortened, the war will start in {duration} seconds."
-        not-in-war: "You are not in a war."
-        not-in-grace: "This command can only be run during the grace period."
-        skip-too-late: "The war is about to start, can't start earlier than this."
-        not-defender: "Only the targets of a war declaration can start the war earlier."
+        confirmation-message: "&7Are you sure you want to start the war in &f{duration} &7seconds? Type '&f/confirm&7' within &f{confirm-time} &7seconds."
+        grace-got-shortened: "&7The grace period has been shortened by &r{clan-name}&7. The war will start in &f{duration} &7seconds."
+        not-in-war: "&cYou are not currently the target of a declaration of war and so there is no war to start."
+        not-in-grace: "&cA war can only be started earlier during the grace period."
+        skip-too-late: "&cThe war is about to start very soon and can not be started any earlier."
+        not-defender: "&cOnly the target faction of a declaration of war is able to start the war earlier."

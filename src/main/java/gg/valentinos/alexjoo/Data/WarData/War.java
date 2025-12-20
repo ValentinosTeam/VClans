@@ -149,10 +149,10 @@ public class War {
             String message;
             if (isPeace) {
                 key = Key.key("minecraft:entity.player.levelup");
-                message = "Both clans have accepted on a peace treaty.";
+                message = "Peace has been achieved.";
             } else {
                 key = Key.key("minecraft:item.goat_horn.sound.6");
-                message = "The war ended by time out, no winners or losers.";
+                message = "";
             }
             for (Player player : initiatorClan.getOnlinePlayers()) {
                 sendFormattedMessage(player, "The war ended by time out, no winners or losers.", LogType.INFO); // TODO: Make this message configurable

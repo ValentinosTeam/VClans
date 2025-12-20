@@ -27,9 +27,10 @@ public class ClanColorSubcommand extends SubCommand {
         Clan clan = clanHandler.getClanByMember(player.getUniqueId());
         UUID playerUUID = player.getUniqueId();
 
-        int r = Integer.parseInt(args[1]);
-        int g = Integer.parseInt(args[2]);
-        int b = Integer.parseInt(args[3]);
+
+        int r = Integer.parseInt(args[1].replace(",", ""));
+        int g = Integer.parseInt(args[2].replace(",", ""));
+        int b = Integer.parseInt(args[3].replace(",", ""));
         return () -> {
             sendFormattedPredefinedMessage(player, "success", LogType.FINE);
             cooldownHandler.createCooldown(playerUUID, targetCooldownQuery, cooldownDuration);
@@ -78,6 +79,9 @@ public class ClanColorSubcommand extends SubCommand {
 
     private boolean isInputValid(String[] args) {
         if (args.length != 4) return false;
+        args[1] = args[1].replace(",", "");
+        args[2] = args[2].replace(",", "");
+        args[3] = args[3].replace(",", "");
         try {
             int r = Integer.parseInt(args[1]);
             int g = Integer.parseInt(args[2]);

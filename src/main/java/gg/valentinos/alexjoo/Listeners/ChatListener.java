@@ -30,7 +30,6 @@ public class ChatListener implements Listener, ChatRenderer {
     public ChatListener(Chat chat) {
         this.chat = chat;
         format = VClans.getInstance().getConfig().getString("settings.chat-format");
-        //TODO: lets add minimessage support
         if (format == null) format = "[{prefix}] <{name}>: ";
     }
 
@@ -56,7 +55,7 @@ public class ChatListener implements Listener, ChatRenderer {
                 recipients.add(player);
             }
             Component original = event.message();
-            Component modified = Component.text("[Clan Chat] ", TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2)))
+            Component modified = Component.text("[Faction Chat] ", TextColor.color(clan.getColor().get(0), clan.getColor().get(1), clan.getColor().get(2)))
                     .append(original.color(NamedTextColor.GRAY));
             event.message(modified);
         }

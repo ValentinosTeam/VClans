@@ -92,9 +92,16 @@ public class WarStartSubcommand extends SubCommand {
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         String durationString = "ERROR";
+        String starterClan = "ERROR";
 
         durationString = warHandler.GRACE_SKIP_TILL + "";
+        if (sender instanceof Player player) {
+            Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+            if (clan == null) return;
+            starterClan = clan.getName();
+        }
 
         replacements.put("{duration}", durationString);
+        replacements.put("{clan-name}", starterClan);
     }
 }

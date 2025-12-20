@@ -157,8 +157,6 @@ public class WarHandler {
             return;
         }
 //        wars.setWars(warHashSet);
-        // Start timers for each war
-        //TODO: handle war loading states
         for (War war : warHashSet) {
             if (war.getState() != WarState.ENDED) {
 

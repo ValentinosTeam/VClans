@@ -36,7 +36,7 @@ public class ClanRenameSubcommand extends SubCommand {
                 String input = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
                 clanHandler.setClanName(clan, input);
                 sendFormattedPredefinedMessage(sender, "success", LogType.FINE);
-            } else { // show current prefix
+            } else { // show current name
                 sender.sendMessage(clan.getName());
             }
         };

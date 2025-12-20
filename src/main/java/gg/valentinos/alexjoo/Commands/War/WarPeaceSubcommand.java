@@ -30,6 +30,12 @@ public class WarPeaceSubcommand extends SubCommand {
         Clan playerClan = clanHandler.getClanByMember(player.getUniqueId());
         Clan otherClan = warHandler.getWarEnemyClan(playerClan);
         War war = warHandler.getWar(playerClan);
+
+        if (args.length < 2) {
+            return () -> {
+
+            };
+        }
         String arg = args[1].toLowerCase();
 
         if (arg.equals("accept")) {
@@ -169,29 +175,31 @@ public class WarPeaceSubcommand extends SubCommand {
         String amountString = "ERROR";
 
         if (sender instanceof Player player) {
-            String arg = args[1].toLowerCase();
-            if (arg.equals("accept") || arg.equals("decline")) {
-                Clan clan = clanHandler.getClanByMember(player.getUniqueId());
-                if (clan == null) return;
-                War war = warHandler.getWar(clan);
-                if (war == null) return;
-                PeaceTreaty peaceTreaty = war.getPeaceTreaty();
-                if (peaceTreaty == null) return;
-                creatorName = peaceTreaty.getCreator().getName();
-                int amount = peaceTreaty.getAmountOffered();
-                if (amount == 0) amount = peaceTreaty.getAmountRequested();
-                amountString = String.valueOf(amount);
-            } else {
-                int amount = 0;
-                try {
-                    amount = Integer.parseInt(arg);
-                    if (amount >= 0) {
-                        amountString = "" + amount;
-                    } else {
-                        amountString = "" + -amount;
+            if (args.length > 1) {
+                String arg = args[1].toLowerCase();
+                if (arg.equals("accept") || arg.equals("decline")) {
+                    Clan clan = clanHandler.getClanByMember(player.getUniqueId());
+                    if (clan == null) return;
+                    War war = warHandler.getWar(clan);
+                    if (war == null) return;
+                    PeaceTreaty peaceTreaty = war.getPeaceTreaty();
+                    if (peaceTreaty == null) return;
+                    creatorName = peaceTreaty.getCreator().getName();
+                    int amount = peaceTreaty.getAmountOffered();
+                    if (amount == 0) amount = peaceTreaty.getAmountRequested();
+                    amountString = String.valueOf(amount);
+                } else {
+                    int amount = 0;
+                    try {
+                        amount = Integer.parseInt(arg);
+                        if (amount >= 0) {
+                            amountString = "" + amount;
+                        } else {
+                            amountString = "" + -amount;
+                        }
+                        creatorName = player.getName();
+                    } catch (NumberFormatException ignored) {
                     }
-                    creatorName = player.getName();
-                } catch (NumberFormatException ignored) {
                 }
             }
         }

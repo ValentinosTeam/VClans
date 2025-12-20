@@ -1,5 +1,5 @@
 name: VClans
-version: '0.9'
+version: '0.10'
 main: gg.valentinos.alexjoo.VClans
 api-version: '1.21.8'
 authors: [ Alex_Joo ]
@@ -17,7 +17,7 @@ commands:
   clan:
     description: Handles all clan related commands.
     usage: /clan help
-    aliases: [ c ]
+    aliases: [ faction, f ]
   war:
     description: Handles all clan war related commands.
     usage: /war help
@@ -25,7 +25,7 @@ commands:
   chunk:
     description: Handles all chunk related commands.
     usage: /chunk help
-    aliases: [ ch ]
+    aliases: [ c ]
   confirm:
     description: Confirm your action.
     usage: /confirm

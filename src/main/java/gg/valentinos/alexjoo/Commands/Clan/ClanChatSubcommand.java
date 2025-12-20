@@ -69,7 +69,7 @@ public class ClanChatSubcommand extends SubCommand {
     @Override
     protected void loadReplacementValues(CommandSender sender, String[] args) {
         // clan chat default cause by default the player will be in GLOBAL mode, and since this runs before success message displays
-        String chat = "clan";
+        String chat = "faction";
         if (sender instanceof Player player) {
             Clan clan = VClans.getInstance().getVaultHandler().getClanChat(player);
             if (clan != null) {

@@ -37,9 +37,9 @@ public abstract class SubCommand {
     protected HashMap<String, String> messages;
     protected HashMap<String, String> replacements;
 
-    protected Key successSound = Key.key("minecraft:entity.experience_orb.pickup");
+    protected Key successSound = Key.key("minecraft:block.amethyst_block.place");
     protected Key errorSound = Key.key("minecraft:block.netherite_block.place");
-    protected float successVolume = 0.3f;
+    protected float successVolume = 0.5f;
     protected float errorVolume = 0.5f;
     protected boolean hasToBePlayer = false;
     protected int minArgs = -1;
@@ -165,26 +165,26 @@ public abstract class SubCommand {
     private boolean hasCommonIssues(CommandSender sender, String[] args) {
         VClans instance = VClans.getInstance();
         if (!enabled) {
-            sender.sendMessage(instance.getDefaultMessage("command-disabled"));
+            sendFormattedPredefinedMessage(sender, "command-disabled", LogType.WARNING);
             return true;
         }
         if (hasToBePlayer && !(sender instanceof Player)) {
-            sender.sendMessage(instance.getDefaultMessage("player-only"));
+            sendFormattedPredefinedMessage(sender, "player-only", LogType.WARNING);
             return true;
         }
         if (minArgs != -1 && args.length < minArgs) {
-            sender.sendMessage(instance.getDefaultMessage("not-enough-arguments"));
-            sender.sendMessage("Usage: " + getUsage());
+            sendFormattedPredefinedMessage(sender, "not-enough-arguments", LogType.WARNING);
+            sendFormattedMessage(sender, "Usage: " + getUsage(), LogType.WARNING);
             return true;
         }
         if (maxArgs != -1 && args.length > maxArgs) {
-            sender.sendMessage(instance.getDefaultMessage("too-many-arguments"));
-            sender.sendMessage("Usage: " + getUsage());
+            sendFormattedPredefinedMessage(sender, "too-many-arguments", LogType.WARNING);
+            sendFormattedMessage(sender, "Usage: " + getUsage(), LogType.WARNING);
             return true;
         }
         if (requiredArgs != -1 && args.length != requiredArgs) {
-            sender.sendMessage(instance.getDefaultMessage("wrong-number-of-arguments"));
-            sender.sendMessage("Usage: " + getUsage());
+            sendFormattedPredefinedMessage(sender, "wrong-number-of-arguments", LogType.WARNING);
+            sendFormattedMessage(sender, "Usage: " + getUsage(), LogType.WARNING);
             return true;
         }
         return false;
@@ -196,7 +196,7 @@ public abstract class SubCommand {
         if (cooldownHandler.isOnCooldown(player.getUniqueId(), query)) {
             String timeLeft = cooldownHandler.getTimeLeft(player.getUniqueId(), query);
             String message = VClans.getInstance().getDefaultMessage("on-cooldown").replace("{time}", timeLeft);
-            player.sendMessage(message);
+            sendFormattedMessage(sender, message, LogType.INFO);
             return true;
         }
         return false;

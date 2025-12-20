@@ -15,6 +15,7 @@ import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -263,8 +264,10 @@ public class ChunkListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         // stop blocks inside claimed chunks from being exploded by entities (ignited tnt, creeper, wither attack)
         List<Block> blocks = event.blockList();
+
         blocks.removeIf(block -> {
             Chunk chunk = block.getChunk();
+            if (event.getEntityType() == EntityType.END_CRYSTAL && isWarTerritory(chunk)) return false;
             return chunkHandler.isChunkClaimed(chunk); // Remove blocks in claimed chunks
         });
     }
@@ -412,6 +415,13 @@ public class ChunkListener implements Listener {
         War war = VClans.getInstance().getWarHandler().getWar(chunkClan);
         if (war == null) return false;
         return VClans.getInstance().getWarHandler().isInActiveWarWith(player, chunkClan);
+    }
+    private static boolean isWarTerritory(Chunk chunk) {
+        Clan chunkClan = VClans.getInstance().getChunkHandler().getClanByChunk(chunk);
+        if (chunkClan == null) return false;
+        War war = VClans.getInstance().getWarHandler().getWar(chunkClan);
+        if (war == null) return false;
+        return true;
     }
     private static boolean isChunkCompromised(Chunk chunk) {
         Clan clan = VClans.getInstance().getChunkHandler().getClanByChunk(chunk);

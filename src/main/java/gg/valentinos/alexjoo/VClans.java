@@ -40,6 +40,7 @@ public final class VClans extends JavaPlugin {
     private VaultHandler vaultHandler = null;
     private TaskScheduler taskScheduler;
     private CombatLogXHandler combatLogXHandler = null;
+    private GuideBookHandler guideBookHandler;
     private HashMap<String, String> defaultMessages;
 
     @Override
@@ -62,6 +63,7 @@ public final class VClans extends JavaPlugin {
         confirmationHandler = new ConfirmationHandler();
         chunkHandler = new ChunkHandler();
         combatLogXHandler = new CombatLogXHandler();
+        guideBookHandler = new GuideBookHandler();
 
         if (worldGuardHandler == null || !worldGuardHandler.enable()) {
             Log("Something went really wrong when enabling the WorldGuard plugin", LogType.SEVERE);
@@ -70,7 +72,6 @@ public final class VClans extends JavaPlugin {
         if (!setupBlueMap()) {
             Log("BlueMap plugin not found, download bluemap if you want to see the chunks in the browser!", LogType.WARNING);
         }
-
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new ChunkListener(), this);
@@ -122,6 +123,8 @@ public final class VClans extends JavaPlugin {
         taskScheduler = null;
 
         combatLogXHandler = null;
+
+        guideBookHandler = null;
 
         instance = null;
 
@@ -214,6 +217,9 @@ public final class VClans extends JavaPlugin {
     }
     public TaskScheduler getTaskScheduler() {
         return taskScheduler;
+    }
+    public GuideBookHandler getGuideBookHandler() {
+        return guideBookHandler;
     }
 
     public String getDefaultMessage(String key) {

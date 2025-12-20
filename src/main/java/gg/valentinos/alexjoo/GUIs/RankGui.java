@@ -345,7 +345,6 @@ public class RankGui extends AbstractGui {
                                         newRank = targetRank;
                                         initializeRankEditor(newRank);
                                     } else if (heldCustomTag.equals("deleteRank")) {
-                                        //TODO delete rank
                                         if (targetRank.getPriority() != 99 && targetRank.getPriority() != 0) {
                                             clanHandler.removeRank(clan, targetRank.getId());
                                         }
