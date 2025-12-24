@@ -1,5 +1,5 @@
 name: VClans
-version: '0.10'
+version: '0.12'
 main: gg.valentinos.alexjoo.VClans
 api-version: '1.21.8'
 authors: [ Alex_Joo ]

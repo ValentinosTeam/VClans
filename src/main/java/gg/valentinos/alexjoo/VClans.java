@@ -47,11 +47,11 @@ public final class VClans extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        WORLD_NAME = getConfig().getString("settings.world-name");
-
         saveDefaultConfig();
-
+        reloadConfig(); // should fix the problem of config not working on first install. I think.
         loadDefaultMessages();
+
+        WORLD_NAME = getConfig().getString("settings.world-name");
 
         taskScheduler = new TaskScheduler(this);
         vaultHandler = new VaultHandler();
