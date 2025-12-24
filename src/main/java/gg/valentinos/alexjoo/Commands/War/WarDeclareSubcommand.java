@@ -135,7 +135,7 @@ public class WarDeclareSubcommand extends SubCommand {
         String clanCooldown = "ERROR";
         String targetCooldown = "ERROR";
         String noChunkClan = "ERROR";
-        String minTier = warHandler.MIN_CLAN_TIER + "";
+        String minTier = VClans.getInstance().getClanTierHandler().getLabel(warHandler.MIN_CLAN_TIER);
 
         if (sender instanceof Player player) {
             playerName = player.getName();

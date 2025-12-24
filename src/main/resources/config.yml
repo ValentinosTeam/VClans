@@ -53,7 +53,7 @@ guide-books:
         
         <click:run_command:'/clan guide faction-members'><blue><u>Faction Members</u></blue></click>
         
-        <click:run_command:'/clan guide faction-tiers'><blue><u>Faction Ranks</u></blue></click>
+        <click:run_command:'/clan guide faction-ranks'><blue><u>Faction Ranks</u></blue></click>
         
         <click:run_command:'/clan guide faction-disbanding'><blue><u>Faction Disbanding</u></blue></click>
       - |
@@ -995,6 +995,7 @@ commands:
         no-permission: "&cYou do not have permission to invite players to this faction."
         invitation: "&6You have been invited to join &r{clan-name} &6by &r{player-name}&6. Use '&f/f join {clan-id}&6' to accept the invitation."
         invite-self: "&cYou can not invite yourself to a faction."
+        offline: "&cThe player &r{target-name}&c is not online!"
         already-in-a-clan: "&cThe player &r{target-name} &cis already in a faction. Ask them to leave their faction before retrying."
         already-in-the-clan: "&cThe player &r{target-name} &cis already in this faction."
         already-invited: "&cThe player &r{target-name} &chas already been invited to this faction."

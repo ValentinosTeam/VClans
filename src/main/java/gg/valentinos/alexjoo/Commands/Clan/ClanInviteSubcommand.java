@@ -8,7 +8,6 @@ import gg.valentinos.alexjoo.Data.LogType;
 import gg.valentinos.alexjoo.Utility.Decorator;
 import gg.valentinos.alexjoo.VClans;
 import net.kyori.adventure.key.Key;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class ClanInviteSubcommand extends SubCommand {
 
     public ClanInviteSubcommand() {
-        super("clan", "invite", List.of("success", "invitation", "invite-self", "already-in-a-clan", "already-in-the-clan", "already-invited", "no-permission", "clan-full"));
+        super("clan", "invite", List.of("success", "invitation", "offline", "invite-self", "already-in-a-clan", "already-in-the-clan", "already-invited", "no-permission", "clan-full"));
         hasToBePlayer = true;
         requiredArgs = 2;
     }
@@ -32,8 +31,8 @@ public class ClanInviteSubcommand extends SubCommand {
 
         return () -> {
             sendFormattedMessage(sender, messages.get("success"), LogType.FINE);
-            OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
-            if (target.getPlayer() != null && target.isOnline()) {
+            Player target = VClans.getInstance().getServer().getPlayer(targetName);
+            if (target != null) {
                 sendFormattedMessage(target.getPlayer(), messages.get("invitation"), LogType.INFO);
                 Decorator.PlaySound(target.getPlayer(), Key.key("minecraft:item.book.page_turn"), 1.5f);
             }
@@ -47,10 +46,10 @@ public class ClanInviteSubcommand extends SubCommand {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         String targetName = args[1];
-        OfflinePlayer target = player.getServer().getOfflinePlayer(targetName);
+        Player target = VClans.getInstance().getServer().getPlayer(targetName);
 
-        if (!target.hasPlayedBefore()) {
-            sendFormattedPredefinedMessage(sender, "never-joined", LogType.WARNING);
+        if (target == null) {
+            sendFormattedPredefinedMessage(sender, "offline", LogType.WARNING);
             return true;
         }
         if (target.getUniqueId().equals(player.getUniqueId())) {

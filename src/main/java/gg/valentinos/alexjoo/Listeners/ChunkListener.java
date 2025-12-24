@@ -17,6 +17,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
@@ -160,7 +161,6 @@ public class ChunkListener implements Listener {
         Player player = event.getPlayer();
         Block block = event.getBlock().getRelative(event.getBlockFace()); // where the entity will be placed
         if (player != null) event.setCancelled(shouldBlockPlayerInteraction(block.getChunk(), player, WarBypassRule.HARD));
-        event.setCancelled(true);
     }
 
     @EventHandler
@@ -285,7 +285,17 @@ public class ChunkListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player player)) return;
+        Player player = null;
+
+        if (event.getDamager() instanceof Player) {
+            player = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile projectile) {
+            if (projectile.getShooter() instanceof Player) {
+                player = (Player) projectile.getShooter();
+            }
+        }
+
+        if (player == null) return;
 
         Entity entity = event.getEntity();
 
@@ -296,7 +306,7 @@ public class ChunkListener implements Listener {
 
     @EventHandler
     public void onVehicleDamage(VehicleDamageEvent event) {
-        // Triggered when a vehicle (boat, minecart) is *damaged* by anything (player, arrow, explosion)
+        // Triggered when a vehicle (boat, minecart) is *damaged* by anything (player, arrow    , explosion)
         if (!(event.getAttacker() instanceof Player player)) return;
 
         Entity vehicle = event.getVehicle();
@@ -322,7 +332,7 @@ public class ChunkListener implements Listener {
         Chunk chunk = event.getEntity().getChunk();
         String chunkClanId = chunkHandler.getClanIdByChunk(chunk);
 
-        if (chunkHandler.isChunkClaimed(chunk)) return;
+        if (!chunkHandler.isChunkClaimed(chunk)) return;
 
         if (remover instanceof Player player) {
             if (!clanHandler.isPlayerInClan(player.getUniqueId(), chunkClanId)) {
@@ -340,7 +350,7 @@ public class ChunkListener implements Listener {
         // forbid liquid flow from outside into a claimed territory
         Chunk fromChunk = event.getBlock().getChunk();
         Chunk toChunk = event.getToBlock().getChunk();
-        if (chunkHandler.isChunkClaimed(fromChunk) && chunkHandler.isChunkClaimed(toChunk)) {
+        if (!chunkHandler.isChunkClaimed(fromChunk) && chunkHandler.isChunkClaimed(toChunk)) {
             event.setCancelled(true);
         }
     }
@@ -349,8 +359,7 @@ public class ChunkListener implements Listener {
     public void onBlockBurn(BlockBurnEvent event) {
         // block fire or lava from destroying blocks (does not apply to ice smelting)
         Chunk chunk = event.getBlock().getChunk();
-        if (chunkHandler.isChunkClaimed(chunk)) return;
-        {
+        if (chunkHandler.isChunkClaimed(chunk)) {
             event.setCancelled(true);
         }
     }

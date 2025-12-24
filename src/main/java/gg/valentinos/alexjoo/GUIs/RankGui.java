@@ -181,7 +181,7 @@ public class RankGui extends AbstractGui {
         Component name = Component.text(unCamelCase(permission.key()) + ": ");
         TextColor color = value ? TextColor.color(0, 255, 0) : TextColor.color(255, 0, 0);
         name = name.append(Component.text(value, color));
-        if (!player.hasPermission(permission.key()) || permission.equals(ClanRankPermission.CAN_DISBAND)) {
+        if (!clanHandler.hasPermission(player, permission) || permission.equals(ClanRankPermission.CAN_DISBAND)) {
             material = value ? Material.GREEN_CONCRETE : Material.RED_CONCRETE;
             lore = Component.text("You cannot change this permission.")
                     .color(TextColor.color(255, 0, 0));
