@@ -217,7 +217,9 @@ public class ChunkListener implements Listener {
         // forbid players on interacting (right-clicking) with entities (frames, end crystals, boats) inside the territory they are not a part of
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
+
         event.setCancelled(shouldBlockPlayerInteraction(entity.getChunk(), player, WarBypassRule.SOFT));
+
     }
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
@@ -233,6 +235,15 @@ public class ChunkListener implements Listener {
         Entity target = event.getEntity();
         Chunk chunk = target.getLocation().getChunk();
         Clan chunkClan = chunkHandler.getClanByChunk(chunk);
+        DamageCause cause = event.getCause();
+        if (event.getCause() == DamageCause.ENTITY_EXPLOSION) {
+            Entity directEntity = event.getDamageSource().getDirectEntity();
+            if (directEntity != null && directEntity.getType() == EntityType.END_CRYSTAL) {
+                event.setCancelled(true);
+            }
+        }
+
+
         if (chunkClan == null) return;
 
         if (target instanceof Player targetPlayer) {
@@ -243,7 +254,6 @@ public class ChunkListener implements Listener {
             }
         }
 
-        DamageCause cause = event.getCause();
 
         // Explosion protection
         if (cause == DamageCause.ENTITY_EXPLOSION || cause == DamageCause.BLOCK_EXPLOSION) {
