@@ -168,6 +168,7 @@ public class War {
         VClans.getInstance().getChunkHandler().updateChunkRadarForAll();
     }
     public void loadTasks() {
+        if (state != WarState.IN_PROGRESS) return; // do not start the chunk occupation tasks if war isnt active.
         Clan initiatorClan = clanHandler.getClanById(initiatorClanId);
         Clan targetClan = clanHandler.getClanById(targetClanId);
         for (ClanChunk chunk : initiatorClan.getChunks()) {
