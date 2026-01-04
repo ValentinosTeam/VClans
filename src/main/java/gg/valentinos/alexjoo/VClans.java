@@ -249,7 +249,8 @@ public final class VClans extends JavaPlugin {
                 "never-joined",
                 "confirmation-message",
                 "nothing-to-confirm",
-                "confirmation-expired"
+                "confirmation-expired",
+                "is-in-war"
         );
         for (String key : configKeys) {
             String message = getConfig().getString("commands.default.messages." + key);
